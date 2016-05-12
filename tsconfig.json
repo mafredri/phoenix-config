@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "amd",
+    "moduleResolution": "node",
+    "outFile": "out/phoenix.js",
+    "noLib": true,
+    "allowJs": true,
+    "target": "es5",
+    "rootDir": "src"
+  },
+  "files": [
+    "node_modules/typescript/lib/lib.core.es7.d.ts",
+    "typings/main.d.ts",
+    "src/phoenix.d.ts",
+    "src/js/timeout.js",
+    "src/js/loader.js",
+    "src/phoenix.ts"
+  ]
+}
