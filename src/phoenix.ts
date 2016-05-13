@@ -27,7 +27,7 @@ keyHandlers = [
 		let win = Window.focusedWindow();
 		if (!win) return;
 
-		let oldScreen = win.screen()
+		let oldScreen = win.screen();
 		let newScreen = oldScreen.next();
 
 		if (oldScreen.isEqual(newScreen)) return;

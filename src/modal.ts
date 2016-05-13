@@ -1,3 +1,5 @@
+export { titleModal };
+
 function titleModal(message: string, duration: number = 1) {
 	let m = new Modal();
 	m.message = message;
@@ -11,7 +13,7 @@ Modal.prototype.showTitleOn = function(screen: Screen) {
 
 Modal.prototype.showCenterOn = function(screen: Screen) {
 	showAt(this, screen, 2, 2);
-}
+};
 
 function showAt(modal: Modal, screen: Screen, widthDiv: number, heightDiv: number) {
 	let { height, width } = modal.frame();
@@ -22,5 +24,3 @@ function showAt(modal: Modal, screen: Screen, widthDiv: number, heightDiv: numbe
 	};
 	modal.show();
 }
-
-export { titleModal };

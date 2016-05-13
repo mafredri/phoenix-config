@@ -1,4 +1,4 @@
-import log from './logger';
+export default addBrightness;
 
 const brightnessCmd: string = '/Users/mafredri/.bin/brightness';
 // Start somewhere, it'll sync at some point...
@@ -22,5 +22,3 @@ function showBrightness(value: number) {
 	bModal.message = `Brightness: ${value}`;
 	bModal.showCenterOn(Screen.mainScreen());
 }
-
-export default addBrightness;

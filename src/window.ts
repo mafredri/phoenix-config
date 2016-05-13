@@ -1,4 +1,3 @@
-import { moveToScreen } from './screen';
 import log from './logger';
 
 let frameCache: Map<number, Rectangle> = new Map();

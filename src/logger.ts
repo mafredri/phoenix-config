@@ -3,7 +3,7 @@ export default function log(...args: any[]): void {
 	Phoenix.log(args.join(' '));
 }
 
-function stringify(value) {
+function stringify(value: any) {
 	switch (typeof value) {
 	case 'object':
 		return JSON.stringify(value, null, 2);
