@@ -1,12 +1,7 @@
 interface Window {
-	to(position: (frame: Rectangle, window: Rectangle, margin?: number) => Point): void;
-	grid(x: number, y: number, reverse?: boolean): void;
-	reverseGrid(x: number, y: number): void;
-	resize(multiplier: { x?: number, y?: number }): void;
-	increaseWidth(): void;
-	decreaseWidth(): void;
-	increaseHeight(): void;
-	decreaseHeight(): void;
+	/**
+	 * Clear unmaximized position.
+	 */
 	clearPosition(): void;
 
 	// FIXME: Don't use so many prototype functions for this...
@@ -23,12 +18,6 @@ interface ScreenObject {
 	at(point: Point): Screen;
 }
 
-interface intervalFunction {
-	(callback: Function, interval: number): EventHandler;
-}
-declare var setTimeout: intervalFunction;
-declare var setInterval: intervalFunction;
-
 interface Modal {
 	/**
 	 * Show modal in title position on screen.
@@ -39,3 +28,10 @@ interface Modal {
 	 */
 	showCenterOn(screen: Screen): void
 }
+
+// Define interval function for global scope, defined in js/timeout.js
+interface intervalFunction {
+	(callback: Function, interval: number): EventHandler;
+}
+declare var setTimeout: intervalFunction;
+declare var setInterval: intervalFunction;
