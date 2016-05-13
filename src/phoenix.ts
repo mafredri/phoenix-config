@@ -3,6 +3,7 @@ import { moveToScreen } from './screen';
 import log from './logger';
 import brightness from './brightness';
 import './window';
+import './extend';
 
 // Export handlers so that the references are kept within Phoenix
 export let keyHandlers: KeyHandler[];
