@@ -11,6 +11,20 @@ This is my personal [Phoenix](kasper/phoenix) configuration, written in TypeScri
 * `hyper + Enter` (Toggle maximize)
 * `hyper + Tab` (Jump to next screen)
 
+## Building
+
+```
+npm install -g typescript typings
+
+git clone https://github.com/mafredri/phoenix-config.git
+cd phoenix-config
+npm install && typings install
+
+tsc
+```
+
+The TypeScript compiler (`tsc`) will produce `out/phoenix.js` that can be used as Phoenix configuration. 
+
 ## LICENSE
 
 MIT
