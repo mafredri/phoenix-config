@@ -1,5 +1,6 @@
 import { titleModal } from './modal';
 import { moveToScreen } from './screen';
+import { enforceKeyhandlersEnabled } from './util';
 import log from './logger';
 import brightness from './brightness';
 import './window';
@@ -104,3 +105,5 @@ keyHandlers = [
 ];
 
 titleModal('Phoenix (re)loaded!');
+
+enforceKeyhandlersEnabled(keyHandlers);
