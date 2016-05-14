@@ -6,10 +6,15 @@ This is my personal [Phoenix](kasper/phoenix) configuration, written in TypeScri
 
 * `hyper + Left` (Left half of screen)
 * `hyper + Right` (Right half of screen)
-* `hyper + Up` (Top half of screen, keeps current width)
-* `hyper + Down` (Bottom half of screen, keeps current width)
+* `hyper + Up` (Top half of screen height, keeps current width)
+* `hyper + Down` (Bottom half of screen height, keeps current width)
 * `hyper + Enter` (Toggle maximize)
 * `hyper + Tab` (Jump to next screen)
+
+These can be combined to further position the window, e.g.
+
+* `hyper + Left` + `hyper + Down` (Bottom left corner of screen)
+* `hyper + Enter` + `hyper + Up` (Top half of screen, full width)
 
 ## Building
 
