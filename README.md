@@ -1,6 +1,6 @@
 # Phoenix configuration
 
-This is my personal [Phoenix](kasper/phoenix) configuration, written in TypeScript. I also created [typings](https://github.com/mafredri/phoenix-typings) for it, feel free to use them.
+This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, written in TypeScript. I also created [typings](https://github.com/mafredri/phoenix-typings) for it, feel free to use them.
 
 ## Basic key bindings
 
