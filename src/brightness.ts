@@ -3,7 +3,8 @@ export default addBrightness;
 const brightnessCmd: string = '/Users/mafredri/.bin/brightness';
 // Conservative start value...
 let brightnessValue: number = 40;
-let bModal: Modal = new Modal();
+let bModal: Modal;
+let bModalHideHandler: EventHandler;
 
 function addBrightness(value: number) {
 	if (value < 0) {
@@ -16,9 +17,19 @@ function addBrightness(value: number) {
 }
 
 function showBrightness(value: number) {
-	bModal.close();
-	bModal = new Modal();
-	bModal.duration = 1;
+	if (!bModal) bModal = new Modal();
+
 	bModal.message = `Brightness: ${value}`;
 	bModal.showCenterOn(Screen.mainScreen());
+
+	if (bModalHideHandler) {
+		clearTimeout(bModalHideHandler);
+	}
+	bModalHideHandler = setTimeout(closeBrightnessModal, 1000);
+}
+
+function closeBrightnessModal() {
+	bModal.close();
+	bModal = null;
+	bModalHideHandler = null;
 }

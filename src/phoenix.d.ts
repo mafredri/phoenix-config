@@ -35,3 +35,5 @@ interface intervalFunction {
 }
 declare var setTimeout: intervalFunction;
 declare var setInterval: intervalFunction;
+declare var clearTimeout: (handler: EventHandler) => void;
+declare var clearInterval: (handler: EventHandler) => void;
