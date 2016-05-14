@@ -40,9 +40,9 @@ keyHandlers = [
 		let win = Window.focusedWindow();
 		if (!win) return;
 
-		let frame = win.screen().visibleFrameInRectangle();
-		frame.width = Math.ceil(frame.width / 2);
-		win.setFrame(frame);
+		let { width, height, x, y } = win.screen().visibleFrameInRectangle();
+		width = Math.ceil(width / 2);
+		win.setFrame({ width, height, x, y });
 		win.clearPosition();
 	}),
 
@@ -50,12 +50,12 @@ keyHandlers = [
 		let win = Window.focusedWindow();
 		if (!win) return;
 
-		let frame = win.screen().visibleFrameInRectangle();
-		frame.width /= 2;
-		frame.x += Math.ceil(frame.width);
-		frame.width = Math.floor(frame.width);
+		let { width, height, x, y } = win.screen().visibleFrameInRectangle();
+		width /= 2;
+		x += Math.ceil(width);
+		width = Math.floor(width);
 
-		win.setFrame(frame);
+		win.setFrame({ width, height, x, y });
 		win.clearPosition();
 	}),
 
@@ -77,7 +77,8 @@ keyHandlers = [
 
 		let { width, x } = win.frame();
 		let { height, y } = win.screen().visibleFrameInRectangle();
-		[ height, y ] = [ Math.ceil(height / 2), y + Math.floor(height / 2) ];
+		height /= 2;
+		[ height, y ] = [ Math.ceil(height), y + Math.floor(height) ];
 
 		win.setFrame({ height, width, x, y });
 		win.clearPosition();
