@@ -4,7 +4,7 @@
 export default startTimer;
 
 const doneMsg = `
-Your coffe is done,
+Your coffee is done,
 go get it!
 `;
 
@@ -40,7 +40,7 @@ function startTimer(duration: number = 8) {
 			min = '~' + String(duration);
 		}
 
-		m.message = `Coffe in ${min} min`;
+		m.message = `Coffee in ${min} min`;
 		let { width: mWidth } = m.frame();
 		let { width, height, x, y } = screen.visibleFrameInRectangle();
 		let { height: fHeight } = screen.frameInRectangle();
