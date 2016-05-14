@@ -18,6 +18,12 @@ Use combos of the key bindings to further place the windows:
 
 I've optimized the key bindings for my common use-case, showing two windows on one screen and moving windows between screens.
 
+### Misc bindings
+
+* `hyper + c` (Start coffee timer, defaults to 8 minutes)
+* `hyper + +` (Increase monitor brightness using external script)
+* `hyper + -` (Decrease monitor brightness using external script)
+
 ## Building
 
 ```
