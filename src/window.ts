@@ -1,3 +1,4 @@
+import { sizeMatches } from './calc';
 import log from './logger';
 
 let frameCache: Map<number, Rectangle> = new Map();
@@ -17,7 +18,8 @@ Window.prototype.setFrame = function(frame: Rectangle): boolean {
 	if (this.app().bundleIdentifier() === 'com.microsoft.Word') {
 		// Workaround for Microsoft Word resizing too slowly and thus not
 		// reaching the correct frame
-		while (!windowMatchesFrame(this, frame)) {
+		while (!sizeMatches(this.frame(), frame)) {
+			log('com.microsoft.Word workaround triggered, reapplying setFrame()');
 			ret = setFrameOrig.call(this, frame);
 		}
 	}
@@ -50,8 +52,3 @@ Window.prototype.toggleMaximized = function toggleMaximized() {
 		this.maximize();
 	}
 };
-
-function windowMatchesFrame(win: Window, wantedFrame: Rectangle) {
-	let { height, width } = win.frame();
-	return Math.abs(height - wantedFrame.height) < 1 && Math.abs(width - wantedFrame.width) < 1;
-}

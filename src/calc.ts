@@ -1,4 +1,4 @@
-export { FrameRatio, frameRatio, pointInsideFrame };
+export { FrameRatio, frameRatio, pointInsideFrame, sizeMatches };
 
 interface FrameRatio {
 	(frame: Rectangle): Rectangle;
@@ -21,4 +21,8 @@ function frameRatio(a: Rectangle, b: Rectangle): FrameRatio {
 function pointInsideFrame(point: Point, frame: Rectangle): boolean {
 	return point.x >= frame.x && point.x <= (frame.x + frame.width)
 		&& point.y >= frame.y && point.y <= (frame.y + frame.height);
+}
+
+function sizeMatches(size: Size, match: Size): boolean {
+	return Math.abs(size.height - match.height) < 1 && Math.abs(size.width - match.width) < 1;
 }
