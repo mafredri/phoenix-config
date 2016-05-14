@@ -3,6 +3,7 @@ import { moveToScreen } from './screen';
 import { enforceKeyhandlersEnabled } from './util';
 import log from './logger';
 import brightness from './brightness';
+import coffeTimer from './coffee';
 import './window';
 import './extend';
 
@@ -101,6 +102,10 @@ keyHandlers = [
 	}),
 	Phoenix.bind('-', hyper, () => {
 		brightness(-10);
+	}),
+
+	Phoenix.bind('c', hyper, () => {
+		coffeTimer();
 	}),
 ];
 
