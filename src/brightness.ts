@@ -1,8 +1,8 @@
 export default addBrightness;
 
 const brightnessCmd: string = '/Users/mafredri/.bin/brightness';
-// Start somewhere, it'll sync at some point...
-let brightnessValue: number = 50;
+// Conservative start value...
+let brightnessValue: number = 40;
 let bModal: Modal = new Modal();
 
 function addBrightness(value: number) {
