@@ -3,6 +3,7 @@
  */
 export default startTimer;
 
+const modalMargin = 3;
 const doneMsg = `
 Your coffee is done,
 go get it!
@@ -45,11 +46,10 @@ function startTimer(duration: number = 8) {
 		let { width, height, x, y } = screen.visibleFrameInRectangle();
 		let { height: fHeight } = screen.frameInRectangle();
 
-		x = x + width - mWidth - 2;
-		// Normally it should suffice to say that y = 2, but depending on if
-		// the screen is main or not, the y value seems to be offset somewhat
-		// (due to dock?)
-		y = 2 + (fHeight - height - y);
+		x = x + width - mWidth - modalMargin;
+		// Start modal y-position from `visibleFrameInRectangle().height`
+		// so that it is in line with a full size window instead of the screen.
+		y = modalMargin + (fHeight - height - y);
 		m.origin = { x, y };
 		m.show();
 	}
