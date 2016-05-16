@@ -108,11 +108,24 @@ keyHandlers = [
 	}),
 
 	Phoenix.bind('c', hyper, () => {
-		coffeTimer();
+		if (coffeTimer.isRunning()) {
+			coffeTimer.stop();
+		} else {
+			coffeTimer.start();
+		}
 	}),
 
 	Phoenix.bind('space', hyper, () => {
-		scanner.scanln(s => log('DONE:', s), s => log('UPDATE:', s));
+		let m = new Modal();
+		let msg = 'Search: ';
+		m.message = msg;
+		m.showCenterOn(Screen.mainScreen());
+		scanner.scanln(s => {
+			m.close();
+		}, s => {
+			m.message = msg + s;
+			m.showCenterOn(Screen.mainScreen());
+		});
 	}),
 
 	Phoenix.bind('v', hyper, () => {
