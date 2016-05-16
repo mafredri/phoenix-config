@@ -1,6 +1,6 @@
 export { Scanner };
 
-const interceptKeys = `1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
+const normalKeys = `1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
 const shiftKeys = `!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`;
 const altKeys = `©@£$∞§|[]≈±•Ωé®†µüıœπ˙ß∂ƒ¸˛√ªﬁøæ™  ≈ç‹›‘’‚ –`;
 const altShiftKeys = `      \\{}`;
@@ -49,8 +49,8 @@ class Scanner {
 			return this.keyHandlers.forEach(h => h.enable());
 		}
 
-		for (let i = 0; i < interceptKeys.length; i++) {
-			let k = interceptKeys[i];
+		for (let i = 0; i < normalKeys.length; i++) {
+			let k = normalKeys[i];
 			this.keyHandlers.push(Phoenix.bind(k, [], () => this.handleKeyPress(k)));
 			this.keyHandlers.push(Phoenix.bind(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])));
 			this.keyHandlers.push(Phoenix.bind(k, ['alt'], () => this.handleKeyPress(altKeys[i])));
