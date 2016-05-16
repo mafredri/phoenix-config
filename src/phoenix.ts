@@ -4,15 +4,18 @@ import { enforceKeyhandlersEnabled } from './util';
 import log from './logger';
 import brightness from './brightness';
 import coffeTimer from './coffee';
+import { Scanner } from './scan';
 import './window';
 import './extend';
 
 // Export handlers so that the references are kept within Phoenix
 export let keyHandlers: KeyHandler[];
 export let eventHandlers: EventHandler[];
+export let modeKeyHandler: KeyHandler[];
 
 let hyper: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt'];
 let hyperShift: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt', 'shift'];
+let scanner = new Scanner();
 
 Phoenix.set({
 	'daemon': true,
@@ -106,6 +109,10 @@ keyHandlers = [
 
 	Phoenix.bind('c', hyper, () => {
 		coffeTimer();
+	}),
+
+	Phoenix.bind('space', hyper, () => {
+		scanner.scanln(s => log('DONE:', s), s => log('UPDATE:', s));
 	}),
 ];
 

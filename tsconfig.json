@@ -8,7 +8,8 @@
     "target": "es5",
     "rootDir": "src",
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "noFallthroughCasesInSwitch": true
   },
   "files": [
     "node_modules/typescript/lib/lib.core.es7.d.ts",
