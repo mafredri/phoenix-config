@@ -1,61 +1,58 @@
 /**
  * This module starts a timer to notify you when your coffee is done.
  */
-export default startTimer;
+import { applyMargin, originOnScreen, Orientation } from './modal';
 
-const modalMargin = 3;
-const doneMsg = `
+export default coffeTimer;
+
+const MODAL_MARGIN = 3;
+const DONE_MSG = `
 Your coffee is done,
 go get it!
 `;
 
-let m: Modal;
+function coffeTimer(after = 8, screen = Screen.mainScreen()) {
+	const initialAfter = after;
+	let modal: Modal;
+	let timeout: EventHandler;
+	let interval: EventHandler;
 
-function startTimer(duration: number = 8) {
-	if (m) return dismiss();
+	return { isRunning, start, stop, set };
 
-	m = new Modal();
-	let screen = Screen.mainScreen(); // save current screen
+	function isRunning(): boolean { return Boolean(modal); }
 
-	let interval = setInterval(() => {
-		duration--;
-		showWithMessage();
-	}, 1000 * 60);
+	function set(timer: number) { after = timer; }
 
-	setTimeout(() => {
-		clearInterval(interval);
-		m.close();
-		m = new Modal();
-		m.message = doneMsg.trim();
-		m.showCenterOn(screen);
-	}, duration * 60 * 1000);
+	function start() {
+		if (isRunning()) return;
 
-	duration--;
-	showWithMessage();
-
-	function showWithMessage() {
-		let min: string;
-		if (!duration) {
-			min = '<1';
-		} else {
-			min = '~' + String(duration);
-		}
-
-		m.message = `Coffee in ${min} min`;
-		let { width: mWidth } = m.frame();
-		let { width, height, x, y } = screen.visibleFrameInRectangle();
-		let { height: fHeight } = screen.frameInRectangle();
-
-		x = x + width - mWidth - modalMargin;
-		// Start modal y-position from `visibleFrameInRectangle().height`
-		// so that it is in line with a full size window instead of the screen.
-		y = modalMargin + (fHeight - height - y);
-		m.origin = { x, y };
-		m.show();
+		modal = new Modal();
+		timeout = setTimeout(alert, 1000 * 60 * after);
+		interval = setInterval(update, 1000 * 60);
+		update();
 	}
-}
 
-function dismiss() {
-	m.close();
-	m = null;
+	function stop() {
+		clearTimeout(timeout);
+		clearTimeout(interval);
+		modal.close();
+		modal = null;
+		after = initialAfter;
+	}
+
+	function update() {
+		after--;
+		let min = after ? '~' + String(after) : '<1';
+		modal.message = `Coffee in ${min} min`;
+		modal.origin = applyMargin(originOnScreen(modal, screen, Orientation.SouthEast), MODAL_MARGIN, MODAL_MARGIN);
+		modal.show();
+	}
+
+	function alert() {
+		clearInterval(interval);
+		modal.close();
+		modal = new Modal();
+		modal.message = DONE_MSG.trim();
+		modal.showCenterOn(screen);
+	}
 }

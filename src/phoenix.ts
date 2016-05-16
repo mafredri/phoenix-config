@@ -3,7 +3,7 @@ import { moveToScreen } from './screen';
 import { enforceKeyhandlersEnabled } from './util';
 import log from './logger';
 import brightness from './brightness';
-import coffeTimer from './coffee';
+import createCoffeTimer from './coffee';
 import { Scanner } from './scan';
 import './window';
 import './extend';
@@ -16,6 +16,8 @@ export let modeKeyHandler: KeyHandler[];
 let hyper: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt'];
 let hyperShift: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt', 'shift'];
 let scanner = new Scanner();
+
+let coffeTimer = createCoffeTimer();
 
 Phoenix.set({
 	'daemon': true,
