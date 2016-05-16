@@ -45,9 +45,7 @@ class Scanner {
 
 	private enable() {
 		this.scanned = ''; // reset input
-		if (this.keyHandlers.length) {
-			return this.keyHandlers.forEach(h => h.enable());
-		}
+		this.keyHandlers.length = 0; // remove stale keyhandlers
 
 		for (let i = 0; i < normalKeys.length; i++) {
 			let k = normalKeys[i];
@@ -62,6 +60,8 @@ class Scanner {
 			this.keyHandlers.push(Phoenix.bind(sk, [], () => this.handleKeyPress(sk)));
 			this.keyHandlers.push(Phoenix.bind(sk, ['shift'], () => this.handleKeyPress(sk)));
 		}
+
+		this.keyHandlers.forEach(h => h.enable()); // make sure all handlers are enabled
 	}
 
 	private disable() {
