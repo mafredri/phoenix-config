@@ -114,6 +114,10 @@ keyHandlers = [
 	Phoenix.bind('space', hyper, () => {
 		scanner.scanln(s => log('DONE:', s), s => log('UPDATE:', s));
 	}),
+
+	Phoenix.bind('v', hyper, () => {
+		scanner.scan(s => log('DONE:', s));
+	}),
 ];
 
 titleModal('Phoenix (re)loaded!');
