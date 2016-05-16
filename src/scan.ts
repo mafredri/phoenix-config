@@ -58,7 +58,7 @@ class Scanner {
 		}
 		for (let sk of specialKeys) {
 			this.keyHandlers.push(Phoenix.bind(sk, [], () => this.handleKeyPress(sk)));
-			this.keyHandlers.push(Phoenix.bind(sk, ['shift'], () => this.handleKeyPress(sk)));
+			this.keyHandlers.push(Phoenix.bind(sk, ['shift'], (h) => this.handleKeyPress(sk, h)));
 		}
 
 		this.keyHandlers.forEach(h => h.enable()); // make sure all handlers are enabled
@@ -68,7 +68,7 @@ class Scanner {
 		this.keyHandlers.forEach(h => h.disable());
 	}
 
-	private handleKeyPress(key: Phoenix.Key) {
+	private handleKeyPress(key: Phoenix.Key, handler?: KeyHandler) {
 		switch (key) {
 			case 'delete':
 				this.scanned = this.scanned.slice(0, -1);
@@ -77,6 +77,10 @@ class Scanner {
 				this.doneCallback(undefined); // undefined indicates aborted.
 				return this.disable();
 			case 'return':
+				if (handler && handler.modifiers.includes('shift')) {
+					this.scanned += '\n';
+					return this.updateCallback(this.scanned);
+				}
 				this.doneCallback(this.scanned);
 				return this.disable();
 			case 'space':
