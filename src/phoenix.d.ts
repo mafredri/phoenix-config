@@ -2,13 +2,8 @@ interface Window {
 	/**
 	 * Clear unmaximized position.
 	 */
-	clearPosition(): void;
-
-	// FIXME: Don't use so many prototype functions for this...
+	clearUnmaximized(): void;
 	toggleMaximized(): void;
-	isMaximized(): void;
-	unmaximizedFrame(): Rectangle;
-	setUnmaximizedFrame(frame: Rectangle): void;
 }
 
 interface ScreenObject {

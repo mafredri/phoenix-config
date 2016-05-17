@@ -1,5 +1,5 @@
+import { frameRatio } from './calc';
 import { titleModal } from './modal';
-import { moveToScreen } from './screen';
 import { enforceKeyhandlersEnabled } from './util';
 import log from './logger';
 import brightness from './brightness';
@@ -40,7 +40,8 @@ keyHandlers = [
 
 		if (oldScreen.isEqual(newScreen)) return;
 
-		moveToScreen(win, newScreen);
+		let ratio = frameRatio(oldScreen.visibleFrameInRectangle(), newScreen.visibleFrameInRectangle());
+		win.setFrame(ratio(win.frame()));
 	}),
 
 	Phoenix.bind('left', hyper, () => {
@@ -50,7 +51,7 @@ keyHandlers = [
 		let { width, height, x, y } = win.screen().visibleFrameInRectangle();
 		width = Math.ceil(width / 2);
 		win.setFrame({ width, height, x, y });
-		win.clearPosition();
+		win.clearUnmaximized();
 	}),
 
 	Phoenix.bind('right', hyper, () => {
@@ -63,7 +64,7 @@ keyHandlers = [
 		width = Math.floor(width);
 
 		win.setFrame({ width, height, x, y });
-		win.clearPosition();
+		win.clearUnmaximized();
 	}),
 
 	Phoenix.bind('up', hyper, () => {
@@ -75,7 +76,7 @@ keyHandlers = [
 		height = Math.ceil(height / 2);
 
 		win.setFrame({ height, width, x, y });
-		win.clearPosition();
+		win.clearUnmaximized();
 	}),
 
 	Phoenix.bind('down', hyper, () => {
@@ -88,7 +89,7 @@ keyHandlers = [
 		[ height, y ] = [ Math.ceil(height), y + Math.floor(height) ];
 
 		win.setFrame({ height, width, x, y });
-		win.clearPosition();
+		win.clearUnmaximized();
 	}),
 
 	Phoenix.bind('return', hyper, () => {
@@ -128,10 +129,6 @@ keyHandlers = [
 			m.message = msg + s;
 			m.showCenterOn(Screen.mainScreen());
 		});
-	}),
-
-	Phoenix.bind('v', hyper, () => {
-		scanner.scan(s => log('DONE:', s));
 	}),
 ];
 

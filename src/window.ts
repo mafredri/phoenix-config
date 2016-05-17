@@ -1,10 +1,15 @@
-import { sizeMatches } from './calc';
+import { frameRatio, sizeMatches } from './calc';
 import log from './logger';
 
-let frameCache: Map<number, Rectangle> = new Map();
+interface FrameCache {
+	window: Rectangle;
+	screen: Rectangle;
+}
+
+let frameCache: Map<number, FrameCache> = new Map();
 
 // Export handlers so that the references are kept within Phoenix
-export const eventHandler: EventHandler[] = [
+export const eventHandlers: EventHandler[] = [
 	Phoenix.on('windowDidClose', (win: Window) => {
 		// Cleanup references to unmaximized window frames
 		frameCache.delete(win.hash());
@@ -26,29 +31,25 @@ Window.prototype.setFrame = function(frame: Rectangle): boolean {
 	return ret;
 };
 
-Window.prototype.clearPosition = function clearPosition() {
-	frameCache.delete(this.hash());
-};
+Window.prototype.clearUnmaximized = function () { frameCache.delete(this.hash()); };
+Window.prototype.toggleMaximized = function () { toggleMaximized(this); };
 
-Window.prototype.isMaximized = function isMaximized() {
-	return frameCache.has(this.hash());
-};
+function unmaximizedFrame(win: Window): Rectangle {
+	let c =  frameCache.get(win.hash());
+	let ratio = frameRatio(c.screen, win.screen().visibleFrameInRectangle());
+	return ratio(c.window);
+}
 
-Window.prototype.unmaximizedFrame = function unmaximizedFrame() {
-	return frameCache.get(this.hash());
-};
-
-Window.prototype.setUnmaximizedFrame = function setUnmaximizedFrame(frame: Rectangle) {
-	frameCache.set(this.hash(), frame);
-};
-
-Window.prototype.toggleMaximized = function toggleMaximized() {
-	let id = this.hash();
+function toggleMaximized(win: Window) {
+	let id = win.hash();
 	if (frameCache.has(id)) {
-		this.setFrame(frameCache.get(id));
-		this.clearPosition();
+		win.setFrame(unmaximizedFrame(win));
+		win.clearUnmaximized();
 	} else {
-		frameCache.set(id, this.frame());
-		this.maximize();
+		frameCache.set(id, {
+			window: win.frame(),
+			screen: win.screen().visibleFrameInRectangle(),
+		});
+		win.maximize();
 	}
-};
+}
