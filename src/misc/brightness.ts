@@ -1,6 +1,7 @@
 export default addBrightness;
 
 const brightnessCmd: string = '/Users/mafredri/.bin/brightness';
+
 // Conservative start value...
 let brightnessValue: number = 40;
 let bModal: Modal;

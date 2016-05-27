@@ -2,11 +2,12 @@ import { frameRatio } from './calc';
 import { titleModal } from './modal';
 import { enforceKeyhandlersEnabled } from './util';
 import log from './logger';
-import brightness from './brightness';
-import createCoffeTimer from './coffee';
+import brightness from './misc/brightness';
+import createCoffeTimer from './misc/coffee';
 import { Scanner } from './scan';
 import './window';
 import './extend';
+import './screen';
 
 // Export handlers so that the references are kept within Phoenix
 export let keyHandlers: KeyHandler[];
@@ -147,7 +148,7 @@ keyHandlers = [
 		if (coffeTimer.isRunning()) {
 			coffeTimer.stop();
 		} else {
-			coffeTimer.start();
+			coffeTimer.start(Screen.mainScreen());
 		}
 	}),
 

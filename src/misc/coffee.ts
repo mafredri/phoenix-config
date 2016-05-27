@@ -1,7 +1,7 @@
 /**
  * This module starts a timer to notify you when your coffee is done.
  */
-import { applyMargin, originOnScreen, Orientation } from './modal';
+import { applyMargin, originOnScreen, Orientation } from '../modal';
 
 export default coffeTimer;
 
@@ -11,9 +11,10 @@ Your coffee is done,
 go get it!
 `;
 
-function coffeTimer(after = 8, screen = Screen.mainScreen()) {
+function coffeTimer(after = 8) {
 	const initialAfter = after;
 	let modal: Modal;
+	let screen: Screen;
 	let timeout: EventHandler;
 	let interval: EventHandler;
 
@@ -23,8 +24,9 @@ function coffeTimer(after = 8, screen = Screen.mainScreen()) {
 
 	function set(timer: number) { after = timer; }
 
-	function start() {
+	function start(s: Screen) {
 		if (isRunning()) return;
+		if (s) screen = s;
 
 		modal = new Modal();
 		timeout = setTimeout(alert, 1000 * 60 * after);

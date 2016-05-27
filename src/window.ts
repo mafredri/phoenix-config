@@ -1,6 +1,8 @@
 import { frameRatio, sizeMatches } from './calc';
 import log from './logger';
 
+export { toggleMaximized, clearUnmaximized };
+
 interface FrameCache {
 	window: Rectangle;
 	screen: Rectangle;
@@ -16,23 +18,9 @@ export const eventHandlers: EventHandler[] = [
 	}),
 ];
 
-// FIXME: This is too hacky, I'd prefer not to monkey patch built-ins
-let setFrameOrig = Window.prototype.setFrame;
-Window.prototype.setFrame = function(frame: Rectangle): boolean {
-	let ret = setFrameOrig.call(this, frame);
-	if (this.app().bundleIdentifier() === 'com.microsoft.Word') {
-		// Workaround for Microsoft Word resizing too slowly and thus not
-		// reaching the correct frame
-		while (!sizeMatches(this.frame(), frame)) {
-			log('com.microsoft.Word workaround triggered, reapplying setFrame()');
-			ret = setFrameOrig.call(this, frame);
-		}
-	}
-	return ret;
-};
-
-Window.prototype.clearUnmaximized = function () { frameCache.delete(this.hash()); };
-Window.prototype.toggleMaximized = function () { toggleMaximized(this); };
+function clearUnmaximized(win: Window) {
+	frameCache.delete(win.hash());
+}
 
 function unmaximizedFrame(win: Window): Rectangle {
 	let c =  frameCache.get(win.hash());
@@ -53,3 +41,21 @@ function toggleMaximized(win: Window) {
 		win.maximize();
 	}
 }
+
+Window.prototype.clearUnmaximized = function () { clearUnmaximized(this); };
+Window.prototype.toggleMaximized = function () { toggleMaximized(this); };
+
+// FIXME: This is too hacky, I'd prefer not to monkey patch built-ins
+let setFrameOrig = Window.prototype.setFrame;
+Window.prototype.setFrame = function(frame: Rectangle): boolean {
+	let ret = setFrameOrig.call(this, frame);
+	if (this.app().bundleIdentifier() === 'com.microsoft.Word') {
+		// Workaround for Microsoft Word resizing too slowly and thus not
+		// reaching the correct frame
+		while (!sizeMatches(this.frame(), frame)) {
+			log('com.microsoft.Word workaround triggered, reapplying setFrame()');
+			ret = setFrameOrig.call(this, frame);
+		}
+	}
+	return ret;
+};
