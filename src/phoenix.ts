@@ -19,15 +19,30 @@ let scanner = new Scanner();
 
 let coffeTimer = createCoffeTimer();
 
+// currentFocusedWindow keeps track of focused window for whitelisted apps.
+let currentFocusedWindow: Window = Window.focusedWindow();
+
 Phoenix.set({
 	'daemon': true,
-	'openAtLogin': true
+	'openAtLogin': true,
 });
 
 eventHandlers = [
 	Phoenix.on('screensDidChange', () => {
 		log('Screens changed');
 	}),
+
+	// Keep currentFocusedWindow up to date.
+	Phoenix.on('windowDidFocus', (win: Window) => {
+		if (win.app().name() !== 'Terminal') {
+			currentFocusedWindow = win;
+		}
+	}),
+	Phoenix.on('appDidActivate', (app: App) => {
+		if (app.name() !== 'Terminal') {
+			currentFocusedWindow = Window.focusedWindow();
+		}
+	})
 ];
 
 keyHandlers = [
@@ -96,6 +111,24 @@ keyHandlers = [
 		Window.focusedWindow() && Window.focusedWindow().toggleMaximized();
 	}),
 
+	Phoenix.bind('§', [], toggleTerminal),
+
+	Phoenix.bind('§', ['cmd'], () => {
+		let win = Window.focusedWindow();
+		if (win && win.app().name() !== 'Terminal') {
+			return toggleTerminal();
+		}
+
+		let app = App.get('Terminal');
+		let windows = app.windows();
+		windows[windows.length - 1].focus();
+	}),
+
+	Phoenix.bind('delete', hyper, () => {
+		let win = Window.focusedWindow();
+		win && win.minimize();
+	}),
+
 	Phoenix.bind('m', hyper, () => {
 		let s = Screen.at(Mouse.location());
 		if (!s) return;
@@ -135,3 +168,18 @@ keyHandlers = [
 titleModal('Phoenix (re)loaded!');
 
 enforceKeyhandlersEnabled(keyHandlers);
+
+function toggleTerminal() {
+	let win = Window.focusedWindow();
+	let term = App.get('Terminal');
+
+	if (win && win.app().name() === 'Terminal') {
+		return currentFocusedWindow.focus();
+	}
+
+	if (!term) {
+		App.launch('Terminal');
+	} else {
+		term.windows()[0].focus();
+	}
+}

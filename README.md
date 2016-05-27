@@ -10,6 +10,7 @@ This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, 
 * `hyper + Down` (Bottom half of screen height, keeps current width)
 * `hyper + Enter` (Toggle maximize, remembers unmaximized position)
 * `hyper + Tab` (Jump to next screen whilst keeping relative size and placement)
+* `hyper + Delete` (Minimize focused window)
 
 Use combos of the key bindings to further place the windows:
 
@@ -23,6 +24,8 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 * `hyper + c` (Start coffee timer, defaults to 8 minutes)
 * `hyper + +` (Increase monitor brightness using external script)
 * `hyper + -` (Decrease monitor brightness using external script)
+* `§` (Show or hide the last used Terminal window)
+* `cmd + §` (Cycle between Terminal windows)
 
 ## Building
 

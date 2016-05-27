@@ -4,9 +4,9 @@
   "description": "Configuration for kasper/phoenix written in TypeScript",
   "main": "phoenix.ts",
   "dependencies": {
-    "tslint": "^3.8.1",
+    "tslint": "^3.10.2",
     "typescript": "^1.8.10",
-    "typings": "^0.8.1"
+    "typings": "^1.0.4"
   },
   "devDependencies": {},
   "scripts": {

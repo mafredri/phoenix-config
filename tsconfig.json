@@ -13,7 +13,7 @@
   },
   "files": [
     "node_modules/typescript/lib/lib.core.es7.d.ts",
-    "typings/main.d.ts",
+    "typings/index.d.ts",
     "src/phoenix.d.ts",
     "src/js/timeout.js",
     "src/js/loader.js",
