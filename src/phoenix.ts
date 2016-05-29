@@ -20,9 +20,6 @@ let scanner = new Scanner();
 
 let coffeTimer = createCoffeTimer();
 
-// currentFocusedWindow keeps track of focused window for whitelisted apps.
-let currentFocusedWindow: Window = Window.focusedWindow();
-
 Phoenix.set({
 	'daemon': true,
 	'openAtLogin': true,
@@ -32,18 +29,6 @@ eventHandlers = [
 	Phoenix.on('screensDidChange', () => {
 		log('Screens changed');
 	}),
-
-	// Keep currentFocusedWindow up to date.
-	Phoenix.on('windowDidFocus', (win: Window) => {
-		if (win.app().name() !== 'Terminal') {
-			currentFocusedWindow = win;
-		}
-	}),
-	Phoenix.on('appDidActivate', (app: App) => {
-		if (app.name() !== 'Terminal') {
-			currentFocusedWindow = Window.focusedWindow();
-		}
-	})
 ];
 
 keyHandlers = [
@@ -175,12 +160,12 @@ function toggleTerminal() {
 	let term = App.get('Terminal');
 
 	if (win && win.app().name() === 'Terminal') {
-		return currentFocusedWindow.focus();
+		return term.hide();
 	}
 
-	if (!term) {
-		App.launch('Terminal');
-	} else {
-		term.windows()[0].focus();
+	if (term && term.windows().length) {
+		return term.focus();
 	}
+
+	App.launch('Terminal');
 }
