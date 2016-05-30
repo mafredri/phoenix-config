@@ -8,9 +8,16 @@ This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, 
 * `hyper + Right` (Right half of screen)
 * `hyper + Up` (Top half of screen height, keeps current width)
 * `hyper + Down` (Bottom half of screen height, keeps current width)
-* `hyper + Enter` (Toggle maximize, remembers unmaximized position)
+* `hyper + Return` (Toggle maximize, remembers unmaximized position)
 * `hyper + Tab` (Jump to next screen whilst keeping relative size and placement)
 * `hyper + Delete` (Minimize focused window)
+
+
+* `hyperShift + Left` (Move window to left edge of screen)
+* `hyperShift + Right` (Move window to right edge of screen)
+* `hyperShift + Up` (Move window to top edge of screen)
+* `hyperShift + Down` (Move window to bottom edge of screen)
+* `hyperShift + Return` (Move window to center of screen)
 
 Use combos of the key bindings to further place the windows:
 

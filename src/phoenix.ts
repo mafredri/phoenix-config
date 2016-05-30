@@ -97,6 +97,66 @@ keyHandlers = [
 		Window.focusedWindow() && Window.focusedWindow().toggleMaximized();
 	}),
 
+	Phoenix.bind('left', hyperShift, () => {
+		let win = Window.focusedWindow();
+		if (!win) return;
+
+		let { width, height, y } = win.frame();
+		let { x } = win.screen().visibleFrameInRectangle();
+
+		win.setFrame({ width, height, y, x });
+	}),
+
+	Phoenix.bind('right', hyperShift, () => {
+		let win = Window.focusedWindow();
+		if (!win) return;
+
+		let { width, height, y } = win.frame();
+		let { width: sWidth, x } = win.screen().visibleFrameInRectangle();
+
+		win.setFrame({
+			width, height, y,
+			x: x + sWidth - width,
+		});
+	}),
+
+	Phoenix.bind('up', hyperShift, () => {
+		let win = Window.focusedWindow();
+		if (!win) return;
+
+		let { width, height, x } = win.frame();
+		let { y } = win.screen().visibleFrameInRectangle();
+
+		win.setFrame({ width, height, x, y });
+	}),
+
+	Phoenix.bind('down', hyperShift, () => {
+		let win = Window.focusedWindow();
+		if (!win) return;
+
+		let { width, height, x } = win.frame();
+		let { height: sHeight, y } = win.screen().visibleFrameInRectangle();
+
+		win.setFrame({
+			width, height, x,
+			y: y + sHeight - height,
+		});
+	}),
+
+	Phoenix.bind('return', hyperShift, () => {
+		let win = Window.focusedWindow();
+		if (!win) return;
+
+		let { width, height } = win.frame();
+		let { width: sWidth, height: sHeight, x, y } = win.screen().visibleFrameInRectangle();
+
+		win.setFrame({
+			width, height,
+			x: x + (sWidth / 2) - (width / 2),
+			y: y + (sHeight / 2) - (height / 2),
+		});
+	}),
+
 	Phoenix.bind('§', [], toggleTerminal),
 
 	Phoenix.bind('§', ['cmd'], () => {
