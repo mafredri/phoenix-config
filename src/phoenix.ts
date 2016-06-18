@@ -9,11 +9,6 @@ import './window';
 import './extend';
 import './screen';
 
-// Export handlers so that the references are kept within Phoenix
-export let keyHandlers: KeyHandler[];
-export let eventHandlers: EventHandler[];
-export let modeKeyHandler: KeyHandler[];
-
 let hyper: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt'];
 let hyperShift: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt', 'shift'];
 let scanner = new Scanner();
@@ -25,13 +20,15 @@ Phoenix.set({
 	'openAtLogin': true,
 });
 
-eventHandlers = [
+// Export handlers to keep references alive.
+export const eventHandlers: EventHandler[] = [
 	Phoenix.on('screensDidChange', () => {
 		log('Screens changed');
 	}),
 ];
 
-keyHandlers = [
+// Export handlers to keep references alive.
+export const keyHandlers: KeyHandler[] = [
 	Phoenix.bind('tab', hyper, () => {
 		let win = Window.focusedWindow();
 		if (!win) return;

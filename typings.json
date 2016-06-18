@@ -1,7 +1,7 @@
 {
   "version": false,
   "main": "src/phoenix.d.ts",
-  "ambientDependencies": {
+  "globalDependencies": {
     "phoenix-typings": "github:mafredri/phoenix-typings"
   }
 }
