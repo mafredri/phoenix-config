@@ -5,6 +5,7 @@ import brightness from './misc/brightness';
 import coffeTimer from './misc/coffee';
 import { TimerStopper } from './misc/coffee';
 import { Scanner } from './scan';
+import { toggleTerminal } from './misc/terminal';
 import './window';
 import './extend';
 import './screen';
@@ -19,9 +20,7 @@ Phoenix.set({
 	'openAtLogin': true,
 });
 
-Event.on('screensDidChange', () => {
-	log('Screens changed');
-});
+Event.on('screensDidChange', () => log('Screens changed'));
 
 Key.on('tab', hyper, () => {
 	let win = Window.focusedWindow();
@@ -148,7 +147,7 @@ Key.on('return', hyperShift, () => {
 	});
 });
 
-// Key.on('§', [], toggleTerminal),
+Key.on('§', [], toggleTerminal),
 
 Key.on('§', ['cmd'], () => {
 	let win = Window.focusedWindow();
@@ -173,12 +172,8 @@ Key.on('m', hyper, () => {
 	log(s.identifier(), Mouse.location());
 });
 
-Key.on('+', hyper, () => {
-	brightness(+10);
-});
-Key.on('-', hyper, () => {
-	brightness(-10);
-});
+Key.on('+', hyper, () => brightness(+10));
+Key.on('-', hyper, () => brightness(-10));
 
 Key.on('c', hyper, () => {
 	if (coffee) {
@@ -203,18 +198,3 @@ Key.on('space', hyper, () => {
 });
 
 titleModal('Phoenix (re)loaded!');
-
-function toggleTerminal() {
-	let win = Window.focusedWindow();
-	let term = App.get('iTerm2');
-
-	if (win && win.app().name() === 'iTerm2') {
-		return term.hide();
-	}
-
-	if (term && term.windows().length) {
-		return term.focus();
-	}
-
-	App.launch('iTerm');
-}
