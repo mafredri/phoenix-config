@@ -24,11 +24,10 @@ interface Modal {
 	showCenterOn(screen: Screen): void
 }
 
-// Define interval function for global scope, defined in js/timeout.js
 interface intervalFunction {
-	(callback: Function, interval: number): EventHandler;
+	(callback: Function, interval: number): number;
 }
 declare var setTimeout: intervalFunction;
 declare var setInterval: intervalFunction;
-declare var clearTimeout: (handler: EventHandler) => void;
-declare var clearInterval: (handler: EventHandler) => void;
+declare var clearTimeout: (handler: number) => void;
+declare var clearInterval: (handler: number) => void;

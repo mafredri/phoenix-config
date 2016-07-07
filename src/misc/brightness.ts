@@ -1,31 +1,40 @@
+import log from '../logger';
+
 export default addBrightness;
 
 const brightnessCmd: string = '/Users/mafredri/.bin/brightness';
 
 // Conservative start value...
-let brightnessValue: number = 40;
+let brightnessValue: number = Storage.get('brightness');
 let bModal: Modal;
-let bModalHideHandler: EventHandler;
+let bModalHideHandler: number;
 
 function addBrightness(value: number) {
+	if (brightnessValue === undefined) {
+		brightnessValue = 40;
+	}
+
 	if (value < 0) {
 		brightnessValue = Math.max(brightnessValue + value, 0);
 	} else {
 		brightnessValue = Math.min(brightnessValue + value, 100);
 	}
+
+	Storage.set('brightness', brightnessValue);
+
 	showBrightness(brightnessValue);
-	Command.run(brightnessCmd, ['set', String(brightnessValue)])
+	Task.run(brightnessCmd, ['set', String(brightnessValue)], (t) => {
+		log(t.output, t.error, t.status);
+	});
 }
 
 function showBrightness(value: number) {
+	clearTimeout(bModalHideHandler);
 	if (!bModal) bModal = new Modal();
 
 	bModal.message = `Brightness: ${value}`;
 	bModal.showCenterOn(Screen.mainScreen());
 
-	if (bModalHideHandler) {
-		clearTimeout(bModalHideHandler);
-	}
 	bModalHideHandler = setTimeout(closeBrightnessModal, 1000);
 }
 

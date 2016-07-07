@@ -10,13 +10,10 @@ interface FrameCache {
 
 let frameCache: Map<number, FrameCache> = new Map();
 
-// Export handlers so that the references are kept within Phoenix
-export const eventHandlers: EventHandler[] = [
-	Phoenix.on('windowDidClose', (win: Window) => {
-		// Cleanup references to unmaximized window frames
-		frameCache.delete(win.hash());
-	}),
-];
+Event.on('windowDidClose', (win: Window) => {
+	// Cleanup references to unmaximized window frames
+	frameCache.delete(win.hash());
+});
 
 function clearUnmaximized(win: Window) {
 	frameCache.delete(win.hash());

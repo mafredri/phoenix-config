@@ -1,9 +1,9 @@
 export { Scanner };
 
-const normalKeys = `1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
-const shiftKeys = `!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`;
-const altKeys = `©@£$∞§|[]≈±•Ωé®†µüıœπ˙ß∂ƒ¸˛√ªﬁøæ™  ≈ç‹›‘’‚ –`;
-const altShiftKeys = `      \\{}`;
+const normalKeys = `§1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
+const shiftKeys = `°!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`;
+const altKeys = ` ©@£$∞§|[]≈±•Ωé®†µüıœπ˙ß∂ƒ¸˛√ªﬁøæ™  ≈ç‹›‘’‚ –`;
+const altShiftKeys = `•      \\{}`;
 const specialKeys = ['delete', 'escape', 'return', 'space'];
 
 type ScanCallback = (s: string) => void;
@@ -13,7 +13,7 @@ type ScanCallback = (s: string) => void;
  */
 class Scanner {
 	private scanned: string;
-	private keyHandlers: KeyHandler[];
+	private keyHandlers: Key[];
 	private doneCallback: ScanCallback;
 	private updateCallback: ScanCallback;
 
@@ -29,8 +29,8 @@ class Scanner {
 		this.doneCallback = done;
 		this.updateCallback = (s) => {
 			if (!s) return; // an update requires a character
-			done(s);
 			this.disable();
+			done(s);
 		};
 	}
 
@@ -47,18 +47,20 @@ class Scanner {
 		this.scanned = ''; // reset input
 		this.keyHandlers.length = 0; // remove stale keyhandlers
 
-		for (let i = 0; i < normalKeys.length; i++) {
-			let k = normalKeys[i];
-			this.keyHandlers.push(Phoenix.bind(k, [], () => this.handleKeyPress(k)));
-			this.keyHandlers.push(Phoenix.bind(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])));
-			this.keyHandlers.push(Phoenix.bind(k, ['alt'], () => this.handleKeyPress(altKeys[i])));
+		if (!this.keyHandlers.length) {
+			for (let i = 0; i < normalKeys.length; i++) {
+				let k = normalKeys[i];
+				this.keyHandlers.push(new Key(k, [], () => this.handleKeyPress(k)));
+				this.keyHandlers.push(new Key(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])));
+				this.keyHandlers.push(new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])));
 
-			let ask = altShiftKeys[i] || ' ';
-			this.keyHandlers.push(Phoenix.bind(k, ['alt', 'shift'], () => this.handleKeyPress(ask)));
-		}
-		for (let sk of specialKeys) {
-			this.keyHandlers.push(Phoenix.bind(sk, [], () => this.handleKeyPress(sk)));
-			this.keyHandlers.push(Phoenix.bind(sk, ['shift'], (h) => this.handleKeyPress(sk, h)));
+				let ask = altShiftKeys[i] || ' ';
+				this.keyHandlers.push(new Key(k, ['alt', 'shift'], () => this.handleKeyPress(ask)));
+			}
+			for (let sk of specialKeys) {
+				this.keyHandlers.push(new Key(sk, [], () => this.handleKeyPress(sk)));
+				this.keyHandlers.push(new Key(sk, ['shift'], (h) => this.handleKeyPress(sk, h)));
+			}
 		}
 
 		this.keyHandlers.forEach(h => h.enable()); // make sure all handlers are enabled
@@ -68,21 +70,21 @@ class Scanner {
 		this.keyHandlers.forEach(h => h.disable());
 	}
 
-	private handleKeyPress(key: Phoenix.Key, handler?: KeyHandler) {
+	private handleKeyPress(key: Phoenix.Key, handler?: Key) {
 		switch (key) {
 			case 'delete':
 				this.scanned = this.scanned.slice(0, -1);
 				return this.updateCallback(this.scanned);
 			case 'escape':
-				this.doneCallback(undefined); // undefined indicates aborted.
-				return this.disable();
+				this.disable();
+				return this.doneCallback(undefined); // undefined indicates aborted.
 			case 'return':
 				if (handler && handler.modifiers.includes('shift')) {
 					this.scanned += '\n';
 					return this.updateCallback(this.scanned);
 				}
-				this.doneCallback(this.scanned);
-				return this.disable();
+				this.disable();
+				return this.doneCallback(this.scanned);
 			case 'space':
 				this.scanned += ' ';
 				return this.updateCallback(this.scanned);

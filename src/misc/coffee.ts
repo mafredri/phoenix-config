@@ -3,7 +3,7 @@
  */
 import { applyMargin, originOnScreen, Orientation } from '../modal';
 
-export default coffeTimer;
+export default start;
 
 const MODAL_MARGIN = 3;
 const DONE_MSG = `
@@ -11,50 +11,56 @@ Your coffee is done,
 go get it!
 `;
 
-function coffeTimer(after = 8) {
-	const initialAfter = after;
-	let modal: Modal;
-	let screen: Screen;
-	let timeout: EventHandler;
-	let interval: EventHandler;
+interface Config {
+	screen: Screen;
+	timeout: number;
+}
 
-	return { isRunning, start, stop, set };
+interface CoffeTimer extends Config {
+	modal: Modal;
+}
 
-	function isRunning(): boolean { return Boolean(modal); }
+export interface TimerStopper {
+	stop(): void;
+}
 
-	function set(timer: number) { after = timer; }
+function start({ screen, timeout }: Config): TimerStopper {
+	let timer = {
+		screen, timeout,
+		modal: new Modal(),
+	};
+	let update = updater(timer);
 
-	function start(s: Screen) {
-		if (isRunning()) return;
-		if (s) screen = s;
+	let updateInterval = setInterval(update, 1000 * 60);
+	let alertTimeout = setTimeout(alerter(timer, updateInterval), 1000 * 60 * timer.timeout);
+	update();
 
-		modal = new Modal();
-		timeout = setTimeout(alert, 1000 * 60 * after);
-		interval = setInterval(update, 1000 * 60);
-		update();
-	}
+	return {
+		stop() {
+			clearTimeout(updateInterval);
+			clearTimeout(alertTimeout);
+			timer.modal.close();
+			timer.modal = null;
+		},
+	};
+}
 
-	function stop() {
-		clearTimeout(timeout);
-		clearTimeout(interval);
-		modal.close();
-		modal = null;
-		after = initialAfter;
-	}
+function updater(timer: CoffeTimer) {
+	return () => {
+		timer.timeout--;
+		let min = timer.timeout ? '~' + String(timer.timeout) : '<1';
+		timer.modal.message = `Coffee in ${min} min`;
+		timer.modal.origin = applyMargin(originOnScreen(timer.modal, timer.screen, Orientation.SouthEast), MODAL_MARGIN, MODAL_MARGIN);
+		timer.modal.show();
+	};
+}
 
-	function update() {
-		after--;
-		let min = after ? '~' + String(after) : '<1';
-		modal.message = `Coffee in ${min} min`;
-		modal.origin = applyMargin(originOnScreen(modal, screen, Orientation.SouthEast), MODAL_MARGIN, MODAL_MARGIN);
-		modal.show();
-	}
-
-	function alert() {
-		clearInterval(interval);
-		modal.close();
-		modal = new Modal();
-		modal.message = DONE_MSG.trim();
-		modal.showCenterOn(screen);
-	}
+function alerter(timer: CoffeTimer, updateInterval: number) {
+	return () => {
+		clearTimeout(updateInterval);
+		timer.modal.close();
+		timer.modal = new Modal();
+		timer.modal.message = DONE_MSG.trim();
+		timer.modal.showCenterOn(timer.screen);
+	};
 }
