@@ -5,7 +5,7 @@ import brightness from './misc/brightness';
 import coffeTimer from './misc/coffee';
 import { TimerStopper } from './misc/coffee';
 import { Scanner } from './scan';
-import { toggleTerminal } from './misc/terminal';
+import * as terminal from './misc/terminal';
 import './window';
 import './extend';
 import './screen';
@@ -147,18 +147,8 @@ Key.on('return', hyperShift, () => {
 	});
 });
 
-Key.on('§', [], toggleTerminal),
-
-Key.on('§', ['cmd'], () => {
-	let win = Window.focusedWindow();
-	if (win && win.app().name() !== 'iTerm2') {
-		return toggleTerminal();
-	}
-
-	let app = App.get('iTerm2');
-	let windows = app.windows();
-	windows[windows.length - 1].focus();
-});
+Key.on('§', [], () => terminal.toggle()),
+Key.on('§', ['cmd'], () => terminal.cycleWindows());
 
 Key.on('delete', hyper, () => {
 	let win = Window.focusedWindow();
