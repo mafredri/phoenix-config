@@ -8,7 +8,7 @@ const TERMINAL_APP = TERMINAL_NAME.replace(/[0-9]+$/, '');
 
 // Initialize with current app status.
 let term = App.get(TERMINAL_NAME);
-let termIsActive = isTerminal(Window.focusedWindow().app());
+let termIsActive = isTerminal(Window.focused().app());
 
 // Keep terminal app cached through event handlers to
 // optimize performance.

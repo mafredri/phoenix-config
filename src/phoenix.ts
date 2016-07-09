@@ -23,7 +23,7 @@ Phoenix.set({
 Event.on('screensDidChange', () => log('Screens changed'));
 
 Key.on('tab', hyper, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let oldScreen = win.screen();
@@ -36,7 +36,7 @@ Key.on('tab', hyper, () => {
 });
 
 Key.on('left', hyper, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, height, x, y } = win.screen().visibleFrameInRectangle();
@@ -46,7 +46,7 @@ Key.on('left', hyper, () => {
 });
 
 Key.on('right', hyper, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, height, x, y } = win.screen().visibleFrameInRectangle();
@@ -59,7 +59,7 @@ Key.on('right', hyper, () => {
 });
 
 Key.on('up', hyper, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, x } = win.frame();
@@ -71,7 +71,7 @@ Key.on('up', hyper, () => {
 });
 
 Key.on('down', hyper, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, x } = win.frame();
@@ -84,11 +84,11 @@ Key.on('down', hyper, () => {
 });
 
 Key.on('return', hyper, () => {
-	Window.focusedWindow() && Window.focusedWindow().toggleMaximized();
+	Window.focused() && Window.focused().toggleMaximized();
 });
 
 Key.on('left', hyperShift, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, height, y } = win.frame();
@@ -98,7 +98,7 @@ Key.on('left', hyperShift, () => {
 });
 
 Key.on('right', hyperShift, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, height, y } = win.frame();
@@ -111,7 +111,7 @@ Key.on('right', hyperShift, () => {
 });
 
 Key.on('up', hyperShift, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, height, x } = win.frame();
@@ -121,7 +121,7 @@ Key.on('up', hyperShift, () => {
 });
 
 Key.on('down', hyperShift, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, height, x } = win.frame();
@@ -134,7 +134,7 @@ Key.on('down', hyperShift, () => {
 });
 
 Key.on('return', hyperShift, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	if (!win) return;
 
 	let { width, height } = win.frame();
@@ -151,7 +151,7 @@ Key.on('§', [], () => terminal.toggle()),
 Key.on('§', ['cmd'], () => terminal.cycleWindows());
 
 Key.on('delete', hyper, () => {
-	let win = Window.focusedWindow();
+	let win = Window.focused();
 	win && win.minimize();
 });
 
@@ -170,7 +170,7 @@ Key.on('c', hyper, () => {
 		coffee.stop();
 		coffee = null;
 	} else {
-		coffee = coffeTimer({ screen: Screen.mainScreen(), timeout: 8 });
+		coffee = coffeTimer({ screen: Screen.main(), timeout: 8 });
 	}
 });
 
@@ -178,12 +178,12 @@ Key.on('space', hyper, () => {
 	let m = new Modal();
 	let msg = 'Search: ';
 	m.message = msg;
-	m.showCenterOn(Screen.mainScreen());
+	m.showCenterOn(Screen.main());
 	scanner.scanln(s => {
 		m.close();
 	}, s => {
 		m.message = msg + s;
-		m.showCenterOn(Screen.mainScreen());
+		m.showCenterOn(Screen.main());
 	});
 });
 

@@ -11,7 +11,7 @@ function titleModal(message: string, duration: number = 1) {
 	let m = new Modal();
 	m.message = message;
 	m.duration = duration;
-	m.showTitleOn(Screen.mainScreen());
+	m.showTitleOn(Screen.main());
 }
 
 Modal.prototype.showTitleOn = function(screen: Screen) {
