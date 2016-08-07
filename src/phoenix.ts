@@ -187,12 +187,52 @@ onKey('space', hyper, () => {
 	let msg = 'Search: ';
 	m.text = msg;
 	m.showCenterOn(Screen.main());
-	scanner.scanln(s => {
-		m.close();
-	}, s => {
-		m.text = msg + s;
+	const currentWindow = Window.focused();
+	let winCache = Window.all({ visible: true });
+	let matches = [...winCache];
+
+	const tab = new Key('tab', [], () => {
+		if (!matches.length) {
+			return;
+		}
+
+		const w = matches.shift();
+		matches.push(w);
+		w.focus();
+		m.icon = w.app().icon();
 		m.showCenterOn(Screen.main());
 	});
+
+	scanner.scanln(s => {
+		m.close();
+		tab.disable();
+	}, (s) => {
+		tab.enable();
+		matches = winCache.filter((w) => appName(w) || title(w));
+		m.text = msg + s + (s ? results(matches.length) : '');
+
+		if (s && matches.length) {
+			matches[0].focus();
+			m.icon = matches[0].app().icon();
+		} else {
+			currentWindow.focus();
+			m.icon = null;
+		}
+
+		m.showCenterOn(Screen.main());
+
+		function appName(w: Window) {
+			return w.app().name().toLowerCase().match(s.toLowerCase());
+		}
+
+		function title(w: Window) {
+			return w.title().toLowerCase().match(s.toLowerCase());
+		}
+	});
+
+	function results(n: number) {
+		return `\n${n} results`;
+	}
 });
 
 titleModal('Phoenix (re)loaded!', 2, App.get('Phoenix').icon());
