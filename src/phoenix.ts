@@ -31,7 +31,7 @@ Key.on('tab', hyper, () => {
 
 	if (oldScreen.isEqual(newScreen)) return;
 
-	let ratio = frameRatio(oldScreen.visibleFrameInRectangle(), newScreen.visibleFrameInRectangle());
+	let ratio = frameRatio(oldScreen.flippedVisibleFrame(), newScreen.flippedVisibleFrame());
 	win.setFrame(ratio(win.frame()));
 });
 
@@ -39,7 +39,7 @@ Key.on('left', hyper, () => {
 	let win = Window.focused();
 	if (!win) return;
 
-	let { width, height, x, y } = win.screen().visibleFrameInRectangle();
+	let { width, height, x, y } = win.screen().flippedVisibleFrame();
 	width = Math.ceil(width / 2);
 	win.setFrame({ width, height, x, y });
 	win.clearUnmaximized();
@@ -49,7 +49,7 @@ Key.on('right', hyper, () => {
 	let win = Window.focused();
 	if (!win) return;
 
-	let { width, height, x, y } = win.screen().visibleFrameInRectangle();
+	let { width, height, x, y } = win.screen().flippedVisibleFrame();
 	width /= 2;
 	x += Math.ceil(width);
 	width = Math.floor(width);
@@ -63,7 +63,7 @@ Key.on('up', hyper, () => {
 	if (!win) return;
 
 	let { width, x } = win.frame();
-	let { height, y } = win.screen().visibleFrameInRectangle();
+	let { height, y } = win.screen().flippedVisibleFrame();
 	height = Math.ceil(height / 2);
 
 	win.setFrame({ height, width, x, y });
@@ -75,7 +75,7 @@ Key.on('down', hyper, () => {
 	if (!win) return;
 
 	let { width, x } = win.frame();
-	let { height, y } = win.screen().visibleFrameInRectangle();
+	let { height, y } = win.screen().flippedVisibleFrame();
 	height /= 2;
 	[ height, y ] = [ Math.ceil(height), y + Math.floor(height) ];
 
@@ -84,7 +84,10 @@ Key.on('down', hyper, () => {
 });
 
 Key.on('return', hyper, () => {
-	Window.focused() && Window.focused().toggleMaximized();
+	let win = Window.focused();
+	if (win) {
+		win.toggleMaximized();
+	}
 });
 
 Key.on('left', hyperShift, () => {
@@ -92,7 +95,7 @@ Key.on('left', hyperShift, () => {
 	if (!win) return;
 
 	let { width, height, y } = win.frame();
-	let { x } = win.screen().visibleFrameInRectangle();
+	let { x } = win.screen().flippedVisibleFrame();
 
 	win.setFrame({ width, height, y, x });
 });
@@ -102,7 +105,7 @@ Key.on('right', hyperShift, () => {
 	if (!win) return;
 
 	let { width, height, y } = win.frame();
-	let { width: sWidth, x } = win.screen().visibleFrameInRectangle();
+	let { width: sWidth, x } = win.screen().flippedVisibleFrame();
 
 	win.setFrame({
 		width, height, y,
@@ -115,7 +118,7 @@ Key.on('up', hyperShift, () => {
 	if (!win) return;
 
 	let { width, height, x } = win.frame();
-	let { y } = win.screen().visibleFrameInRectangle();
+	let { y } = win.screen().flippedVisibleFrame();
 
 	win.setFrame({ width, height, x, y });
 });
@@ -125,7 +128,7 @@ Key.on('down', hyperShift, () => {
 	if (!win) return;
 
 	let { width, height, x } = win.frame();
-	let { height: sHeight, y } = win.screen().visibleFrameInRectangle();
+	let { height: sHeight, y } = win.screen().flippedVisibleFrame();
 
 	win.setFrame({
 		width, height, x,
@@ -138,7 +141,7 @@ Key.on('return', hyperShift, () => {
 	if (!win) return;
 
 	let { width, height } = win.frame();
-	let { width: sWidth, height: sHeight, x, y } = win.screen().visibleFrameInRectangle();
+	let { width: sWidth, height: sHeight, x, y } = win.screen().flippedVisibleFrame();
 
 	win.setFrame({
 		width, height,
@@ -147,12 +150,14 @@ Key.on('return', hyperShift, () => {
 	});
 });
 
-Key.on('§', [], () => terminal.toggle()),
+Key.on('§', [], () => terminal.toggle());
 Key.on('§', ['cmd'], () => terminal.cycleWindows());
 
 Key.on('delete', hyper, () => {
 	let win = Window.focused();
-	win && win.minimize();
+	if (win) {
+		win.minimize();
+	}
 });
 
 Key.on('m', hyper, () => {
@@ -177,12 +182,12 @@ Key.on('c', hyper, () => {
 Key.on('space', hyper, () => {
 	let m = new Modal();
 	let msg = 'Search: ';
-	m.message = msg;
+	m.text = msg;
 	m.showCenterOn(Screen.main());
 	scanner.scanln(s => {
 		m.close();
 	}, s => {
-		m.message = msg + s;
+		m.text = msg + s;
 		m.showCenterOn(Screen.main());
 	});
 });

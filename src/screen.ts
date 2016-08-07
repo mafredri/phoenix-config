@@ -4,7 +4,7 @@ function screenAt(point: Point) {
 	let screens = Screen.all();
 
 	for (let s of screens) {
-		if (pointInsideFrame(point, s.frameInRectangle())) {
+		if (pointInsideFrame(point, s.flippedFrame())) {
 			return s;
 		}
 	}
@@ -24,7 +24,7 @@ class PositionHandler {
 
 	changed(win: Window) {
 		let window = Object.assign({}, win.frame());
-		let screen = Object.assign({}, win.screen().visibleFrameInRectangle());
+		let screen = Object.assign({}, win.screen().flippedVisibleFrame());
 		this.store.set(win.hash(), {window, screen});
 	}
 	remove(win: Window) {

@@ -90,7 +90,7 @@ class Scanner {
 				return this.updateCallback(this.scanned);
 			default:
 				this.scanned += key;
-				return this.updateCallback(this.scanned);;
+				return this.updateCallback(this.scanned);
 		}
 	}
 }

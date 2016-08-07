@@ -49,7 +49,7 @@ function updater(timer: CoffeTimer) {
 	return () => {
 		timer.timeout--;
 		let min = timer.timeout ? '~' + String(timer.timeout) : '<1';
-		timer.modal.message = `Coffee in ${min} min`;
+		timer.modal.text = `Coffee in ${min} min`;
 		timer.modal.origin = applyMargin(originOnScreen(timer.modal, timer.screen, Orientation.SouthEast), MODAL_MARGIN, MODAL_MARGIN);
 		timer.modal.show();
 	};
@@ -60,7 +60,7 @@ function alerter(timer: CoffeTimer, updateInterval: number) {
 		clearTimeout(updateInterval);
 		timer.modal.close();
 		timer.modal = new Modal();
-		timer.modal.message = DONE_MSG.trim();
+		timer.modal.text = DONE_MSG.trim();
 		timer.modal.showCenterOn(timer.screen);
 	};
 }
