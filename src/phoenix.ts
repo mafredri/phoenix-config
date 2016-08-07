@@ -192,4 +192,4 @@ Key.on('space', hyper, () => {
 	});
 });
 
-titleModal('Phoenix (re)loaded!');
+titleModal('Phoenix (re)loaded!', 2, App.get('Phoenix').icon());

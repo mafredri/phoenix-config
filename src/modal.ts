@@ -7,10 +7,13 @@ enum Orientation {
 	SouthEast
 }
 
-function titleModal(message: string, duration: number = 1) {
+function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
 	let m = new Modal();
-	m.text = message;
+	m.text = text;
 	m.duration = duration;
+	if (icon) {
+		m.icon = icon;
+	}
 	m.showTitleOn(Screen.main());
 }
 
