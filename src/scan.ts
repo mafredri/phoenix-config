@@ -1,5 +1,7 @@
 export { Scanner };
 
+import { getLastHandler } from './key';
+
 const normalKeys = `§1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
 const shiftKeys = `°!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`;
 const altKeys = ` ©@£$∞§|[]≈±•Ωé®†µüıœπ˙ß∂ƒ¸˛√ªﬁøæ™  ≈ç‹›‘’‚ –`;
@@ -67,7 +69,13 @@ class Scanner {
 	}
 
 	private disable() {
-		this.keyHandlers.forEach(h => h.disable());
+		this.keyHandlers.forEach(h => {
+			h.disable();
+			const last = getLastHandler(h.key, h.modifiers);
+			if (last) {
+				last.enable();
+			}
+		});
 	}
 
 	private handleKeyPress(key: Phoenix.Key, handler?: Key) {

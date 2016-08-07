@@ -1,5 +1,9 @@
 import * as _ from 'lodash';
 
+import './key';
+import './window';
+import './screen';
+
 import { frameRatio } from './calc';
 import { titleModal } from './modal';
 import log from './logger';
@@ -8,9 +12,6 @@ import coffeTimer from './misc/coffee';
 import { TimerStopper } from './misc/coffee';
 import { Scanner } from './scan';
 import * as terminal from './misc/terminal';
-
-import './window';
-import './screen';
 
 let hyper: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt'];
 let hyperShift: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt', 'shift'];
