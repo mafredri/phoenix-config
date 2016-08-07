@@ -1,22 +1,17 @@
 {
   "compilerOptions": {
-    "module": "amd",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "outFile": "out/phoenix.js",
-    "noLib": true,
-    "allowJs": true,
+    "outDir": "out/src",
     "target": "es5",
-    "rootDir": "src",
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noFallthroughCasesInSwitch": true
+    "noLib": true
   },
   "files": [
     "node_modules/typescript/lib/lib.core.es7.d.ts",
     "typings/index.d.ts",
     "src/phoenix.d.ts",
-    "src/js/loader.js",
-    "src/phoenix.ts",
-    "node_modules/lodash/lodash.js"
+    "src/phoenix.ts"
   ]
 }

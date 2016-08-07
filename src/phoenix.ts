@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 import { frameRatio } from './calc';
 import { titleModal } from './modal';
 import log from './logger';
@@ -8,7 +10,6 @@ import { Scanner } from './scan';
 import * as terminal from './misc/terminal';
 
 import './window';
-import './extend';
 import './screen';
 
 let hyper: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt'];

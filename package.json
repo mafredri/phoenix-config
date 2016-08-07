@@ -5,12 +5,17 @@
   "main": "src/phoenix.ts",
   "dependencies": {
     "lodash": "^4.14.1",
+    "ts-loader": "^0.8.2",
     "tslint": "^3.14.0",
     "typescript": "^1.8.10",
-    "typings": "^1.3.2"
+    "typings": "^1.3.2",
+    "webpack": "^1.13.1"
   },
   "devDependencies": {},
   "scripts": {
+    "start": "npm run watch",
+    "watch": "webpack --watch",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
