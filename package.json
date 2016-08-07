@@ -2,11 +2,12 @@
   "name": "phoenix-config",
   "version": "1.0.0",
   "description": "Configuration for kasper/phoenix written in TypeScript",
-  "main": "phoenix.ts",
+  "main": "src/phoenix.ts",
   "dependencies": {
-    "tslint": "^3.11.0",
+    "lodash": "^4.14.1",
+    "tslint": "^3.14.0",
     "typescript": "^1.8.10",
-    "typings": "^1.3.0"
+    "typings": "^1.3.2"
   },
   "devDependencies": {},
   "scripts": {

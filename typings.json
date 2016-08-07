@@ -1,6 +1,8 @@
 {
-  "version": false,
-  "main": "src/phoenix.d.ts",
+  "name": "phoenix-config",
+  "dependencies": {
+    "lodash": "registry:npm/lodash#4.0.0+20160723033700"
+  },
   "globalDependencies": {
     "phoenix-typings": "github:mafredri/phoenix-typings"
   }

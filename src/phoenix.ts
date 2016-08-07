@@ -6,6 +6,7 @@ import coffeTimer from './misc/coffee';
 import { TimerStopper } from './misc/coffee';
 import { Scanner } from './scan';
 import * as terminal from './misc/terminal';
+
 import './window';
 import './extend';
 import './screen';

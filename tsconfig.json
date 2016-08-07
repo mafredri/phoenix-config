@@ -16,6 +16,7 @@
     "typings/index.d.ts",
     "src/phoenix.d.ts",
     "src/js/loader.js",
-    "src/phoenix.ts"
+    "src/phoenix.ts",
+    "node_modules/lodash/lodash.js"
   ]
 }

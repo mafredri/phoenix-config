@@ -17,17 +17,17 @@ interface Modal {
 	/**
 	 * Show modal in title position on screen.
 	 */
-	showTitleOn(screen: Screen): void
+	showTitleOn(screen: Screen): void;
 	/**
 	 * Show modal in center position on screen.
 	 */
-	showCenterOn(screen: Screen): void
+	showCenterOn(screen: Screen): void;
 }
 
-interface intervalFunction {
+interface IntervalFunction {
 	(callback: Function, interval: number): number;
 }
-declare var setTimeout: intervalFunction;
-declare var setInterval: intervalFunction;
+declare var setTimeout: IntervalFunction;
+declare var setInterval: IntervalFunction;
 declare var clearTimeout: (handler: number) => void;
 declare var clearInterval: (handler: number) => void;
