@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
-import './key';
 import './window';
 import './screen';
 
+import { onKey } from './key';
 import { frameRatio } from './calc';
 import { titleModal } from './modal';
 import log from './logger';
@@ -25,7 +25,7 @@ Phoenix.set({
 
 Event.on('screensDidChange', () => log('Screens changed'));
 
-Key.on('tab', hyper, () => {
+onKey('tab', hyper, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -38,7 +38,7 @@ Key.on('tab', hyper, () => {
 	win.setFrame(ratio(win.frame()));
 });
 
-Key.on('left', hyper, () => {
+onKey('left', hyper, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -48,7 +48,7 @@ Key.on('left', hyper, () => {
 	win.clearUnmaximized();
 });
 
-Key.on('right', hyper, () => {
+onKey('right', hyper, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -61,7 +61,7 @@ Key.on('right', hyper, () => {
 	win.clearUnmaximized();
 });
 
-Key.on('up', hyper, () => {
+onKey('up', hyper, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -73,7 +73,7 @@ Key.on('up', hyper, () => {
 	win.clearUnmaximized();
 });
 
-Key.on('down', hyper, () => {
+onKey('down', hyper, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -86,14 +86,14 @@ Key.on('down', hyper, () => {
 	win.clearUnmaximized();
 });
 
-Key.on('return', hyper, () => {
+onKey('return', hyper, () => {
 	let win = Window.focused();
 	if (win) {
 		win.toggleMaximized();
 	}
 });
 
-Key.on('left', hyperShift, () => {
+onKey('left', hyperShift, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -103,7 +103,7 @@ Key.on('left', hyperShift, () => {
 	win.setFrame({ width, height, y, x });
 });
 
-Key.on('right', hyperShift, () => {
+onKey('right', hyperShift, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -116,7 +116,7 @@ Key.on('right', hyperShift, () => {
 	});
 });
 
-Key.on('up', hyperShift, () => {
+onKey('up', hyperShift, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -126,7 +126,7 @@ Key.on('up', hyperShift, () => {
 	win.setFrame({ width, height, x, y });
 });
 
-Key.on('down', hyperShift, () => {
+onKey('down', hyperShift, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -139,7 +139,7 @@ Key.on('down', hyperShift, () => {
 	});
 });
 
-Key.on('return', hyperShift, () => {
+onKey('return', hyperShift, () => {
 	let win = Window.focused();
 	if (!win) return;
 
@@ -153,27 +153,27 @@ Key.on('return', hyperShift, () => {
 	});
 });
 
-Key.on('§', [], () => terminal.toggle());
-Key.on('§', ['cmd'], () => terminal.cycleWindows());
+onKey('§', [], () => terminal.toggle());
+onKey('§', ['cmd'], () => terminal.cycleWindows());
 
-Key.on('delete', hyper, () => {
+onKey('delete', hyper, () => {
 	let win = Window.focused();
 	if (win) {
 		win.minimize();
 	}
 });
 
-Key.on('m', hyper, () => {
+onKey('m', hyper, () => {
 	let s = Screen.at(Mouse.location());
 	if (!s) return;
 
 	log(s.identifier(), Mouse.location());
 });
 
-Key.on('+', hyper, () => brightness(+10));
-Key.on('-', hyper, () => brightness(-10));
+onKey('+', hyper, () => brightness(+10));
+onKey('-', hyper, () => brightness(-10));
 
-Key.on('c', hyper, () => {
+onKey('c', hyper, () => {
 	if (coffee) {
 		coffee.stop();
 		coffee = null;
@@ -182,7 +182,7 @@ Key.on('c', hyper, () => {
 	}
 });
 
-Key.on('space', hyper, () => {
+onKey('space', hyper, () => {
 	let m = new Modal();
 	let msg = 'Search: ';
 	m.text = msg;

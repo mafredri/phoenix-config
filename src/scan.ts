@@ -1,6 +1,6 @@
 export { Scanner };
 
-import { getLastHandler } from './key';
+import { getHandler } from './key';
 
 const normalKeys = `§1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
 const shiftKeys = `°!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`;
@@ -71,14 +71,14 @@ class Scanner {
 	private disable() {
 		this.keyHandlers.forEach(h => {
 			h.disable();
-			const last = getLastHandler(h.key, h.modifiers);
+			const last = getHandler(h.key, h.modifiers);
 			if (last) {
 				last.enable();
 			}
 		});
 	}
 
-	private handleKeyPress(key: Phoenix.Key, handler?: Key) {
+	private handleKeyPress(key: Phoenix.KeyIdentifier, handler?: Key) {
 		switch (key) {
 			case 'delete':
 				this.scanned = this.scanned.slice(0, -1);

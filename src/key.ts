@@ -1,36 +1,34 @@
 import log from './logger';
 
-const handlers: Map<number, Key> = new Map();
-const handlerIDs: Map<string, number> = new Map();
+const handlers: Map<string, Key> = new Map();
 
-Key.on = (key, mod, cb) => {
+function onKey(key: Phoenix.KeyIdentifier, mod: Phoenix.ModifierKey[], cb: Phoenix.KeyCallback) {
 	const handler = new Key(key, mod, cb);
 	if (!handler) {
 		return;
 	}
 
 	const id = createID(key, mod);
-	handlers.set(handler.hash(), handler);
-	handlerIDs.set(id, handler.hash());
+	handlers.set(id, handler);
 
-	return handler.hash();
-};
+	return () => unbind(id);
+}
 
-Key.off = (identifier) => {
-	const handler = handlers.get(identifier);
+function unbind(id: string) {
+	const handler = handlers.get(id);
 	if (handler) {
 		handler.disable();
-		handlers.delete(identifier);
+		handlers.delete(id);
 	}
-};
+}
 
 function createID(key: string, mod: string[]) {
 	return key + mod.sort().join();
 }
 
-function getLastHandler(key: string, mod: string[]) {
+function getHandler(key: string, mod: string[]) {
 	const id = createID(key, mod);
-	return handlers.get(handlerIDs.get(id));
+	return handlers.get(id);
 }
 
-export { getLastHandler };
+export { onKey, getHandler };
