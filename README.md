@@ -37,16 +37,13 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ## Building
 
 ```
-npm install -g typescript typings
-
 git clone https://github.com/mafredri/phoenix-config.git
 cd phoenix-config
 npm install && typings install
-
-tsc
+npm run build
 ```
 
-The TypeScript compiler (`tsc`) will produce `out/phoenix.js` that can be used as Phoenix configuration. 
+The TypeScript compiler and Webpack will produce `out/phoenix.js` that can be used as Phoenix configuration. 
 
 ## License
 
