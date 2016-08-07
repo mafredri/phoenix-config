@@ -6,10 +6,11 @@
     "target": "es5",
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noLib": true
+    "lib": [
+      "es7"
+    ]
   },
   "files": [
-    "node_modules/typescript/lib/lib.core.es7.d.ts",
     "typings/index.d.ts",
     "src/phoenix.d.ts",
     "src/phoenix.ts"
