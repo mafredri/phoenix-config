@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import './window';
 import './screen';
 
-import { onKey, enableHyperKeys, disableHyperKeys } from './key';
+import { onKey } from './key';
 import { frameRatio } from './calc';
 import { titleModal } from './modal';
 import log from './logger';
@@ -23,30 +23,6 @@ Phoenix.set({
 });
 
 Event.on('screensDidChange', () => log('Screens changed'));
-
-let hyperTimeout: number = null;
-onKey('f19', [], enableHyperBindings);
-onKey('f19', ['shift'], enableHyperBindings);
-
-function enableHyperBindings() {
-	if (!hyperTimeout) {
-		log('enable f19');
-		enableHyperKeys();
-		hyperTimeout = setTimeout(disableHyperBindings, 510);
-	} else {
-		clearTimeout(hyperTimeout);
-		hyperTimeout = setTimeout(disableHyperBindings, 110);
-	}
-}
-
-function disableHyperBindings() {
-	log('disable f19');
-	if (hyperTimeout) {
-		clearTimeout(hyperTimeout);
-		hyperTimeout = null;
-	}
-	disableHyperKeys();
-}
 
 onKey('tab', hyper, () => {
 	let win = Window.focused();

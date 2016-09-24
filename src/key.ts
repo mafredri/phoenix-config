@@ -4,6 +4,32 @@ import { hyper, hyperShift } from './config';
 const handlers: Map<string, Key> = new Map();
 const hyperHandlers: Map<string, Key> = new Map();
 
+// Custom hyper key implementation for macOS Sierra.
+// Caps Lock mapped to f19, should work as hyper.
+let hyperTimeout: number = null;
+onKey('f19', [], enableHyperBindings);
+onKey('f19', ['shift'], enableHyperBindings);
+
+function enableHyperBindings() {
+	if (!hyperTimeout) {
+		log('enable f19');
+		enableHyperKeys();
+		hyperTimeout = setTimeout(disableHyperBindings, 510);
+	} else {
+		clearTimeout(hyperTimeout);
+		hyperTimeout = setTimeout(disableHyperBindings, 110);
+	}
+}
+
+function disableHyperBindings() {
+	log('disable f19');
+	if (hyperTimeout) {
+		clearTimeout(hyperTimeout);
+		hyperTimeout = null;
+	}
+	disableHyperKeys();
+}
+
 function onKey(key: Phoenix.KeyIdentifier, mod: Phoenix.ModifierKey[], cb: Phoenix.KeyCallback) {
 	let isHyper = false;
 	if (mod === hyper) {
