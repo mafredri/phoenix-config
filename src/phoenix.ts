@@ -26,6 +26,7 @@ Event.on('screensDidChange', () => log('Screens changed'));
 
 let hyperTimeout: number = null;
 onKey('f19', [], enableHyperBindings);
+onKey('f19', ['shift'], enableHyperBindings);
 
 function enableHyperBindings() {
 	if (!hyperTimeout) {
