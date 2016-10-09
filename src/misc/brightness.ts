@@ -1,4 +1,5 @@
 import log from '../logger';
+import debounce from './debounce';
 
 export default addBrightness;
 
@@ -8,6 +9,12 @@ const brightnessCmd: string = '/Users/mafredri/.bin/brightness';
 let brightnessValue: number = Storage.get('brightness');
 let bModal: Modal;
 let bModalHideHandler: number;
+
+const debouncedApplyBrightness = debounce(function applyBrightness() {
+	Task.run(brightnessCmd, ['set', String(brightnessValue)], (t) => {
+		log(t.output, t.error, t.status);
+	});
+}, 500);
 
 function addBrightness(value: number) {
 	if (brightnessValue === undefined) {
@@ -23,9 +30,7 @@ function addBrightness(value: number) {
 	Storage.set('brightness', brightnessValue);
 
 	showBrightness(brightnessValue);
-	Task.run(brightnessCmd, ['set', String(brightnessValue)], (t) => {
-		log(t.output, t.error, t.status);
-	});
+	debouncedApplyBrightness();
 }
 
 function showBrightness(value: number) {
