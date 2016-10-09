@@ -10,11 +10,13 @@ let brightnessValue: number = Storage.get('brightness');
 let bModal: Modal;
 let bModalHideHandler: number;
 
-const debouncedApplyBrightness = debounce(function applyBrightness() {
+const debouncedApplyBrightness = debounce(applyBrightness, 500);
+
+function applyBrightness() {
 	Task.run(brightnessCmd, ['set', String(brightnessValue)], (t) => {
 		log(t.output, t.error, t.status);
 	});
-}, 500);
+}
 
 function addBrightness(value: number) {
 	if (brightnessValue === undefined) {
