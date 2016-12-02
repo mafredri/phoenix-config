@@ -4,18 +4,20 @@
   "description": "Configuration for kasper/phoenix written in TypeScript",
   "main": "src/phoenix.ts",
   "dependencies": {
-    "lodash": "^4.14.1",
-    "ts-loader": "^0.8.2",
-    "tslint": "^3.14.0-dev.1",
-    "typescript": "^2.1.0-dev.20160807",
-    "typings": "^1.3.2",
-    "webpack": "^1.13.1"
+    "eslint": "^3.11.1",
+    "ts-loader": "^1.2.2",
+    "tslint": "^4.0.0-dev.3",
+    "typescript": "^2.0.10",
+    "typings": "^2.0.0",
+    "webpack": "^1.13.3"
   },
   "devDependencies": {},
   "scripts": {
     "start": "npm run watch",
     "watch": "webpack --watch",
     "build": "webpack",
+    "typings": "typings install",
+    "lint": "tslint './src/**/*.ts' && eslint ./src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -1,5 +1,10 @@
 {
+  "extends": "tslint:latest",
   "rules": {
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
     "class-name": true,
     "comment-format": [
       true,
@@ -13,6 +18,7 @@
     "no-eval": true,
     "no-internal-module": true,
     "no-trailing-whitespace": true,
+    "no-unsafe-finally": true,
     "no-var-keyword": true,
     "one-line": [
       true,

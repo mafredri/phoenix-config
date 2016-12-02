@@ -39,7 +39,7 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ```
 git clone https://github.com/mafredri/phoenix-config.git
 cd phoenix-config
-npm install && typings install
+npm install && npm run typings
 npm run build
 ```
 
