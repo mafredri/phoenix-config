@@ -1,37 +1,37 @@
-import * as _ from 'lodash';
-
-import './window';
 import './screen';
+import './window';
 
-import { onKey } from './key';
 import { frameRatio } from './calc';
-import { titleModal } from './modal';
+import { hyper, hyperShift } from './config';
+import { onKey } from './key';
 import log from './logger';
 import brightness from './misc/brightness';
 import coffeTimer from './misc/coffee';
 import { TimerStopper } from './misc/coffee';
-import { Scanner } from './scan';
 import * as terminal from './misc/terminal';
-import { hyper, hyperShift } from './config';
+import { titleModal } from './modal';
+import { Scanner } from './scan';
 
 let scanner = new Scanner();
 let coffee: TimerStopper;
 
 Phoenix.set({
-	'daemon': true,
-	'openAtLogin': true,
+	daemon: true,
+	openAtLogin: true,
 });
 
 Event.on('screensDidChange', () => log('Screens changed'));
 
 onKey('tab', hyper, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let oldScreen = win.screen();
 	let newScreen = oldScreen.next();
 
-	if (oldScreen.isEqual(newScreen)) return;
+	if (oldScreen.isEqual(newScreen)) {
+		return;
+	}
 
 	let ratio = frameRatio(oldScreen.flippedVisibleFrame(), newScreen.flippedVisibleFrame());
 	win.setFrame(ratio(win.frame()));
@@ -39,7 +39,7 @@ onKey('tab', hyper, () => {
 
 onKey('left', hyper, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, height, x, y } = win.screen().flippedVisibleFrame();
 	width = Math.ceil(width / 2);
@@ -49,7 +49,7 @@ onKey('left', hyper, () => {
 
 onKey('right', hyper, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, height, x, y } = win.screen().flippedVisibleFrame();
 	width /= 2;
@@ -62,7 +62,7 @@ onKey('right', hyper, () => {
 
 onKey('up', hyper, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, x } = win.frame();
 	let { height, y } = win.screen().flippedVisibleFrame();
@@ -74,12 +74,12 @@ onKey('up', hyper, () => {
 
 onKey('down', hyper, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, x } = win.frame();
 	let { height, y } = win.screen().flippedVisibleFrame();
 	height /= 2;
-	[ height, y ] = [ Math.ceil(height), y + Math.floor(height) ];
+	[height, y] = [Math.ceil(height), y + Math.floor(height)];
 
 	win.setFrame({ height, width, x, y });
 	win.clearUnmaximized();
@@ -94,7 +94,7 @@ onKey('return', hyper, () => {
 
 onKey('left', hyperShift, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, height, y } = win.frame();
 	let { x } = win.screen().flippedVisibleFrame();
@@ -104,7 +104,7 @@ onKey('left', hyperShift, () => {
 
 onKey('right', hyperShift, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, height, y } = win.frame();
 	let { width: sWidth, x } = win.screen().flippedVisibleFrame();
@@ -117,7 +117,7 @@ onKey('right', hyperShift, () => {
 
 onKey('up', hyperShift, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, height, x } = win.frame();
 	let { y } = win.screen().flippedVisibleFrame();
@@ -127,7 +127,7 @@ onKey('up', hyperShift, () => {
 
 onKey('down', hyperShift, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, height, x } = win.frame();
 	let { height: sHeight, y } = win.screen().flippedVisibleFrame();
@@ -140,7 +140,7 @@ onKey('down', hyperShift, () => {
 
 onKey('return', hyperShift, () => {
 	let win = Window.focused();
-	if (!win) return;
+	if (!win) { return; }
 
 	let { width, height } = win.frame();
 	let { width: sWidth, height: sHeight, x, y } = win.screen().flippedVisibleFrame();
@@ -164,7 +164,7 @@ onKey('delete', hyper, () => {
 
 onKey('m', hyper, () => {
 	let s = Screen.at(Mouse.location());
-	if (!s) return;
+	if (!s) { return; }
 
 	log(s.identifier(), Mouse.location());
 });
@@ -202,7 +202,7 @@ onKey('space', hyper, () => {
 		m.showCenterOn(Screen.main());
 	});
 
-	scanner.scanln(s => {
+	scanner.scanln((s) => {
 		m.close();
 		tab.disable();
 	}, (s) => {

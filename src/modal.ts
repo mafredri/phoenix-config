@@ -4,7 +4,7 @@ enum Orientation {
 	NorthWest,
 	NorthEast,
 	SouthWest,
-	SouthEast
+	SouthEast,
 }
 
 function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
@@ -17,11 +17,11 @@ function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
 	m.showTitleOn(Screen.main());
 }
 
-Modal.prototype.showTitleOn = function(screen: Screen) {
+Modal.prototype.showTitleOn = function _showTitleOn(screen: Screen) {
 	showAt(this, screen, 2, 1 + (1 / 3));
 };
 
-Modal.prototype.showCenterOn = function(screen: Screen) {
+Modal.prototype.showCenterOn = function _showCenterOn(screen: Screen) {
 	showAt(this, screen, 2, 2);
 };
 

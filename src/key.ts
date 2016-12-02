@@ -1,5 +1,5 @@
-import log from './logger';
 import { hyper, hyperShift } from './config';
+import log from './logger';
 
 const handlers: Map<string, Key> = new Map();
 const hyperHandlers: Map<string, Key> = new Map();
@@ -12,7 +12,6 @@ onKey('f19', ['shift'], enableHyperBindings);
 
 function enableHyperBindings() {
 	if (!hyperTimeout) {
-		log('enable f19');
 		enableHyperKeys();
 		hyperTimeout = setTimeout(disableHyperBindings, 510);
 	} else {
@@ -22,7 +21,6 @@ function enableHyperBindings() {
 }
 
 function disableHyperBindings() {
-	log('disable f19');
 	if (hyperTimeout) {
 		clearTimeout(hyperTimeout);
 		hyperTimeout = null;
@@ -75,11 +73,11 @@ function getHandler(key: string, mod: string[]) {
 }
 
 function enableHyperKeys() {
-	hyperHandlers.forEach(h => h.enable());
+	hyperHandlers.forEach((h) => h.enable());
 }
 
 function disableHyperKeys() {
-	hyperHandlers.forEach(h => h.disable());
+	hyperHandlers.forEach((h) => h.disable());
 }
 
 export { onKey, getHandler, enableHyperKeys, disableHyperKeys };

@@ -8,9 +8,9 @@ const TERMINAL_APP = TERMINAL_NAME.replace(/[0-9]+$/, '');
 
 // Initialize with current app status.
 let term = App.get(TERMINAL_NAME);
-let termIsActive = (function() {
+let termIsActive = (() => {
 	const win = Window.focused();
-	if (!win) return false;
+	if (!win) { return false; }
 
 	return isTerminal(win.app());
 })();

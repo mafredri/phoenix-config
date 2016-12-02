@@ -8,7 +8,7 @@ function frameRatio(a: Rectangle, b: Rectangle): FrameRatio {
 	let widthRatio = b.width / a.width;
 	let heightRatio = b.height / a.height;
 
-	return function ({ width, height, x, y }) {
+	return ({ width, height, x, y }) => {
 		width = Math.round(width * widthRatio);
 		height = Math.round(height * heightRatio);
 		x = Math.round(b.x + (x - a.x) * widthRatio);

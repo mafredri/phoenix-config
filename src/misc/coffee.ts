@@ -1,7 +1,7 @@
 /**
  * This module starts a timer to notify you when your coffee is done.
  */
-import { applyMargin, originOnScreen, Orientation } from '../modal';
+import { applyMargin, Orientation, originOnScreen } from '../modal';
 
 export default start;
 
@@ -50,7 +50,9 @@ function updater(timer: CoffeTimer) {
 		timer.timeout--;
 		let min = timer.timeout ? '~' + String(timer.timeout) : '<1';
 		timer.modal.text = `Coffee in ${min} min`;
-		timer.modal.origin = applyMargin(originOnScreen(timer.modal, timer.screen, Orientation.SouthEast), MODAL_MARGIN, MODAL_MARGIN);
+
+		const screenOrigin = originOnScreen(timer.modal, timer.screen, Orientation.SouthEast);
+		timer.modal.origin = applyMargin(screenOrigin, MODAL_MARGIN, MODAL_MARGIN);
 		timer.modal.show();
 	};
 }

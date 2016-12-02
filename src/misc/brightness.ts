@@ -37,7 +37,9 @@ function addBrightness(value: number) {
 
 function showBrightness(value: number) {
 	clearTimeout(bModalHideHandler);
-	if (!bModal) bModal = new Modal();
+	if (!bModal) {
+		bModal = new Modal();
+	}
 
 	bModal.text = `Brightness: ${value}`;
 	bModal.showCenterOn(Screen.main());

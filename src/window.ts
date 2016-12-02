@@ -20,7 +20,7 @@ function clearUnmaximized(win: Window) {
 }
 
 function unmaximizedFrame(win: Window): Rectangle {
-	let c =  frameCache.get(win.hash());
+	let c = frameCache.get(win.hash());
 	let ratio = frameRatio(c.screen, win.screen().flippedVisibleFrame());
 	return ratio(c.window);
 }
@@ -32,19 +32,19 @@ function toggleMaximized(win: Window) {
 		win.clearUnmaximized();
 	} else {
 		frameCache.set(id, {
-			window: win.frame(),
 			screen: win.screen().flippedVisibleFrame(),
+			window: win.frame(),
 		});
 		win.maximize();
 	}
 }
 
-Window.prototype.clearUnmaximized = function () { clearUnmaximized(this); };
-Window.prototype.toggleMaximized = function () { toggleMaximized(this); };
+Window.prototype.clearUnmaximized = function _clearUnmaximized() { clearUnmaximized(this); };
+Window.prototype.toggleMaximized = function _toggleMaximized() { toggleMaximized(this); };
 
 // FIXME: This is too hacky, I'd prefer not to monkey patch built-ins
 let setFrameOrig = Window.prototype.setFrame;
-Window.prototype.setFrame = function(frame: Rectangle): boolean {
+Window.prototype.setFrame = function _setFrame(frame: Rectangle): boolean {
 	let ret = setFrameOrig.call(this, frame);
 	if (this.app().bundleIdentifier() === 'com.microsoft.Word') {
 		// Workaround for Microsoft Word resizing too slowly and thus not

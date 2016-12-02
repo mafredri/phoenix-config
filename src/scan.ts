@@ -30,7 +30,9 @@ class Scanner {
 		this.enable();
 		this.doneCallback = done;
 		this.updateCallback = (s) => {
-			if (!s) return; // an update requires a character
+			if (!s) {
+				return; // an update requires a character
+			}
 			this.disable();
 			done(s);
 		};
@@ -39,7 +41,7 @@ class Scanner {
 	/**
 	 * scanln scans an entire line (return ends scan).
 	 */
-	public scanln(done: ScanCallback, update: ScanCallback = (() => {})) {
+	public scanln(done: ScanCallback, update: ScanCallback = (() => undefined)) {
 		this.enable();
 		this.doneCallback = done;
 		this.updateCallback = update;
@@ -65,11 +67,11 @@ class Scanner {
 			}
 		}
 
-		this.keyHandlers.forEach(h => h.enable()); // make sure all handlers are enabled
+		this.keyHandlers.forEach((h) => h.enable()); // make sure all handlers are enabled
 	}
 
 	private disable() {
-		this.keyHandlers.forEach(h => {
+		this.keyHandlers.forEach((h) => {
 			h.disable();
 			const last = getHandler(h.key, h.modifiers);
 			if (last) {
