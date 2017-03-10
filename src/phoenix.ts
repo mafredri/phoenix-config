@@ -37,7 +37,7 @@ onKey('tab', hyper, () => {
 	win.setFrame(ratio(win.frame()));
 });
 
-onKey('left', hyper, () => {
+onKey(['left', 'j'], hyper, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 
@@ -47,7 +47,7 @@ onKey('left', hyper, () => {
 	win.clearUnmaximized();
 });
 
-onKey('right', hyper, () => {
+onKey(['right', 'l'], hyper, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 
@@ -60,7 +60,7 @@ onKey('right', hyper, () => {
 	win.clearUnmaximized();
 });
 
-onKey('up', hyper, () => {
+onKey(['up', 'i'], hyper, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 
@@ -72,7 +72,7 @@ onKey('up', hyper, () => {
 	win.clearUnmaximized();
 });
 
-onKey('down', hyper, () => {
+onKey(['down', 'k'], hyper, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 
@@ -92,7 +92,7 @@ onKey('return', hyper, () => {
 	}
 });
 
-onKey('left', hyperShift, () => {
+onKey(['left', 'j'], hyperShift, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 
@@ -102,7 +102,7 @@ onKey('left', hyperShift, () => {
 	win.setFrame({ width, height, y, x });
 });
 
-onKey('right', hyperShift, () => {
+onKey(['right', 'l'], hyperShift, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 
@@ -115,7 +115,7 @@ onKey('right', hyperShift, () => {
 	});
 });
 
-onKey('up', hyperShift, () => {
+onKey(['up', 'i'], hyperShift, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 
@@ -125,7 +125,7 @@ onKey('up', hyperShift, () => {
 	win.setFrame({ width, height, x, y });
 });
 
-onKey('down', hyperShift, () => {
+onKey(['down', 'k'], hyperShift, () => {
 	let win = Window.focused();
 	if (!win) { return; }
 

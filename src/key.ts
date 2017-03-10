@@ -28,7 +28,22 @@ function disableHyperBindings() {
 	disableHyperKeys();
 }
 
-function onKey(key: Phoenix.KeyIdentifier, mod: Phoenix.ModifierKey[], cb: Phoenix.KeyCallback) {
+function onKey(
+	keys: Phoenix.KeyIdentifier | Phoenix.KeyIdentifier[],
+	mod: Phoenix.ModifierKey[],
+	cb: Phoenix.KeyCallback,
+) {
+	if (Array.isArray(keys)) {
+		const unbinds: Array<() => void> = [];
+		for (const key of keys) {
+			unbinds.push(onKeySingle(key, mod, cb));
+		}
+		return () => unbinds.forEach((u) => u());
+	}
+	return onKeySingle(keys, mod, cb);
+}
+
+function onKeySingle(key: Phoenix.KeyIdentifier, mod: Phoenix.ModifierKey[], cb: Phoenix.KeyCallback) {
 	let isHyper = false;
 	if (mod === hyper) {
 		mod = [];
