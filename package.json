@@ -4,12 +4,11 @@
   "description": "Configuration for kasper/phoenix written in TypeScript",
   "main": "src/phoenix.ts",
   "dependencies": {
-    "eslint": "^3.11.1",
-    "ts-loader": "^1.2.2",
-    "tslint": "^4.0.0-dev.3",
-    "typescript": "^2.0.10",
-    "typings": "^2.0.0",
-    "webpack": "^1.13.3"
+    "ts-loader": "^2.0.3",
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2",
+    "typings": "^2.1.1",
+    "webpack": "^2.4.1"
   },
   "devDependencies": {},
   "scripts": {
@@ -17,7 +16,7 @@
     "watch": "webpack --watch",
     "build": "webpack",
     "typings": "typings install",
-    "lint": "tslint './src/**/*.ts' && eslint ./src/",
+    "lint": "tslint './src/**/*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
