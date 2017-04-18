@@ -1,6 +1,7 @@
 import './screen';
 import './window';
 
+import * as _ from 'lodash';
 import { frameRatio } from './calc';
 import { hyper, hyperShift } from './config';
 import { onKey } from './key';

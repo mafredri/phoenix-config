@@ -4,6 +4,8 @@
   "description": "Configuration for kasper/phoenix written in TypeScript",
   "main": "src/phoenix.ts",
   "dependencies": {
+    "@types/lodash": "^4.14.62",
+    "lodash": "^4.17.4",
     "ts-loader": "^2.0.3",
     "tslint": "^5.1.0",
     "typescript": "^2.2.2",
