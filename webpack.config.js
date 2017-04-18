@@ -4,7 +4,7 @@ module.exports = {
 		filename: 'out/phoenix.js',
 	},
 	resolve: {
-		extensions: ['.webpack.js', '.ts', '.js'],
+		extensions: ['.ts', '.js'],
 	},
 	module: {
 		loaders: [

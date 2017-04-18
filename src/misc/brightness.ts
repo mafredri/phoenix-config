@@ -7,7 +7,7 @@ const brightnessCmd: string = '/Users/mafredri/.bin/brightness';
 
 // Conservative start value...
 let brightnessValue: number = Storage.get('brightness');
-let bModal: Modal;
+let bModal: Modal | null;
 let bModalHideHandler: number;
 
 const debouncedApplyBrightness = debounce(applyBrightness, 500);
@@ -48,7 +48,8 @@ function showBrightness(value: number) {
 }
 
 function closeBrightnessModal() {
-	bModal.close();
+	clearTimeout(bModalHideHandler);
+	if (bModal) { bModal.close(); }
 	bModal = null;
-	bModalHideHandler = null;
+	bModalHideHandler = 0;
 }

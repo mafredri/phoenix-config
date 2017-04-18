@@ -24,7 +24,7 @@ Event.on('appDidLaunch', (app: App) => {
 });
 Event.on('appDidTerminate', (app: App) => {
 	if (isTerminal(app)) {
-		term = null;
+		term = undefined;
 	}
 });
 
@@ -42,7 +42,7 @@ function isTerminal(app: App) {
 
 function toggle() {
 	// Only hide terminal if it's active and has windows.
-	if (termIsActive && term.windows().length) {
+	if (termIsActive && term && term.windows().length) {
 		term.hide();
 	} else {
 		launchOrFocus();
@@ -50,7 +50,7 @@ function toggle() {
 }
 
 function cycleWindows() {
-	if (!termIsActive) {
+	if (!term || !termIsActive) {
 		return launchOrFocus();
 	}
 
@@ -64,6 +64,9 @@ function cycleWindows() {
 
 function launchOrFocus() {
 	// We don't need to care if the app is running or not,
-	// launch+focus will take care of that for us.
-	App.launch(TERMINAL_APP).focus();
+	// launch + focus will take care of that for us.
+	const app = App.launch(TERMINAL_APP);
+	if (app) {
+		app.focus();
+	}
 }

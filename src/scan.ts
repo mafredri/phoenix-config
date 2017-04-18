@@ -1,5 +1,3 @@
-export { Scanner };
-
 import { disableHyperKeys, getHandler } from './key';
 
 const normalKeys = `§1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
@@ -13,7 +11,7 @@ type ScanCallback = (s: string) => void;
 /**
  * Scanner scans input from the user.
  */
-class Scanner {
+export class Scanner {
 	private scanned: string;
 	private keyHandlers: Key[];
 	private doneCallback: ScanCallback;
@@ -47,6 +45,12 @@ class Scanner {
 		this.updateCallback = update;
 	}
 
+	private addKeyHandler(h: Key | undefined) {
+		if (h) {
+			this.keyHandlers.push(h);
+		}
+	}
+
 	private enable() {
 		this.scanned = ''; // reset input
 		this.keyHandlers.length = 0; // remove stale keyhandlers
@@ -54,16 +58,16 @@ class Scanner {
 		if (!this.keyHandlers.length) {
 			for (let i = 0; i < normalKeys.length; i++) {
 				const k = normalKeys[i];
-				this.keyHandlers.push(new Key(k, [], () => this.handleKeyPress(k)));
-				this.keyHandlers.push(new Key(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])));
-				this.keyHandlers.push(new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])));
+				this.addKeyHandler(new Key(k, [], () => this.handleKeyPress(k)));
+				this.addKeyHandler(new Key(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])));
+				this.addKeyHandler(new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])));
 
 				const ask = altShiftKeys[i] || ' ';
-				this.keyHandlers.push(new Key(k, ['alt', 'shift'], () => this.handleKeyPress(ask)));
+				this.addKeyHandler(new Key(k, ['alt', 'shift'], () => this.handleKeyPress(ask)));
 			}
 			for (const sk of specialKeys) {
-				this.keyHandlers.push(new Key(sk, [], () => this.handleKeyPress(sk)));
-				this.keyHandlers.push(new Key(sk, ['shift'], (h) => this.handleKeyPress(sk, h)));
+				this.addKeyHandler(new Key(sk, [], () => this.handleKeyPress(sk)));
+				this.addKeyHandler(new Key(sk, ['shift'], (h) => this.handleKeyPress(sk, h)));
 			}
 		}
 
@@ -90,7 +94,7 @@ class Scanner {
 				return this.updateCallback(this.scanned);
 			case 'escape':
 				this.disable();
-				return this.doneCallback(undefined); // undefined indicates aborted.
+				return this.doneCallback('');
 			case 'return':
 				if (handler && handler.modifiers.includes('shift')) {
 					this.scanned += '\n';

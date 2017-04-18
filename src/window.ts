@@ -4,8 +4,8 @@ import log from './logger';
 export { toggleMaximized, clearUnmaximized };
 
 interface FrameCache {
-	window: Rectangle;
 	screen: Rectangle;
+	window: Rectangle;
 }
 
 const frameCache: Map<number, FrameCache> = new Map();
@@ -20,7 +20,13 @@ function clearUnmaximized(win: Window) {
 }
 
 function unmaximizedFrame(win: Window): Rectangle {
-	const c = frameCache.get(win.hash());
+	let c = frameCache.get(win.hash());
+	if (!c) {
+		c = {
+			screen: win.screen().flippedVisibleFrame(),
+			window: win.frame(),
+		};
+	}
 	const ratio = frameRatio(c.screen, win.screen().flippedVisibleFrame());
 	return ratio(c.window);
 }

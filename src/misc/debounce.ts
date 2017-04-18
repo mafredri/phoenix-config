@@ -2,7 +2,7 @@ export default function debounce(func: () => void, wait: number, immediate?: boo
 	let timeout: number;
 	return (...args: any[]) => {
 		const later = () => {
-			timeout = null;
+			timeout = 0;
 			if (!immediate) {
 				func.apply(this, args);
 			}

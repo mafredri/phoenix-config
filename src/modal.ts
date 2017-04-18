@@ -1,11 +1,11 @@
-export { titleModal, originOnScreen, applyMargin, Orientation };
-
 enum Orientation {
 	NorthWest,
 	NorthEast,
 	SouthWest,
 	SouthEast,
 }
+
+export { titleModal, originOnScreen, applyMargin, Orientation };
 
 function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
 	const m = new Modal();

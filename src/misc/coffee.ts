@@ -17,7 +17,7 @@ interface Config {
 }
 
 interface CoffeTimer extends Config {
-	modal: Modal;
+	modal?: Modal;
 }
 
 export interface TimerStopper {
@@ -25,9 +25,10 @@ export interface TimerStopper {
 }
 
 function start({ screen, timeout }: Config): TimerStopper {
-	const timer = {
-		screen, timeout,
+	const timer: CoffeTimer = {
 		modal: new Modal(),
+		screen,
+		timeout,
 	};
 	const update = updater(timer);
 
@@ -39,14 +40,17 @@ function start({ screen, timeout }: Config): TimerStopper {
 		stop() {
 			clearTimeout(updateInterval);
 			clearTimeout(alertTimeout);
-			timer.modal.close();
-			timer.modal = null;
+			if (timer.modal) { timer.modal.close(); }
+			timer.modal = undefined;
 		},
 	};
 }
 
 function updater(timer: CoffeTimer) {
 	return () => {
+		if (!timer.modal) {
+			return;
+		}
 		timer.timeout--;
 		const min = timer.timeout ? '~' + String(timer.timeout) : '<1';
 		timer.modal.text = `Coffee in ${min} min`;
@@ -60,7 +64,7 @@ function updater(timer: CoffeTimer) {
 function alerter(timer: CoffeTimer, updateInterval: number) {
 	return () => {
 		clearTimeout(updateInterval);
-		timer.modal.close();
+		if (timer.modal) { timer.modal.close(); }
 		timer.modal = new Modal();
 		timer.modal.text = DONE_MSG.trim();
 		timer.modal.showCenterOn(timer.screen);

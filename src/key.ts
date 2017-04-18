@@ -6,7 +6,7 @@ const hyperHandlers: Map<string, Key> = new Map();
 
 // Custom hyper key implementation for macOS Sierra.
 // Caps Lock mapped to f19, should work as hyper.
-let hyperTimeout: number = null;
+let hyperTimeout: number = 0;
 onKey('f19', [], enableHyperBindings);
 onKey('f19', ['shift'], enableHyperBindings);
 
@@ -23,7 +23,7 @@ function enableHyperBindings() {
 function disableHyperBindings() {
 	if (hyperTimeout) {
 		clearTimeout(hyperTimeout);
-		hyperTimeout = null;
+		hyperTimeout = 0;
 	}
 	disableHyperKeys();
 }
@@ -55,7 +55,10 @@ function onKeySingle(key: Phoenix.KeyIdentifier, mod: Phoenix.ModifierKey[], cb:
 
 	const handler = new Key(key, mod, cb);
 	if (!handler) {
-		return;
+		log('error: could not create handler for', {key, mod});
+		return () => {
+			log('error: calling unbind on non-existent handler for', {key, mod});
+		};
 	}
 
 	const id = createID(key, mod);

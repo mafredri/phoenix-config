@@ -14,7 +14,7 @@ import { titleModal } from './modal';
 import { Scanner } from './scan';
 
 const scanner = new Scanner();
-let coffee: TimerStopper;
+let coffee: TimerStopper | null;
 
 Phoenix.set({
 	daemon: true,
@@ -209,7 +209,7 @@ onKey('space', hyper, () => {
 	const msg = 'Search: ';
 	m.text = msg;
 	m.showCenterOn(Screen.main());
-	const currentWindow = Window.focused();
+	const originalWindow = Window.focused();
 	const winCache = Window.all({ visible: true });
 	let matches = [...winCache];
 
@@ -219,6 +219,9 @@ onKey('space', hyper, () => {
 		}
 
 		const w = matches.shift();
+		if (!w) {
+			return;
+		}
 		matches.push(w);
 		w.focus();
 		m.icon = w.app().icon();
@@ -227,9 +230,9 @@ onKey('space', hyper, () => {
 
 	scanner.scanln((s) => {
 		m.close();
-		tab.disable();
+		if (tab) { tab.disable(); }
 	}, (s) => {
-		tab.enable();
+		if (tab) { tab.enable(); }
 		matches = winCache.filter((w) => appName(w) || title(w));
 		m.text = msg + s + (s ? results(matches.length) : '');
 
@@ -237,8 +240,8 @@ onKey('space', hyper, () => {
 			matches[0].focus();
 			m.icon = matches[0].app().icon();
 		} else {
-			currentWindow.focus();
-			m.icon = null;
+			if (originalWindow) { originalWindow.focus(); }
+			m.icon = undefined;
 		}
 
 		m.showCenterOn(Screen.main());
@@ -257,4 +260,5 @@ onKey('space', hyper, () => {
 	}
 });
 
-titleModal('Phoenix (re)loaded!', 2, App.get('Phoenix').icon());
+const phoenixApp = App.get('Phoenix');
+titleModal('Phoenix (re)loaded!', 2, phoenixApp && phoenixApp.icon());
