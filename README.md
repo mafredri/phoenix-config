@@ -31,6 +31,7 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 * `hyper + c` (Start coffee timer, defaults to 8 minutes)
 * `hyper + +` (Increase monitor brightness using external script)
 * `hyper + -` (Decrease monitor brightness using external script)
+* `hyper + Space` (Experimental: search for windows, tab to cycle, enter or esc to exit)
 * `§` (Show or hide the last used Terminal window)
 * `cmd + §` (Cycle between Terminal windows)
 
@@ -39,12 +40,8 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ```
 git clone https://github.com/mafredri/phoenix-config.git
 cd phoenix-config
-npm install && npm run typings
-npm run build
+yarn && yarn run typings
+yarn run build
 ```
 
 The TypeScript compiler and Webpack will produce `out/phoenix.js` that can be used as Phoenix configuration. 
-
-## License
-
-The MIT License.
