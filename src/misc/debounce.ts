@@ -14,4 +14,4 @@ export default function debounce(func: () => void, wait: number, immediate?: boo
 			func.apply(this, args);
 		}
 	};
-};
+}

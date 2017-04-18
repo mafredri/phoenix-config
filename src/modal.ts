@@ -8,7 +8,7 @@ enum Orientation {
 }
 
 function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
-	let m = new Modal();
+	const m = new Modal();
 	m.text = text;
 	m.duration = duration;
 	if (icon) {
@@ -26,8 +26,8 @@ Modal.prototype.showCenterOn = function _showCenterOn(screen: Screen) {
 };
 
 function showAt(modal: Modal, screen: Screen, widthDiv: number, heightDiv: number) {
-	let { height, width } = modal.frame();
-	let sf = screen.flippedVisibleFrame();
+	const { height, width } = modal.frame();
+	const sf = screen.flippedVisibleFrame();
 	modal.origin = {
 		x: sf.x + ((sf.width - width) / widthDiv),
 		y: sf.y + ((sf.height - height) / heightDiv),
@@ -36,9 +36,9 @@ function showAt(modal: Modal, screen: Screen, widthDiv: number, heightDiv: numbe
 }
 
 function originOnScreen(modal: Modal, screen: Screen, orientation: Orientation): Point {
-	let { width: mWidth } = modal.frame();
+	const { width: mWidth } = modal.frame();
 	let { width, height, x, y } = screen.flippedVisibleFrame();
-	let { height: fHeight } = screen.flippedFrame();
+	const { height: fHeight } = screen.flippedFrame();
 
 	if (orientation === Orientation.SouthEast) {
 		x = x + width - mWidth;

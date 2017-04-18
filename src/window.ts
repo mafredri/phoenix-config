@@ -8,7 +8,7 @@ interface FrameCache {
 	screen: Rectangle;
 }
 
-let frameCache: Map<number, FrameCache> = new Map();
+const frameCache: Map<number, FrameCache> = new Map();
 
 Event.on('windowDidClose', (win: Window) => {
 	// Cleanup references to unmaximized window frames
@@ -20,13 +20,13 @@ function clearUnmaximized(win: Window) {
 }
 
 function unmaximizedFrame(win: Window): Rectangle {
-	let c = frameCache.get(win.hash());
-	let ratio = frameRatio(c.screen, win.screen().flippedVisibleFrame());
+	const c = frameCache.get(win.hash());
+	const ratio = frameRatio(c.screen, win.screen().flippedVisibleFrame());
 	return ratio(c.window);
 }
 
 function toggleMaximized(win: Window) {
-	let id = win.hash();
+	const id = win.hash();
 	if (frameCache.has(id)) {
 		win.setFrame(unmaximizedFrame(win));
 		win.clearUnmaximized();
@@ -43,7 +43,7 @@ Window.prototype.clearUnmaximized = function _clearUnmaximized() { clearUnmaximi
 Window.prototype.toggleMaximized = function _toggleMaximized() { toggleMaximized(this); };
 
 // FIXME: This is too hacky, I'd prefer not to monkey patch built-ins
-let setFrameOrig = Window.prototype.setFrame;
+const setFrameOrig = Window.prototype.setFrame;
 Window.prototype.setFrame = function _setFrame(frame: Rectangle): boolean {
 	let ret = setFrameOrig.call(this, frame);
 	if (this.app().bundleIdentifier() === 'com.microsoft.Word') {

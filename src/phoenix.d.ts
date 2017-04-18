@@ -24,9 +24,8 @@ interface Modal {
 	showCenterOn(screen: Screen): void;
 }
 
-interface IntervalFunction {
-	(callback: Function, interval: number): number;
-}
+type IntervalFunction = (callback: () => void, interval: number) => number;
+
 declare var setTimeout: IntervalFunction;
 declare var setInterval: IntervalFunction;
 declare var clearTimeout: (handler: number) => void;

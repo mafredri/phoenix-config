@@ -25,14 +25,14 @@ export interface TimerStopper {
 }
 
 function start({ screen, timeout }: Config): TimerStopper {
-	let timer = {
+	const timer = {
 		screen, timeout,
 		modal: new Modal(),
 	};
-	let update = updater(timer);
+	const update = updater(timer);
 
-	let updateInterval = setInterval(update, 1000 * 60);
-	let alertTimeout = setTimeout(alerter(timer, updateInterval), 1000 * 60 * timer.timeout);
+	const updateInterval = setInterval(update, 1000 * 60);
+	const alertTimeout = setTimeout(alerter(timer, updateInterval), 1000 * 60 * timer.timeout);
 	update();
 
 	return {
@@ -48,7 +48,7 @@ function start({ screen, timeout }: Config): TimerStopper {
 function updater(timer: CoffeTimer) {
 	return () => {
 		timer.timeout--;
-		let min = timer.timeout ? '~' + String(timer.timeout) : '<1';
+		const min = timer.timeout ? '~' + String(timer.timeout) : '<1';
 		timer.modal.text = `Coffee in ${min} min`;
 
 		const screenOrigin = originOnScreen(timer.modal, timer.screen, Orientation.SouthEast);

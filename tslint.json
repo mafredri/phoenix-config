@@ -1,10 +1,10 @@
 {
-  "extends": "tslint:latest",
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
   "rules": {
-    "interface-name": [
-      true,
-      "never-prefix"
-    ],
     "class-name": true,
     "comment-format": [
       true,
@@ -14,16 +14,30 @@
       true,
       "tabs"
     ],
-    "no-duplicate-variable": true,
-    "no-eval": true,
-    "no-internal-module": true,
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
+    "max-line-length": [
+      false,
+      120
+    ],
+    "no-consecutive-blank-lines": [
+      true,
+      1
+    ],
+    "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
-    "no-unsafe-finally": true,
-    "no-var-keyword": true,
     "one-line": [
       true,
       "check-open-brace",
       "check-whitespace"
+    ],
+    "prefer-const": [
+      true,
+      {
+        "destructuring": "all"
+      }
     ],
     "quotemark": [
       true,
@@ -37,27 +51,22 @@
       true,
       "allow-null-check"
     ],
-    "typedef-whitespace": [
-      true,
-      {
-        "call-signature": "nospace",
-        "index-signature": "nospace",
-        "parameter": "nospace",
-        "property-declaration": "nospace",
-        "variable-declaration": "nospace"
-      }
-    ],
     "variable-name": [
       true,
-      "ban-keywords"
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore"
     ],
     "whitespace": [
       true,
       "check-branch",
       "check-decl",
+      "check-module",
       "check-operator",
       "check-separator",
-      "check-type"
+      "check-type",
+      "check-typecast"
     ]
-  }
+  },
+  "rulesDirectory": []
 }

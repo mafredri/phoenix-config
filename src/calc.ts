@@ -1,12 +1,10 @@
 export { FrameRatio, frameRatio, pointInsideFrame, sizeMatches };
 
-interface FrameRatio {
-	(frame: Rectangle): Rectangle;
-}
+type FrameRatio = (frame: Rectangle) => Rectangle;
 
 function frameRatio(a: Rectangle, b: Rectangle): FrameRatio {
-	let widthRatio = b.width / a.width;
-	let heightRatio = b.height / a.height;
+	const widthRatio = b.width / a.width;
+	const heightRatio = b.height / a.height;
 
 	return ({ width, height, x, y }) => {
 		width = Math.round(width * widthRatio);

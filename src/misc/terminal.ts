@@ -36,7 +36,7 @@ Event.on('appDidActivate', (app: App) => {
 });
 
 function isTerminal(app: App) {
-	let name = app.name();
+	const name = app.name();
 	return name === TERMINAL_NAME || name === TERMINAL_APP;
 }
 
@@ -54,7 +54,7 @@ function cycleWindows() {
 		return launchOrFocus();
 	}
 
-	let windows = term.windows();
+	const windows = term.windows();
 	if (!windows.length) {
 		return launchOrFocus();
 	}

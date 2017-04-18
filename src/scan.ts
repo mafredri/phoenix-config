@@ -53,15 +53,15 @@ class Scanner {
 
 		if (!this.keyHandlers.length) {
 			for (let i = 0; i < normalKeys.length; i++) {
-				let k = normalKeys[i];
+				const k = normalKeys[i];
 				this.keyHandlers.push(new Key(k, [], () => this.handleKeyPress(k)));
 				this.keyHandlers.push(new Key(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])));
 				this.keyHandlers.push(new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])));
 
-				let ask = altShiftKeys[i] || ' ';
+				const ask = altShiftKeys[i] || ' ';
 				this.keyHandlers.push(new Key(k, ['alt', 'shift'], () => this.handleKeyPress(ask)));
 			}
-			for (let sk of specialKeys) {
+			for (const sk of specialKeys) {
 				this.keyHandlers.push(new Key(sk, [], () => this.handleKeyPress(sk)));
 				this.keyHandlers.push(new Key(sk, ['shift'], (h) => this.handleKeyPress(sk, h)));
 			}
