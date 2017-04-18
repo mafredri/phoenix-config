@@ -1,6 +1,6 @@
 export { Scanner };
 
-import { getHandler } from './key';
+import { disableHyperKeys, getHandler } from './key';
 
 const normalKeys = `§1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
 const shiftKeys = `°!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`;
@@ -67,17 +67,20 @@ class Scanner {
 			}
 		}
 
-		this.keyHandlers.forEach((h) => h.enable()); // make sure all handlers are enabled
+		this.keyHandlers.forEach((h) => h.enable()); // Make sure all handlers are enabled.
 	}
 
 	private disable() {
-		this.keyHandlers.forEach((h) => {
+		for (const h of this.keyHandlers) {
 			h.disable();
 			const last = getHandler(h.key, h.modifiers);
 			if (last) {
 				last.enable();
 			}
-		});
+		}
+		// Hyper keys could be left active but we've hijacked most keys,
+		// so reset hyper state to be on the safe side.
+		disableHyperKeys();
 	}
 
 	private handleKeyPress(key: Phoenix.KeyIdentifier, handler?: Key) {
