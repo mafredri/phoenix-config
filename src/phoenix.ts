@@ -100,9 +100,9 @@ onKey(['left', 'j'], hyperShift, () => {
 	const { width, height, y, x: fX } = win.frame();
 	let { width: sWidth, x } = win.screen().flippedVisibleFrame();
 
-	const center = x + (sWidth / 2);
-	const half = width / 2;
-	if (Math.floor(fX + half) > center) {
+	const center = x + Math.ceil((sWidth / 2));
+	const half = Math.floor(width / 2);
+	if ((fX + half) > center) {
 		x = center - half;
 	}
 
@@ -116,9 +116,9 @@ onKey(['right', 'l'], hyperShift, () => {
 	const { width, height, y, x: fX } = win.frame();
 	let { width: sWidth, x } = win.screen().flippedVisibleFrame();
 
-	const center = x + (sWidth / 2);
-	const half = width / 2;
-	if (Math.ceil(fX + half) < center) {
+	const center = x + Math.floor(sWidth / 2);
+	const half = Math.ceil(width / 2);
+	if ((fX + half) < center) {
 		x = center - half;
 	} else {
 		x = x + sWidth - width;
@@ -134,9 +134,9 @@ onKey(['up', 'i'], hyperShift, () => {
 	const { width, height, x, y: frameY } = win.frame();
 	let { height: sHeight, y } = win.screen().flippedVisibleFrame();
 
-	const center = y + (sHeight / 2);
-	const half = height / 2;
-	if (Math.floor(frameY + half) > center) {
+	const center = Math.ceil(y + sHeight / 2);
+	const half = Math.floor(height / 2);
+	if ((frameY + half) > center) {
 		y = center - half;
 	}
 
@@ -150,9 +150,9 @@ onKey(['down', 'k'], hyperShift, () => {
 	const { width, height, x, y: frameY } = win.frame();
 	let { height: sHeight, y } = win.screen().flippedVisibleFrame();
 
-	const center = y + (sHeight / 2);
-	const half = height / 2;
-	if (Math.ceil(frameY + half) < center) {
+	const center = Math.floor(y + sHeight / 2);
+	const half = Math.ceil(height / 2);
+	if ((frameY + half) < center) {
 		y = center - half;
 	} else {
 		y = y + sHeight - height;
