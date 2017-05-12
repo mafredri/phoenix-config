@@ -11,48 +11,65 @@ let brightnessValue: number = Storage.get('brightness');
 let bModal: Modal | null;
 let bModalHideHandler: number;
 
-interface Display {
+interface DdcctlDisplay {
 	id: number;
-	hash: string;
+	hash: number;
+}
+
+interface DisplayBrightness {
+	current: number;
+	max: number;
+}
+
+interface Display extends DdcctlDisplay, DisplayBrightness {
+	identifier: string;
 }
 
 /**
  * refresh updates the current (external) display information.
  */
 async function refresh() {
-	for (const s of Screen.all()) {
-		log(s.identifier(), s.hash());
-	}
-	try {
-		const displays = await ddcctl()
-			.then((task) => parseDisplays(task.output));
+	const screens = Screen.all();
 
-		const values = (await Promise.all(displays.map((d) => displayBrightness(d.id))))
-			.map((t) => parseBrightness(t.output));
+	const ddcctlDisplays = await ddcctl().then(parseDisplays);
+	const brightnessOutput =
+		await Promise.all(ddcctlDisplays.map((d) => displayBrightness(d.id)));
+	const values = brightnessOutput.map(parseBrightness);
 
-		log(displays, values);
-	} catch (e) {
-		log('Failed to refresh display brightness!', e);
-	}
+	const mergeFunc = mergeDisplayInformation(screens, ddcctlDisplays, values);
+	const displays = ddcctlDisplays.map(mergeFunc);
+	log(displays);
 }
 
-refresh();
+function mergeDisplayInformation(screens: Screen[], displays: DdcctlDisplay[], values: DisplayBrightness[]): (d: DdcctlDisplay, i: number) => Display {
+	return (d, i) => {
+		const screen = screens.find((s) => s.hash() === d.hash);
+		if (!screen) {
+			throw new Error(`could not find screen for display id: ${d.id}; hash: ${d.hash}`);
+		}
+		return Object.assign({identifier: screen.identifier()}, d, values[i]);
+	};
+}
+
+refresh().catch((e) => Phoenix.notify('Refresh displays failed: ' + e));
 Event.on('screensDidChange', () => {
 	// Give the displays time to settle before querying state.
-	setTimeout(refresh, 5000);
+	setTimeout(() => {
+		refresh().catch((e) => Phoenix.notify('Refresh displays failed: ' + e));
+	}, 5000);
 });
 
 /**
  * parseDisplays returns all external displays discovered by ddcctl.
  */
-function parseDisplays(output: string): Display[] {
+function parseDisplays(output: string): DdcctlDisplay[] {
 	const numMatch = /I: found ([0-9]+) external displays/.exec(output);
 	if (numMatch === null) {
 		return [];
 	}
 	const numDisplays = parseInt(numMatch[1], 10);
 
-	const displays: Display[] = [];
+	const displays: DdcctlDisplay[] = [];
 	const re = /D: NSScreen #([0-9]+)/gm;
 
 	for (let i = 1; i <= numDisplays; i++) {
@@ -60,9 +77,8 @@ function parseDisplays(output: string): Display[] {
 		if (match === null) {
 			break;
 		}
-		log(match[1]);
 		displays.push({
-			hash: match[1],
+			hash: parseInt(match[1], 10),
 			id: i,
 		});
 	}
@@ -73,7 +89,7 @@ function parseDisplays(output: string): Display[] {
 /**
  * parseBrightness fetches the current brightness from the ddcctl command output.
  */
-function parseBrightness(output: string): {current: number, max: number} {
+function parseBrightness(output: string): DisplayBrightness {
 	const match = /current: ([0-9]+), max: ([0-9]+)/.exec(output);
 	if (!match) {
 		throw new Error('could not parse brightness');
@@ -88,21 +104,24 @@ function parseBrightness(output: string): {current: number, max: number} {
  * displayBrightness returns brightness when no value is given and sets the
  * brightness when given a value.
  */
-function displayBrightness(displayId: number, value?: number): Promise<Task> {
+function displayBrightness(displayId: number, value?: number) {
 	return ddcctl('-d', String(displayId), '-b', (value ? String(value) : '?'));
 }
 
 /**
  * ddcctl runs the ddcctl command with provided arguments.
  */
-function ddcctl(...args: string[]): Promise<Task> {
+function ddcctl(...args: string[]): Promise<string> {
 	return new Promise((resolve, reject) => {
 		try {
 			Task.run(ddcctlBinary, args, (task) => {
-				resolve(task);
+				if (task.status === 0) {
+					return resolve(task.output);
+				}
+				return reject(`ddcctl failed with status: ${task.status}; output: ${task.output}; error: ${task.error}`);
 			});
 		} catch (e) {
-			reject(e);
+			return reject(e);
 		}
 	});
 }
