@@ -2,21 +2,22 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
+    "baseUrl": "src",
     "outDir": "out/src",
-    "target": "es5",
-    "alwaysStrict": true,
+    "target": "es2015",
+    "strict": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "pretty": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "typings/globals"
+    ],
     "lib": [
       "es2017"
     ]
   },
-  "files": [
-    "typings/index.d.ts",
-    "src/phoenix.d.ts",
-    "src/phoenix.ts"
+  "exclude": [
+    "node_modules"
   ]
 }
