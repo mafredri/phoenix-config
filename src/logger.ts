@@ -4,6 +4,16 @@ export default function log(...args: any[]): void {
 }
 
 function stringify(value: any) {
+	if (value instanceof Error) {
+		let stack = '';
+		if (value.stack) {
+			const s = value.stack.trim().split('\n');
+			s[0] += ` (:${value.line}:${value.column})`;
+			const indented = s.map((line) => '\t at ' + line).join('\n');
+			stack = `\n${indented}`;
+		}
+		return `\n${value.name}: ${value.message}${stack}`;
+	}
 	switch (typeof value) {
 		case 'object':
 			return '\n' + JSON.stringify(value, null, 2);
