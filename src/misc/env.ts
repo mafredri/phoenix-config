@@ -1,4 +1,4 @@
-export function getEnv(name = ''): Promise<string> {
+export function getEnv(name: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		if (!name) {
 			return reject('no variable name provided');
