@@ -105,7 +105,7 @@ function parseBrightness(output: string): DisplayBrightness {
  * brightness when given a value.
  */
 function displayBrightness(displayId: number, value?: number) {
-	return ddcctl('-d', String(displayId), '-b', (value ? String(value) : '?'));
+	return ddcctl('-d', String(displayId), '-b', (typeof value === 'number' ? String(value) : '?'));
 }
 
 /**

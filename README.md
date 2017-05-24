@@ -45,3 +45,5 @@ yarn run build
 ```
 
 The TypeScript compiler and Webpack will produce `out/phoenix.js` that can be used as Phoenix configuration. 
+
+For development, `npm start` will run Webpack in watch-mode.
