@@ -138,11 +138,7 @@ function addBrightness(value: number) {
 		brightnessValue = 40;
 	}
 
-	if (value < 0) {
-		brightnessValue = Math.max(brightnessValue + value, 0);
-	} else {
-		brightnessValue = Math.min(brightnessValue + value, 100);
-	}
+	brightnessValue = Math.max(Math.min(brightnessValue + value, 100), 0);
 
 	Storage.set('brightness', brightnessValue);
 

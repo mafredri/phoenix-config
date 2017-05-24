@@ -14,10 +14,10 @@ function enableHyperBindings() {
 	if (!hyperTimeout) {
 		enableHyperKeys();
 		hyperTimeout = setTimeout(disableHyperBindings, 510);
-	} else {
-		clearTimeout(hyperTimeout);
-		hyperTimeout = setTimeout(disableHyperBindings, 110);
+		return;
 	}
+	clearTimeout(hyperTimeout);
+	hyperTimeout = setTimeout(disableHyperBindings, 110);
 }
 
 function disableHyperBindings() {

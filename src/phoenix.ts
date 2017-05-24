@@ -198,9 +198,9 @@ onKey('c', hyper, () => {
 	if (coffee) {
 		coffee.stop();
 		coffee = null;
-	} else {
-		coffee = coffeTimer({ screen: Screen.main(), timeout: 8 });
+		return;
 	}
+	coffee = coffeTimer({ screen: Screen.main(), timeout: 8 });
 });
 
 onKey('space', hyper, () => {

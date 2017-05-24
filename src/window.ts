@@ -36,13 +36,13 @@ function toggleMaximized(win: Window) {
 	if (frameCache.has(id)) {
 		win.setFrame(unmaximizedFrame(win));
 		win.clearUnmaximized();
-	} else {
-		frameCache.set(id, {
-			screen: win.screen().flippedVisibleFrame(),
-			window: win.frame(),
-		});
-		win.maximize();
+		return;
 	}
+	frameCache.set(id, {
+		screen: win.screen().flippedVisibleFrame(),
+		window: win.frame(),
+	});
+	win.maximize();
 }
 
 Window.prototype.clearUnmaximized = function _clearUnmaximized() { clearUnmaximized(this); };

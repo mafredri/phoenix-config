@@ -5,11 +5,10 @@ export function getEnv(name: string): Promise<string> {
 		}
 
 		Task.run('/bin/sh', ['-c', `echo "$${name}"`], (t) => {
-			if (t.status === 0) {
-				return resolve(t.output);
-			} else {
+			if (t.status !== 0) {
 				return reject(`could not execute command to fetch '$${name}'`);
 			}
+			return resolve(t.output);
 		});
 	});
 }

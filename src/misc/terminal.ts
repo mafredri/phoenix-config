@@ -44,9 +44,9 @@ function toggle() {
 	// Only hide terminal if it's active and has windows.
 	if (termIsActive && term && term.windows().length) {
 		term.hide();
-	} else {
-		launchOrFocus();
+		return;
 	}
+	launchOrFocus();
 }
 
 function cycleWindows() {
