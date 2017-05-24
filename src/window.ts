@@ -47,18 +47,3 @@ function toggleMaximized(win: Window) {
 
 Window.prototype.clearUnmaximized = function _clearUnmaximized() { clearUnmaximized(this); };
 Window.prototype.toggleMaximized = function _toggleMaximized() { toggleMaximized(this); };
-
-// FIXME: This is too hacky, I'd prefer not to monkey patch built-ins
-const setFrameOrig = Window.prototype.setFrame;
-Window.prototype.setFrame = function _setFrame(frame: Rectangle): boolean {
-	let ret = setFrameOrig.call(this, frame);
-	if (this.app().bundleIdentifier() === 'com.microsoft.Word') {
-		// Workaround for Microsoft Word resizing too slowly and thus not
-		// reaching the correct frame
-		while (!sizeMatches(this.frame(), frame)) {
-			log('com.microsoft.Word workaround triggered, reapplying setFrame()');
-			ret = setFrameOrig.call(this, frame);
-		}
-	}
-	return ret;
-};
