@@ -65,7 +65,11 @@ function updater(timer: CoffeTimer) {
 			timer.screen,
 			Orientation.SouthEast,
 		);
-		timer.modal.origin = applyMargin(screenOrigin, MODAL_MARGIN, MODAL_MARGIN);
+		timer.modal.origin = applyMargin(
+			screenOrigin,
+			MODAL_MARGIN,
+			MODAL_MARGIN,
+		);
 		timer.modal.show();
 	};
 }

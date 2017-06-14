@@ -5,19 +5,22 @@
   "main": "src/phoenix.ts",
   "dependencies": {
     "@types/lodash": "^4.14.64",
-    "ts-loader": "^2.0.3",
-    "tslint": "^5.2.0",
     "typescript": "^2.3.2",
-    "typings": "^2.1.1",
-    "webpack": "^2.5.1"
+    "typings": "^2.1.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "^1.4.4",
+    "ts-loader": "^2.1.0",
+    "tslint": "^5.4.3",
+    "webpack": "^2.6.1"
+  },
   "scripts": {
     "start": "npm run watch",
     "watch": "webpack --watch",
     "build": "webpack",
     "typings": "typings install",
-    "lint": "tslint './src/**/*.ts'",
+    "lint": "tslint src/**/*.ts",
+    "format": "prettier --write --tab-width 4 --use-tabs --single-quote --no-bracket-spacing --trailing-comma all src/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
