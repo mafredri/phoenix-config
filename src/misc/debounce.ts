@@ -1,4 +1,8 @@
-export default function debounce(func: () => void, wait: number, immediate?: boolean) {
+export default function debounce(
+	func: () => void,
+	wait: number,
+	immediate?: boolean,
+) {
 	let timeout: number;
 	return (...args: any[]) => {
 		const later = () => {

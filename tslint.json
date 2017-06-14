@@ -5,6 +5,7 @@
   ],
   "jsRules": {},
   "rules": {
+    "arrow-parens": false,
     "class-name": true,
     "comment-format": [
       true,
@@ -44,7 +45,7 @@
       "single"
     ],
     "semicolon": [
-      true,
+      false,
       "always"
     ],
     "triple-equals": [

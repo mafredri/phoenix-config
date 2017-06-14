@@ -32,8 +32,9 @@ async function refresh() {
 	const screens = Screen.all();
 
 	const ddcctlDisplays = await ddcctl().then(parseDisplays);
-	const brightnessOutput =
-		await Promise.all(ddcctlDisplays.map((d) => displayBrightness(d.id)));
+	const brightnessOutput = await Promise.all(
+		ddcctlDisplays.map(d => displayBrightness(d.id)),
+	);
 	const values = brightnessOutput.map(parseBrightness);
 
 	const mergeFunc = mergeDisplayInformation(screens, ddcctlDisplays, values);
@@ -41,21 +42,27 @@ async function refresh() {
 	log(displays);
 }
 
-function mergeDisplayInformation(screens: Screen[], displays: DdcctlDisplay[], values: DisplayBrightness[]): (d: DdcctlDisplay, i: number) => Display {
+function mergeDisplayInformation(
+	screens: Screen[],
+	displays: DdcctlDisplay[],
+	values: DisplayBrightness[],
+): (d: DdcctlDisplay, i: number) => Display {
 	return (d, i) => {
-		const screen = screens.find((s) => s.hash() === d.hash);
+		const screen = screens.find(s => s.hash() === d.hash);
 		if (!screen) {
-			throw new Error(`could not find screen for display id: ${d.id}; hash: ${d.hash}`);
+			throw new Error(
+				`could not find screen for display id: ${d.id}; hash: ${d.hash}`,
+			);
 		}
 		return Object.assign({identifier: screen.identifier()}, d, values[i]);
 	};
 }
 
-refresh().catch((e) => Phoenix.notify('Refresh displays failed: ' + e));
+refresh().catch(e => Phoenix.notify('Refresh displays failed: ' + e));
 Event.on('screensDidChange', () => {
 	// Give the displays time to settle before querying state.
 	setTimeout(() => {
-		refresh().catch((e) => Phoenix.notify('Refresh displays failed: ' + e));
+		refresh().catch(e => Phoenix.notify('Refresh displays failed: ' + e));
 	}, 5000);
 });
 
@@ -105,7 +112,8 @@ function parseBrightness(output: string): DisplayBrightness {
  * brightness when given a value.
  */
 function displayBrightness(displayId: number, value?: number) {
-	return ddcctl('-d', String(displayId), '-b', (typeof value === 'number' ? String(value) : '?'));
+	const bval = typeof value === 'number' ? String(value) : '?';
+	return ddcctl('-d', String(displayId), '-b', bval);
 }
 
 /**
@@ -114,11 +122,13 @@ function displayBrightness(displayId: number, value?: number) {
 function ddcctl(...args: string[]): Promise<string> {
 	return new Promise((resolve, reject) => {
 		try {
-			Task.run(ddcctlBinary, args, (task) => {
+			Task.run(ddcctlBinary, args, task => {
 				if (task.status === 0) {
 					return resolve(task.output);
 				}
-				return reject(`ddcctl failed with status: ${task.status}; output: ${task.output}; error: ${task.error}`);
+				return reject(
+					`ddcctl failed with status: ${task.status}; output: ${task.output}; error: ${task.error}`,
+				);
 			});
 		} catch (e) {
 			return reject(e);
@@ -160,7 +170,9 @@ function showBrightness(value: number) {
 
 function closeBrightnessModal() {
 	clearTimeout(bModalHideHandler);
-	if (bModal) { bModal.close(); }
+	if (bModal) {
+		bModal.close();
+	}
 	bModal = null;
 	bModalHideHandler = 0;
 }

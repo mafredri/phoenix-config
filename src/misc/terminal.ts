@@ -1,7 +1,7 @@
 // terminal exposes methods for toggling the users terminal application in a
 // quake style manner. It attempts to optimize performance by caching
 // information about the terminal application through Phoenix event handlers.
-export { toggle, cycleWindows };
+export {toggle, cycleWindows};
 
 const TERMINAL_NAME = 'iTerm2';
 const TERMINAL_APP = TERMINAL_NAME.replace(/[0-9]+$/, '');
@@ -10,7 +10,9 @@ const TERMINAL_APP = TERMINAL_NAME.replace(/[0-9]+$/, '');
 let term = App.get(TERMINAL_NAME);
 let termIsActive = (() => {
 	const win = Window.focused();
-	if (!win) { return false; }
+	if (!win) {
+		return false;
+	}
 
 	return isTerminal(win.app());
 })();

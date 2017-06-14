@@ -1,7 +1,7 @@
-import { frameRatio, sizeMatches } from './calc';
+import {frameRatio, sizeMatches} from './calc';
 import log from './logger';
 
-export { toggleMaximized, clearUnmaximized };
+export {toggleMaximized, clearUnmaximized};
 
 interface FrameCache {
 	screen: Rectangle;
@@ -45,5 +45,9 @@ function toggleMaximized(win: Window) {
 	win.maximize();
 }
 
-Window.prototype.clearUnmaximized = function _clearUnmaximized() { clearUnmaximized(this); };
-Window.prototype.toggleMaximized = function _toggleMaximized() { toggleMaximized(this); };
+Window.prototype.clearUnmaximized = function _clearUnmaximized() {
+	clearUnmaximized(this);
+};
+Window.prototype.toggleMaximized = function _toggleMaximized() {
+	toggleMaximized(this);
+};

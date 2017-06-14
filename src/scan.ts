@@ -27,7 +27,7 @@ export class Scanner {
 	public scan(done: ScanCallback) {
 		this.enable();
 		this.doneCallback = done;
-		this.updateCallback = (s) => {
+		this.updateCallback = s => {
 			if (!s) {
 				return; // an update requires a character
 			}
@@ -39,7 +39,7 @@ export class Scanner {
 	/**
 	 * scanln scans an entire line (return ends scan).
 	 */
-	public scanln(done: ScanCallback, update: ScanCallback = (() => undefined)) {
+	public scanln(done: ScanCallback, update: ScanCallback = () => undefined) {
 		this.enable();
 		this.doneCallback = done;
 		this.updateCallback = update;
@@ -59,19 +59,27 @@ export class Scanner {
 			for (let i = 0; i < normalKeys.length; i++) {
 				const k = normalKeys[i];
 				this.addKeyHandler(new Key(k, [], () => this.handleKeyPress(k)));
-				this.addKeyHandler(new Key(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])));
-				this.addKeyHandler(new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])));
+				this.addKeyHandler(
+					new Key(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])),
+				);
+				this.addKeyHandler(
+					new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])),
+				);
 
 				const ask = altShiftKeys[i] || ' ';
-				this.addKeyHandler(new Key(k, ['alt', 'shift'], () => this.handleKeyPress(ask)));
+				this.addKeyHandler(
+					new Key(k, ['alt', 'shift'], () => this.handleKeyPress(ask)),
+				);
 			}
 			for (const sk of specialKeys) {
 				this.addKeyHandler(new Key(sk, [], () => this.handleKeyPress(sk)));
-				this.addKeyHandler(new Key(sk, ['shift'], (h) => this.handleKeyPress(sk, h)));
+				this.addKeyHandler(
+					new Key(sk, ['shift'], h => this.handleKeyPress(sk, h)),
+				);
 			}
 		}
 
-		this.keyHandlers.forEach((h) => h.enable()); // Make sure all handlers are enabled.
+		this.keyHandlers.forEach(h => h.enable()); // Make sure all handlers are enabled.
 	}
 
 	private disable() {

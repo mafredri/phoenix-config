@@ -1,4 +1,4 @@
-import { pointInsideFrame } from './calc';
+import {pointInsideFrame} from './calc';
 
 function screenAt(point: Point) {
 	const screens = Screen.all();

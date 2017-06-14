@@ -34,7 +34,9 @@ Event.on('screensDidChange', () => {
 
 onKey('tab', hyper, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
 	const oldScreen = win.screen();
 	const newScreen = oldScreen.next();
@@ -43,55 +45,66 @@ onKey('tab', hyper, () => {
 		return;
 	}
 
-	const ratio = frameRatio(oldScreen.flippedVisibleFrame(), newScreen.flippedVisibleFrame());
+	const ratio = frameRatio(
+		oldScreen.flippedVisibleFrame(),
+		newScreen.flippedVisibleFrame(),
+	);
 	win.setFrame(ratio(win.frame()));
 });
 
 onKey(['left', 'j'], hyper, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	let { width, height, x, y } = win.screen().flippedVisibleFrame();
+	let {width, height, x, y} = win.screen().flippedVisibleFrame();
 	width = Math.ceil(width / 2);
-	win.setFrame({ width, height, x, y });
+	win.setFrame({width, height, x, y});
 	win.clearUnmaximized();
 });
 
 onKey(['right', 'l'], hyper, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	let { width, height, x, y } = win.screen().flippedVisibleFrame();
+	let {width, height, x, y} = win.screen().flippedVisibleFrame();
 	width /= 2;
 	x += Math.ceil(width);
 	width = Math.floor(width);
 
-	win.setFrame({ width, height, x, y });
+	win.setFrame({width, height, x, y});
 	win.clearUnmaximized();
 });
 
 onKey(['up', 'i'], hyper, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	const { width, x } = win.frame();
-	let { height, y } = win.screen().flippedVisibleFrame();
+	const {width, x} = win.frame();
+	let {height, y} = win.screen().flippedVisibleFrame();
 	height = Math.ceil(height / 2);
 
-	win.setFrame({ height, width, x, y });
+	win.setFrame({height, width, x, y});
 	win.clearUnmaximized();
 });
 
 onKey(['down', 'k'], hyper, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	const { width, x } = win.frame();
-	let { height, y } = win.screen().flippedVisibleFrame();
+	const {width, x} = win.frame();
+	let {height, y} = win.screen().flippedVisibleFrame();
 	height /= 2;
 	[height, y] = [Math.ceil(height), y + Math.floor(height)];
 
-	win.setFrame({ height, width, x, y });
+	win.setFrame({height, width, x, y});
 	win.clearUnmaximized();
 });
 
@@ -104,83 +117,99 @@ onKey('return', hyper, () => {
 
 onKey(['left', 'j'], hyperShift, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	const { width, height, y, x: fX } = win.frame();
-	let { width: sWidth, x } = win.screen().flippedVisibleFrame();
+	const {width, height, y, x: fX} = win.frame();
+	let {width: sWidth, x} = win.screen().flippedVisibleFrame();
 
-	const center = x + Math.ceil((sWidth / 2));
+	const center = x + Math.ceil(sWidth / 2);
 	const half = Math.floor(width / 2);
-	if ((fX + half) > center) {
+	if (fX + half > center) {
 		x = center - half;
 	}
 
-	win.setFrame({ width, height, y, x });
+	win.setFrame({width, height, y, x});
 });
 
 onKey(['right', 'l'], hyperShift, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	const { width, height, y, x: fX } = win.frame();
-	let { width: sWidth, x } = win.screen().flippedVisibleFrame();
+	const {width, height, y, x: fX} = win.frame();
+	let {width: sWidth, x} = win.screen().flippedVisibleFrame();
 
 	const center = x + Math.floor(sWidth / 2);
 	const half = Math.ceil(width / 2);
-	if ((fX + half) < center) {
+	if (fX + half < center) {
 		x = center - half;
 	} else {
 		x = x + sWidth - width;
 	}
 
-	win.setFrame({ width, height, y, x });
+	win.setFrame({width, height, y, x});
 });
 
 onKey(['up', 'i'], hyperShift, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	const { width, height, x, y: frameY } = win.frame();
-	let { height: sHeight, y } = win.screen().flippedVisibleFrame();
+	const {width, height, x, y: frameY} = win.frame();
+	let {height: sHeight, y} = win.screen().flippedVisibleFrame();
 
 	const center = Math.ceil(y + sHeight / 2);
 	const half = Math.floor(height / 2);
-	if ((frameY + half) > center) {
+	if (frameY + half > center) {
 		y = center - half;
 	}
 
-	win.setFrame({ width, height, x, y });
+	win.setFrame({width, height, x, y});
 });
 
 onKey(['down', 'k'], hyperShift, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	const { width, height, x, y: frameY } = win.frame();
-	let { height: sHeight, y } = win.screen().flippedVisibleFrame();
+	const {width, height, x, y: frameY} = win.frame();
+	let {height: sHeight, y} = win.screen().flippedVisibleFrame();
 
 	const center = Math.floor(y + sHeight / 2);
 	const half = Math.ceil(height / 2);
-	if ((frameY + half) < center) {
+	if (frameY + half < center) {
 		y = center - half;
 	} else {
 		y = y + sHeight - height;
 	}
 
-	win.setFrame({ width, height, x, y });
+	win.setFrame({width, height, x, y});
 });
 
 onKey('return', hyperShift, () => {
 	const win = Window.focused();
-	if (!win) { return; }
+	if (!win) {
+		return;
+	}
 
-	const { width, height } = win.frame();
-	const { width: sWidth, height: sHeight, x, y } = win.screen().flippedVisibleFrame();
+	const {width, height} = win.frame();
+	const {
+		width: sWidth,
+		height: sHeight,
+		x,
+		y,
+	} = win.screen().flippedVisibleFrame();
 
 	win.setFrame({
-		width, height,
-		x: x + (sWidth / 2) - (width / 2),
-		y: y + (sHeight / 2) - (height / 2),
+		width,
+		height,
+		x: x + sWidth / 2 - width / 2,
+		y: y + sHeight / 2 - height / 2,
 	});
 });
 
@@ -196,7 +225,9 @@ onKey('delete', hyper, () => {
 
 onKey('m', hyper, () => {
 	const s = Screen.at(Mouse.location());
-	if (!s) { return; }
+	if (!s) {
+		return;
+	}
 
 	log(s.identifier(), Mouse.location());
 });
@@ -210,7 +241,7 @@ onKey('c', hyper, () => {
 		coffee = null;
 		return;
 	}
-	coffee = coffeTimer({ screen: Screen.main(), timeout: 8 });
+	coffee = coffeTimer({screen: Screen.main(), timeout: 8});
 });
 
 onKey('space', hyper, () => {
@@ -219,7 +250,7 @@ onKey('space', hyper, () => {
 	m.text = msg;
 	m.showCenterOn(Screen.main());
 	const originalWindow = Window.focused();
-	const winCache = Window.all({ visible: true });
+	const winCache = Window.all({visible: true});
 	let matches = [...winCache];
 
 	const tab = new Key('tab', [], () => {
@@ -237,32 +268,41 @@ onKey('space', hyper, () => {
 		m.showCenterOn(Screen.main());
 	});
 
-	scanner.scanln((s) => {
-		m.close();
-		if (tab) { tab.disable(); }
-	}, (s) => {
-		if (tab) { tab.enable(); }
-		matches = winCache.filter((w) => appName(w) || title(w));
-		m.text = msg + s + (s ? results(matches.length) : '');
+	scanner.scanln(
+		s => {
+			m.close();
+			if (tab) {
+				tab.disable();
+			}
+		},
+		s => {
+			if (tab) {
+				tab.enable();
+			}
+			matches = winCache.filter(w => appName(w) || title(w));
+			m.text = msg + s + (s ? results(matches.length) : '');
 
-		if (s && matches.length) {
-			matches[0].focus();
-			m.icon = matches[0].app().icon();
-		} else {
-			if (originalWindow) { originalWindow.focus(); }
-			m.icon = undefined;
-		}
+			if (s && matches.length) {
+				matches[0].focus();
+				m.icon = matches[0].app().icon();
+			} else {
+				if (originalWindow) {
+					originalWindow.focus();
+				}
+				m.icon = undefined;
+			}
 
-		m.showCenterOn(Screen.main());
+			m.showCenterOn(Screen.main());
 
-		function appName(w: Window) {
-			return w.app().name().toLowerCase().match(s.toLowerCase());
-		}
+			function appName(w: Window) {
+				return w.app().name().toLowerCase().match(s.toLowerCase());
+			}
 
-		function title(w: Window) {
-			return w.title().toLowerCase().match(s.toLowerCase());
-		}
-	});
+			function title(w: Window) {
+				return w.title().toLowerCase().match(s.toLowerCase());
+			}
+		},
+	);
 
 	function results(n: number) {
 		return `\n${n} results`;

@@ -1,7 +1,7 @@
 /**
  * This module starts a timer to notify you when your coffee is done.
  */
-import { applyMargin, Orientation, originOnScreen } from '../modal';
+import {applyMargin, Orientation, originOnScreen} from '../modal';
 
 export default start;
 
@@ -24,7 +24,7 @@ export interface TimerStopper {
 	stop(): void;
 }
 
-function start({ screen, timeout }: Config): TimerStopper {
+function start({screen, timeout}: Config): TimerStopper {
 	const timer: CoffeTimer = {
 		modal: new Modal(),
 		screen,
@@ -33,14 +33,19 @@ function start({ screen, timeout }: Config): TimerStopper {
 	const update = updater(timer);
 
 	const updateInterval = setInterval(update, 1000 * 60);
-	const alertTimeout = setTimeout(alerter(timer, updateInterval), 1000 * 60 * timer.timeout);
+	const alertTimeout = setTimeout(
+		alerter(timer, updateInterval),
+		1000 * 60 * timer.timeout,
+	);
 	update();
 
 	return {
 		stop() {
 			clearTimeout(updateInterval);
 			clearTimeout(alertTimeout);
-			if (timer.modal) { timer.modal.close(); }
+			if (timer.modal) {
+				timer.modal.close();
+			}
 			timer.modal = undefined;
 		},
 	};
@@ -55,7 +60,11 @@ function updater(timer: CoffeTimer) {
 		const min = timer.timeout ? '~' + String(timer.timeout) : '<1';
 		timer.modal.text = `Coffee in ${min} min`;
 
-		const screenOrigin = originOnScreen(timer.modal, timer.screen, Orientation.SouthEast);
+		const screenOrigin = originOnScreen(
+			timer.modal,
+			timer.screen,
+			Orientation.SouthEast,
+		);
 		timer.modal.origin = applyMargin(screenOrigin, MODAL_MARGIN, MODAL_MARGIN);
 		timer.modal.show();
 	};
@@ -64,7 +73,9 @@ function updater(timer: CoffeTimer) {
 function alerter(timer: CoffeTimer, updateInterval: number) {
 	return () => {
 		clearTimeout(updateInterval);
-		if (timer.modal) { timer.modal.close(); }
+		if (timer.modal) {
+			timer.modal.close();
+		}
 		timer.modal = new Modal();
 		timer.modal.text = DONE_MSG.trim();
 		timer.modal.showCenterOn(timer.screen);
