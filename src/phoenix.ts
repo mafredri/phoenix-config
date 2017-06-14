@@ -1,16 +1,17 @@
 import './screen';
 import './window';
 
-import { frameRatio } from './calc';
-import { hyper, hyperShift } from './config';
-import { onKey } from './key';
+import {frameRatio} from './calc';
+import {hyper, hyperShift} from './config';
+import {onKey} from './key';
 import log from './logger';
 import brightness from './misc/brightness';
 import coffeTimer from './misc/coffee';
-import { TimerStopper } from './misc/coffee';
+import {TimerStopper} from './misc/coffee';
+import {Profile, selectProfile} from './misc/karabiner';
 import * as terminal from './misc/terminal';
-import { titleModal } from './modal';
-import { Scanner } from './scan';
+import {titleModal} from './modal';
+import {Scanner} from './scan';
 
 const scanner = new Scanner();
 let coffee: TimerStopper | null;
@@ -20,7 +21,16 @@ Phoenix.set({
 	openAtLogin: true,
 });
 
-Event.on('screensDidChange', () => log('Screens changed'));
+Event.on('screensDidChange', () => {
+	let p = Profile.Mistel;
+	if (Screen.all().length === 1) {
+		// No external keyboard without external monitors.
+		p = Profile.Internal;
+	}
+	selectProfile(p);
+
+	log('Screens changed');
+});
 
 onKey('tab', hyper, () => {
 	const win = Window.focused();
