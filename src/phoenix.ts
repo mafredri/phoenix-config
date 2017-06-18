@@ -5,7 +5,7 @@ import {frameRatio} from './calc';
 import {hyper, hyperShift} from './config';
 import {onKey} from './key';
 import log from './logger';
-import brightness from './misc/brightness';
+import {brightness} from './misc/brightness';
 import coffeTimer from './misc/coffee';
 import {TimerStopper} from './misc/coffee';
 import {Profile, selectProfile} from './misc/karabiner';
@@ -206,8 +206,8 @@ onKey('return', hyperShift, () => {
 	} = win.screen().flippedVisibleFrame();
 
 	win.setFrame({
-		width,
 		height,
+		width,
 		x: x + sWidth / 2 - width / 2,
 		y: y + sHeight / 2 - height / 2,
 	});
