@@ -1,4 +1,5 @@
 import log from '../../logger';
+import task from '../../task';
 import debounce from '../debounce';
 
 import {Display, DisplayBrightness, DisplayIdentifier} from './display';
@@ -100,18 +101,5 @@ function displayBrightness(
  * ddcctl runs the ddcctl command with provided arguments.
  */
 function ddcctl(...args: string[]): Promise<string> {
-	return new Promise((resolve, reject) => {
-		try {
-			Task.run(ddcctlBinary, args, task => {
-				if (task.status === 0) {
-					return resolve(task.output);
-				}
-				return reject(
-					`ddcctl failed with status: ${task.status}; output: ${task.output}; error: ${task.error}`,
-				);
-			});
-		} catch (e) {
-			return reject(e);
-		}
-	});
+	return task(ddcctlBinary, ...args).then(t => t.output);
 }

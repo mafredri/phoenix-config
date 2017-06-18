@@ -20,7 +20,7 @@ function stringify(value: any) {
 			const indented = s.map(line => '\t at ' + line).join('\n');
 			stack = `\n${indented}`;
 		}
-		return `\n${value.name}: ${value.message}${stack}`;
+		return `\n${value.toString()}${stack}`;
 	}
 	switch (typeof value) {
 		case 'object':
