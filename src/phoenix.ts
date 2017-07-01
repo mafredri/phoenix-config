@@ -301,6 +301,15 @@ onKey('space', hyper, () => {
 			m.close();
 			tab.disable();
 			shiftTab.disable();
+			if (s === '' && originalWindow) {
+				// No window selected, restore original.
+				originalWindow.focus();
+
+				// Window management on macOS with multiple monitors is pretty
+				// bad, the right window might not be focused when an app is not
+				// focused and has multiple windows on multiple monitors.
+				setTimeout(() => originalWindow.focus(), 200);
+			}
 		},
 		s => {
 			tab.enable();
