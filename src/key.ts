@@ -9,10 +9,7 @@ function onKey(
 	cb: Phoenix.KeyCallback,
 ) {
 	if (Array.isArray(keys)) {
-		const unbinds: Array<() => void> = [];
-		for (const key of keys) {
-			unbinds.push(onKeySingle(key, mod, cb));
-		}
+		const unbinds = keys.map(key => onKeySingle(key, mod, cb));
 		return () => unbinds.forEach(u => u());
 	}
 	return onKeySingle(keys, mod, cb);
@@ -26,13 +23,9 @@ function onKeySingle(
 	const handler = new Key(key, mod, cb);
 	if (!handler) {
 		const keyName = `(key=${key}, mod=[${mod.join(' ')}])`;
-		const err = new Error(`could not create handler for ${keyName}`);
-		log.notify(err);
+		log.notify(new Error(`could not create handler for ${keyName}`));
 		return () => {
-			const err2 = new Error(
-				`calling unbind on handler that does not exist ${keyName}`,
-			);
-			log.notify(err2);
+			log.notify(new Error(`unbind on non-existent handler ${keyName}`));
 		};
 	}
 
