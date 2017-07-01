@@ -253,32 +253,61 @@ onKey('space', hyper, () => {
 	const winCache = Window.all({visible: true});
 	let matches = [...winCache];
 
-	const tab = new Key('tab', [], () => {
+	// Prevent modal from hopping from screen to screen.
+	const mainScreen = Screen.main();
+
+	// Since we focus the first window, start in reverse mode.
+	let prevReverse = true;
+
+	function nextWindow(reverse: boolean): Window | undefined {
+		if (prevReverse !== reverse) {
+			prevReverse = reverse;
+			nextWindow(reverse); // Rotate.
+		}
+
+		const w = reverse ? matches.pop() : matches.shift();
+		if (!w) {
+			return;
+		}
+		reverse ? matches.unshift(w) : matches.push(w);
+		return w;
+	}
+
+	const tabFn = (reverse: boolean) => () => {
 		if (!matches.length) {
 			return;
 		}
 
-		const w = matches.shift();
+		const w = nextWindow(reverse);
 		if (!w) {
 			return;
 		}
-		matches.push(w);
+
 		w.focus();
 		m.icon = w.app().icon();
-		m.showCenterOn(Screen.main());
-	});
+		m.showCenterOn(mainScreen);
+	};
+
+	const tab = new Key('tab', [], tabFn(false));
+	const shiftTab = new Key('tab', ['shift'], tabFn(true));
+
+	if (!tab || !shiftTab) {
+		log.notify(new Error('search: could not enable tab'));
+		return;
+	}
 
 	scanner.scanln(
 		s => {
 			m.close();
-			if (tab) {
-				tab.disable();
-			}
+			tab.disable();
+			shiftTab.disable();
 		},
 		s => {
-			if (tab) {
-				tab.enable();
-			}
+			tab.enable();
+			shiftTab.enable();
+
+			prevReverse = true; // Reset.
+
 			matches = winCache.filter(w => appName(w) || title(w));
 			m.text = msg + s + (s ? results(matches.length) : '');
 
@@ -292,7 +321,7 @@ onKey('space', hyper, () => {
 				m.icon = undefined;
 			}
 
-			m.showCenterOn(Screen.main());
+			m.showCenterOn(mainScreen);
 
 			function appName(w: Window) {
 				return w.app().name().toLowerCase().match(s.toLowerCase());
