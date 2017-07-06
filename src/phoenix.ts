@@ -216,6 +216,36 @@ onKey('return', hyperShift, () => {
 onKey('§', [], () => terminal.toggle());
 onKey('§', ['cmd'], () => terminal.cycleWindows());
 
+onKey('p', hyper, () => {
+	const win = Window.focused();
+	if (!win) {
+		return;
+	}
+	const app = win.app().name();
+	const bundleId = win.app().bundleIdentifier();
+	const pid = win.app().processIdentifier();
+	const title = win.title();
+	const frame = win.frame();
+	const msg = [
+		`Application: ${app}`,
+		`Title: ${title}`,
+		`Frame: X=${frame.x}, Y=${frame.y}`,
+		`Size: H=${frame.height}, W=${frame.width}`,
+		`Bundle ID: ${bundleId}`,
+		`PID: ${pid}`,
+	].join('\n');
+
+	log('Window information:\n' + msg);
+
+	const modal = Modal.build({
+		duration: 10,
+		icon: win.app().icon(),
+		text: msg,
+		weight: 16,
+	});
+	modal.showCenterOn(Screen.main());
+});
+
 onKey('delete', hyper, () => {
 	const win = Window.focused();
 	if (win) {
