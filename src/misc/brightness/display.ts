@@ -38,7 +38,7 @@ function updateBrightnessValue(): void {
 updateBrightnessValue();
 Event.on('screensDidChange', () => {
 	// Give the displays time to settle before querying state.
-	setTimeout(updateBrightnessValue, 5000);
+	setTimeout(updateBrightnessValue, 1000 * 10);
 });
 
 const debouncedApplyBrightness = debounce(applyBrightness, 500);
