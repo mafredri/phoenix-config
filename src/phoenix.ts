@@ -3,6 +3,7 @@ import './window';
 
 import {frameRatio} from './calc';
 import {hyper, hyperShift} from './config';
+import {cycleBackward, cycleForward} from './cycle';
 import {onKey} from './key';
 import log from './logger';
 import {brightness} from './misc/brightness';
@@ -275,70 +276,8 @@ onKey('c', hyper, () => {
 	coffee = coffeTimer({screen: Screen.main(), timeout: 8});
 });
 
-onKey(
-	'escape',
-	['cmd'],
-	(() => {
-		const focused: Map<number, number> = new Map();
-		let modal = new Modal();
-
-		const close = debounce(() => {
-			modal.close();
-			modal = new Modal();
-		}, 2000);
-
-		return () => {
-			const win = Window.focused();
-			if (!win) {
-				return;
-			}
-
-			const app = win.app();
-			const others = app
-				.windows()
-				// A window without a title is usually unfocusable,
-				// true for e.g. Finder, Chrome, etc.
-				.filter(w => w.title() !== '');
-
-			// Do nothing when there is only one window.
-			if (others.length < 2) {
-				return;
-			}
-
-			updateTimestamp(win);
-			others.sort(leastRecentlyFocused);
-
-			log(others.map(w => w.hash() + ' - ' + w.title()));
-
-			const next = others[0];
-			modal.weight = 18;
-			modal.text = `${next.title()} - ${app.name()}`;
-			modal.icon = app.icon();
-			modal.showCenterOn(next.screen());
-			next.focus();
-			close();
-		};
-
-		function updateTimestamp(w: Window) {
-			focused.set(w.hash(), +new Date());
-		}
-
-		function getTimestamp(w: Window) {
-			return focused.get(w.hash()) || 0;
-		}
-
-		function leastRecentlyFocused(a, b) {
-			const [at, bt] = [getTimestamp(a), getTimestamp(b)];
-			if (at === bt) {
-				return 0;
-			}
-			if (at < bt) {
-				return -1;
-			}
-			return 1;
-		}
-	})(),
-);
+onKey('escape', ['cmd'], () => cycleForward(Window.focused()));
+onKey('escape', ['cmd', 'shift'], () => cycleBackward(Window.focused()));
 
 onKey('space', hyper, () => {
 	const m = new Modal();
