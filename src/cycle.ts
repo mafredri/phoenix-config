@@ -53,10 +53,7 @@ function cycle(dir: Direction, win?: Window) {
 
 	const next = order[0];
 	modal.weight = 18;
-	modal.text = `${next.title()} - ${app.name()}`;
-	modal.text = order
-		.map(w => (w.isEqual(next) ? '=> ' : '') + w.title())
-		.join('\n');
+	modal.text = next.title();
 	modal.icon = app.icon();
 	modal.showCenterOn(next.screen());
 	next.focus();
