@@ -4,6 +4,8 @@ This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, 
 
 ## Basic key bindings
 
+The definition of `hyper` and `hyperShift` can be found in [src/config.ts](src/config.ts).
+
 * `hyper + Left` (Left half of screen)
 * `hyper + Right` (Right half of screen)
 * `hyper + Up` (Top half of screen height, keeps current width)
@@ -11,7 +13,6 @@ This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, 
 * `hyper + Return` (Toggle maximize, remembers unmaximized position)
 * `hyper + Tab` (Jump to next screen whilst keeping relative size and placement)
 * `hyper + Delete` (Minimize focused window)
-
 
 * `hyperShift + Left` (Move window to left edge of screen)
 * `hyperShift + Right` (Move window to right edge of screen)
@@ -31,9 +32,11 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 * `hyper + c` (Start coffee timer, defaults to 8 minutes)
 * `hyper + +` (Increase monitor brightness using external script)
 * `hyper + -` (Decrease monitor brightness using external script)
-* `hyper + Space` (Experimental: search for windows, tab to cycle, enter or esc to exit)
+* `hyper + Space` (Experimental: search for windows, tab to cycle, enter to switch, esc to cancel)
 * `§` (Show or hide the last used Terminal window)
-* `cmd + §` (Cycle between Terminal windows)
+* `Cmd + §` (Cycle between Terminal windows)
+* `Cmd + Escape` (Cycle between windows of current application, including minimized and windows on a different screen)
+* `Cmd + Shift + Escape` (Same as `Cmd + Escape` except in reverse order)
 
 ## Building
 
