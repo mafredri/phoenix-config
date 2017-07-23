@@ -15,7 +15,6 @@ The definition of `hyper` and `hyperShift` can be found in [src/config.ts](src/c
 * `hyper + Return` (Toggle maximize, remembers unmaximized position)
 * `hyper + Tab` (Jump to next screen whilst keeping relative size and placement)
 * `hyper + Delete` (Minimize focused window)
-
 * `hyperShift + Left` (Move window to left edge of screen)
 * `hyperShift + Right` (Move window to right edge of screen)
 * `hyperShift + Up` (Move window to top edge of screen)
