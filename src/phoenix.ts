@@ -279,6 +279,7 @@ onKey('c', hyper, () => {
 onKey('escape', ['cmd'], () => cycleForward(Window.focused()));
 onKey('escape', ['cmd', 'shift'], () => cycleBackward(Window.focused()));
 
+// Experimental: Search for windows and cycle between results.
 onKey('space', hyper, () => {
 	const m = new Modal();
 	const msg = 'Search: ';
