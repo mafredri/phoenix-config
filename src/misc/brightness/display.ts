@@ -36,9 +36,13 @@ function updateBrightnessValue(): void {
 
 // TODO: Handle in main script (phoenix.ts).
 updateBrightnessValue();
+const debouncedUpdateBrightnessValue = debounce(
+	updateBrightnessValue,
+	1000 * 7,
+);
 Event.on('screensDidChange', () => {
 	// Give the displays time to settle before querying state.
-	setTimeout(updateBrightnessValue, 1000 * 10);
+	debouncedUpdateBrightnessValue();
 });
 
 const debouncedApplyBrightness = debounce(applyBrightness, 500);

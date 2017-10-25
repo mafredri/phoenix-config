@@ -6,7 +6,7 @@ import {Display, DisplayBrightness, DisplayIdentifier} from './display';
 
 export {getBrightness, setBrightness, getDisplays, Display};
 
-const ddcctlBinary = '/Users/mafredri/.bin/ddcctl';
+const ddcctlBinary = '/Users/maf/.bin/ddcctl';
 
 /**
  * getDisplays updates the current (external) display information.
@@ -22,7 +22,7 @@ async function getDisplays(): Promise<Display[]> {
  * parseDisplays returns all external displays discovered by ddcctl.
  */
 function parseDisplays(output: string): DisplayIdentifier[] {
-	const numMatch = /I: found ([0-9]+) external displays/.exec(output);
+	const numMatch = /I: found ([0-9]+) external displays?/.exec(output);
 	if (numMatch === null) {
 		return [];
 	}
