@@ -24,13 +24,6 @@ Phoenix.set({
 });
 
 Event.on('screensDidChange', () => {
-	let p = Profile.Mistel;
-	if (Screen.all().length === 1) {
-		// No external keyboard without external monitors.
-		p = Profile.Internal;
-	}
-	selectProfile(p);
-
 	log('Screens changed');
 });
 
