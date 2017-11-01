@@ -45,7 +45,7 @@ Event.on('screensDidChange', () => {
 	debouncedUpdateBrightnessValue();
 });
 
-const debouncedApplyBrightness = debounce(applyBrightness, 500);
+const debouncedApplyBrightness = debounce(applyBrightness, 510);
 function applyBrightness() {
 	setBrightness(1, brightnessValue);
 	setBrightness(2, brightnessValue);
