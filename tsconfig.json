@@ -4,7 +4,7 @@
     "moduleResolution": "node",
     "baseUrl": "src",
     "outDir": "out/src",
-    "target": "es2015",
+    "target": "es2017",
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "pretty": true,
@@ -14,7 +14,8 @@
       "typings/globals"
     ],
     "lib": [
-      "es2017"
+      "es2017",
+      "esnext"
     ]
   },
   "exclude": [
