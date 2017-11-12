@@ -1,40 +1,44 @@
 {
-  "name": "phoenix-config",
-  "version": "1.0.0",
-  "description": "Configuration for kasper/phoenix written in TypeScript",
-  "main": "src/phoenix.ts",
-  "dependencies": {
-    "@types/lodash": "^4.14.64",
-    "typescript": "^2.4.1",
-    "typings": "^2.1.1"
-  },
-  "devDependencies": {
-    "prettier": "^1.5.2",
-    "ts-loader": "^2.2.1",
-    "tslint": "^5.4.3",
-    "webpack": "^3.0.0"
-  },
-  "scripts": {
-    "start": "npm run watch",
-    "watch": "webpack --watch",
-    "build": "webpack",
-    "typings": "typings install",
-    "lint": "tslint src/**/*.ts",
-    "format": "prettier --write --tab-width 4 --use-tabs --single-quote --no-bracket-spacing --trailing-comma all src/**/*.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mafredri/phoenix-config.git"
-  },
-  "keywords": [
-    "phoenix",
-    "typescript"
-  ],
-  "author": "Mathias Fredriksson",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mafredri/phoenix-config/issues"
-  },
-  "homepage": "https://github.com/mafredri/phoenix-config#readme"
+	"name": "phoenix-config",
+	"version": "1.0.0",
+	"description": "Configuration for kasper/phoenix written in TypeScript",
+	"main": "src/phoenix.ts",
+	"dependencies": {
+		"@types/lodash": "^4.14.64",
+		"typescript": "^2.4.1",
+		"typings": "^2.1.1"
+	},
+	"devDependencies": {
+		"prettier": "^1.5.2",
+		"ts-loader": "^2.2.1",
+		"tslint": "^5.4.3",
+		"webpack": "^3.0.0"
+	},
+	"scripts": {
+		"start": "npm run watch",
+		"watch": "webpack --watch",
+		"build": "webpack",
+		"typings": "typings install",
+		"lint": "tslint src/**/*.ts",
+		"format": "prettier --write src/**/*.ts",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mafredri/phoenix-config.git"
+	},
+	"keywords": ["phoenix", "typescript"],
+	"author": "Mathias Fredriksson",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/mafredri/phoenix-config/issues"
+	},
+	"homepage": "https://github.com/mafredri/phoenix-config#readme",
+	"prettier": {
+		"tabWidth": 4,
+		"useTabs": true,
+		"singleQuote": true,
+		"bracketSpacing": false,
+		"trailingComma": "all"
+	}
 }
