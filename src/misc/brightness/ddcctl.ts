@@ -2,6 +2,7 @@ import log from '../../logger';
 import task from '../../task';
 import debounce from '../debounce';
 
+import {syncInternalBrightness} from './brightness';
 import {Display, DisplayBrightness, DisplayIdentifier} from './display';
 
 export {getBrightness, setBrightness, getDisplays, Display};
@@ -79,6 +80,7 @@ function parseBrightness(output: string): DisplayBrightness {
 }
 
 function setBrightness(displayId: number, value: number) {
+	syncInternalBrightness(value);
 	return displayBrightness(displayId, value);
 }
 
