@@ -1,6 +1,6 @@
-export {FrameRatio, frameRatio, pointInsideFrame, sizeMatches};
-
 type FrameRatio = (frame: Rectangle) => Rectangle;
+
+export {FrameRatio, frameRatio, pointInsideFrame, sizeMatches};
 
 function frameRatio(a: Rectangle, b: Rectangle): FrameRatio {
 	const widthRatio = b.width / a.width;

@@ -3,6 +3,7 @@ function log(...args: any[]): void {
 	Phoenix.log(...args);
 }
 
+// tslint:disable-next-line:prefer-object-spread
 export default Object.assign(log, {
 	notify: (...args: any[]): void => {
 		log(...args);

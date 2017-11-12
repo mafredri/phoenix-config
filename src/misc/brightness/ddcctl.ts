@@ -61,7 +61,7 @@ function merge(
 				`could not find screen for display id: ${d.id}; hash: ${d.hash}`,
 			);
 		}
-		return Object.assign({identifier: screen.identifier()}, d, values[i]);
+		return {identifier: screen.identifier(), ...d, ...values[i]};
 	};
 }
 
