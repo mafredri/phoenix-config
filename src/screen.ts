@@ -8,7 +8,9 @@ function screenAt(point: Point) {
 			return s;
 		}
 	}
+
+	throw new Error('point out of range');
 }
 
-// Extend ScreenObject
+// Extend ScreenObject.
 Screen.at = screenAt;

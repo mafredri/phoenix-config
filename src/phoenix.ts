@@ -241,19 +241,48 @@ onKey('p', hyper, () => {
 	modal.showCenterOn(Screen.main());
 });
 
+onKey('.', hyper, () => {
+	const win = Window.focused();
+	if (win) {
+		log(
+			win
+				.screen()
+				.windows({visible: true})
+				.map(w => w.title()),
+		);
+		log(
+			win
+				.screen()
+				.windows()
+				.map(w => w.title()),
+		);
+	}
+});
+
 onKey('delete', hyper, () => {
 	const win = Window.focused();
 	if (win) {
+		const visible = win.screen().windows({visible: true});
+		log(visible.map(w => w.title()));
+		// log(win.screen().windows({visible: true}).map(w => w.title()));
+		// log(win.others({visible: true}).map(w => w.title()));
 		win.minimize();
+		if (visible.length) {
+			const next = visible[visible.length > 1 ? 1 : 0];
+			log('focusing: ' + next.title());
+			next.focus();
+		}
+		// win.focusClosestNeighbor('east');
+		// const others = win.others({visible: true});
+		// if (others.length) {
+		// 	log(others.map(w => w.title()));
+		// 	others[0].focus();
+		// }
 	}
 });
 
 onKey('m', hyper, () => {
 	const s = Screen.at(Mouse.location());
-	if (!s) {
-		return;
-	}
-
 	log(s.identifier(), Mouse.location());
 });
 

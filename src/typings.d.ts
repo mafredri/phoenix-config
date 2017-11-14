@@ -10,7 +10,7 @@ interface ScreenObject {
 	/**
 	 * Returns the screen at the provided point.
 	 */
-	at(point: Point): Screen | undefined;
+	at(point: Point): Screen;
 }
 
 interface Modal {
