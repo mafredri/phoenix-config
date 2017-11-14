@@ -21,14 +21,6 @@ function onKeySingle(
 	cb: Phoenix.KeyCallback,
 ) {
 	const handler = new Key(key, mod, cb);
-	if (!handler) {
-		const keyName = `(key=${key}, mod=[${mod.join(' ')}])`;
-		log.notify(new Error(`could not create handler for ${keyName}`));
-		return () => {
-			log.notify(new Error(`unbind on non-existent handler ${keyName}`));
-		};
-	}
-
 	const id = createID(key, mod);
 	handlers.set(id, handler);
 

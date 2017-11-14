@@ -45,12 +45,6 @@ export class Scanner {
 		this.updateCallback = update;
 	}
 
-	private addKeyHandler(h: Key | undefined) {
-		if (h) {
-			this.keyHandlers.push(h);
-		}
-	}
-
 	private enable() {
 		this.scanned = ''; // reset input
 		this.keyHandlers.length = 0; // remove stale keyhandlers
@@ -58,22 +52,30 @@ export class Scanner {
 		if (!this.keyHandlers.length) {
 			for (let i = 0; i < normalKeys.length; i++) {
 				const k = normalKeys[i];
-				this.addKeyHandler(new Key(k, [], () => this.handleKeyPress(k)));
-				this.addKeyHandler(
-					new Key(k, ['shift'], () => this.handleKeyPress(shiftKeys[i])),
+				this.keyHandlers.push(
+					new Key(k, [], () => this.handleKeyPress(k)),
 				);
-				this.addKeyHandler(
+				this.keyHandlers.push(
+					new Key(k, ['shift'], () =>
+						this.handleKeyPress(shiftKeys[i]),
+					),
+				);
+				this.keyHandlers.push(
 					new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])),
 				);
 
 				const ask = altShiftKeys[i] || ' ';
-				this.addKeyHandler(
-					new Key(k, ['alt', 'shift'], () => this.handleKeyPress(ask)),
+				this.keyHandlers.push(
+					new Key(k, ['alt', 'shift'], () =>
+						this.handleKeyPress(ask),
+					),
 				);
 			}
 			for (const sk of specialKeys) {
-				this.addKeyHandler(new Key(sk, [], () => this.handleKeyPress(sk)));
-				this.addKeyHandler(
+				this.keyHandlers.push(
+					new Key(sk, [], () => this.handleKeyPress(sk)),
+				);
+				this.keyHandlers.push(
 					new Key(sk, ['shift'], h => this.handleKeyPress(sk, h)),
 				);
 			}

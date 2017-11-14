@@ -320,11 +320,6 @@ onKey('space', hyper, () => {
 	const tab = new Key('tab', [], tabFn(false));
 	const shiftTab = new Key('tab', ['shift'], tabFn(true));
 
-	if (!tab || !shiftTab) {
-		log.notify(new Error('search: could not enable tab'));
-		return;
-	}
-
 	scanner.scanln(
 		s => {
 			m.close();
