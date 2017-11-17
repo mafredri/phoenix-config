@@ -2,6 +2,7 @@ import {debounce, once} from 'lodash';
 
 import log from '../../logger';
 
+import {activateDisplayPreferences, syncInternalBrightness} from './brightness';
 import {getDisplays, setBrightness} from './ddcctl';
 import {showBrightness} from './modal';
 
@@ -47,9 +48,24 @@ Event.on('screensDidChange', () => {
 });
 
 const debouncedApplyBrightness = debounce(applyBrightness, 510);
+const prepareSync = () => activateDisplayPreferences();
+let oncePrepareSync = once(prepareSync);
+
 function applyBrightness() {
 	setBrightness(1, brightnessValue);
 	setBrightness(2, brightnessValue);
+	syncInternalBrightness(brightnessValue)
+		.then(() => oncePrepareSync())
+		.then(launched => {
+			if (launched) {
+				const sp = App.get('System Preferences');
+				if (sp) {
+					sp.terminate();
+				}
+			}
+			oncePrepareSync = once(prepareSync);
+		})
+		.catch(log);
 }
 
 function brightness(value: number): void {
@@ -57,4 +73,5 @@ function brightness(value: number): void {
 
 	showBrightness(brightnessValue);
 	debouncedApplyBrightness();
+	oncePrepareSync();
 }

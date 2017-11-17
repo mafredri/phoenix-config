@@ -57,7 +57,9 @@ function merge(
 		const screen = screens.find(s => s.hash() === d.hash);
 		if (!screen) {
 			throw new Error(
-				`could not find screen for display id: ${d.id}; hash: ${d.hash}`,
+				`could not find screen for display id: ${d.id}; hash: ${
+					d.hash
+				}`,
 			);
 		}
 		return {identifier: screen.identifier(), ...d, ...values[i]};
@@ -79,7 +81,6 @@ function parseBrightness(output: string): DisplayBrightness {
 }
 
 function setBrightness(displayId: number, value: number) {
-	syncInternalBrightness(value);
 	return displayBrightness(displayId, value);
 }
 

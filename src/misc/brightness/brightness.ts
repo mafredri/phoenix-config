@@ -1,3 +1,4 @@
+import osascript from '../../misc/osascript';
 import task from '../../task';
 
 const brightnessBinary = '/usr/local/bin/brightness';
@@ -9,8 +10,23 @@ export function brightness(...args: string[]): Promise<string> {
 	return task(brightnessBinary, ...args).then(t => t.output);
 }
 
+export function activateDisplayPreferences() {
+	const launched = !App.get('System Preferences');
+	return osascript(`
+		tell application "System Preferences"
+			reveal anchor "displaysDisplayTab" of pane "com.apple.preference.displays"
+		end tell
+	`).then(() => launched);
+}
+
 function setBrightness(value: number) {
-	return brightness((value * 0.01).toString());
+	value *= 0.01;
+
+	return osascript(`
+		tell application "System Events" to tell process "System Preferences" to tell window "Built-in Retina Display"
+			set value of value indicator 1 of slider 1 of group 1 of tab group 1 to ${value}
+		end tell
+	`);
 }
 
 /**
