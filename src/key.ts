@@ -6,7 +6,7 @@ const handlers: Map<string, Key> = new Map();
 function onKey(
 	keys: Phoenix.KeyIdentifier | Phoenix.KeyIdentifier[],
 	mod: Phoenix.ModifierKey[],
-	cb: Phoenix.KeyCallback,
+	cb: (handler: Key, repeated: boolean) => any,
 ) {
 	if (Array.isArray(keys)) {
 		const unbinds = keys.map(key => onKeySingle(key, mod, cb));
@@ -18,7 +18,7 @@ function onKey(
 function onKeySingle(
 	key: Phoenix.KeyIdentifier,
 	mod: Phoenix.ModifierKey[],
-	cb: Phoenix.KeyCallback,
+	cb: (handler: Key, repeated: boolean) => any,
 ) {
 	const handler = new Key(key, mod, cb);
 	const id = createID(key, mod);
