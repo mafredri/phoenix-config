@@ -385,11 +385,18 @@ onKey('space', hyper, () => {
 			m.showCenterOn(mainScreen);
 
 			function appName(w: Window) {
-				return w.app().name().toLowerCase().match(s.toLowerCase());
+				return w
+					.app()
+					.name()
+					.toLowerCase()
+					.match(s.toLowerCase());
 			}
 
 			function title(w: Window) {
-				return w.title().toLowerCase().match(s.toLowerCase());
+				return w
+					.title()
+					.toLowerCase()
+					.match(s.toLowerCase());
 			}
 		},
 	);
