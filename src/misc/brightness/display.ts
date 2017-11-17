@@ -1,5 +1,6 @@
+import {debounce, once} from 'lodash';
+
 import log from '../../logger';
-import debounce from '../debounce';
 
 import {getDisplays, setBrightness} from './ddcctl';
 import {showBrightness} from './modal';

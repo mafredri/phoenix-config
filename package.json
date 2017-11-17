@@ -5,6 +5,7 @@
 	"main": "src/phoenix.ts",
 	"dependencies": {
 		"@types/lodash": "^4.14.64",
+		"lodash": "^4.17.4",
 		"typescript": "^2.4.1",
 		"typings": "^2.1.1"
 	},
@@ -27,7 +28,10 @@
 		"type": "git",
 		"url": "git+https://github.com/mafredri/phoenix-config.git"
 	},
-	"keywords": ["phoenix", "typescript"],
+	"keywords": [
+		"phoenix",
+		"typescript"
+	],
 	"author": "Mathias Fredriksson",
 	"license": "MIT",
 	"bugs": {

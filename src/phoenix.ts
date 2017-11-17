@@ -9,7 +9,6 @@ import log from './logger';
 import {brightness} from './misc/brightness';
 import coffeTimer from './misc/coffee';
 import {TimerStopper} from './misc/coffee';
-import debounce from './misc/debounce';
 import {Profile, selectProfile} from './misc/karabiner';
 import * as terminal from './misc/terminal';
 import {titleModal} from './modal';

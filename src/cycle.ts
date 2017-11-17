@@ -1,5 +1,6 @@
+import {debounce} from 'lodash';
+
 import log from './logger';
-import debounce from './misc/debounce';
 
 enum Direction {
 	Forward,

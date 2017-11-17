@@ -1,6 +1,5 @@
 import log from '../../logger';
 import task from '../../task';
-import debounce from '../debounce';
 
 import {syncInternalBrightness} from './brightness';
 import {Display, DisplayBrightness, DisplayIdentifier} from './display';
