@@ -95,13 +95,26 @@ function displayBrightness(
 	displayId: number,
 	value?: number,
 ): Promise<DisplayBrightness> {
-	const bval = typeof value === 'number' ? String(value) : '?';
-	return ddcctl('-d', String(displayId), '-b', bval).then(parseBrightness);
+	const bval = typeof value === 'number' ? value.toString() : '?';
+	return ddcctl('-w', '0', '-d', displayId.toString(), '-b', bval)
+		.then(out => {
+			if (typeof value === 'number') {
+				// ddcctl currently only returns current/max output on query ?.
+				return ddcctl('-w', '0', '-d', displayId.toString(), '-b', '?');
+			}
+			return out;
+		})
+		.then(parseBrightness);
 }
 
 /**
  * ddcctl runs the ddcctl command with provided arguments.
  */
 function ddcctl(...args: string[]): Promise<string> {
-	return task(ddcctlBinary, ...args).then(t => t.output);
+	return task(ddcctlBinary, ...args)
+		.then(t => t.output)
+		.catch(err => {
+			log.notify(err);
+			throw err;
+		});
 }
