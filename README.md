@@ -50,10 +50,10 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ```
 git clone https://github.com/mafredri/phoenix-config.git
 cd phoenix-config
-yarn && npm run typings
-npm run build
+yarn && yarn run typings
+yarn run build
 ```
 
 The TypeScript compiler and Webpack will produce `out/phoenix.js` that can be used as Phoenix configuration. 
 
-For development, `npm start` will run Webpack in watch-mode.
+For development, `yarn start` will run Webpack in watch-mode.
