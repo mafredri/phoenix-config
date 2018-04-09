@@ -47,13 +47,15 @@ export function syncInternalBrightness(value: number) {
 	switch (true) {
 		case value < 10:
 			// Set brightness in range of [50, 62].
-			return setBrightness(50 + (1 + 1 / 3) * value);
-		case value <= 50:
+			return setBrightness(35 + (1 + 1 / 3) * value);
+		case value < 20:
+			return setBrightness(60 + 1 * (value - 10));
+		case value < 50:
 			// Set brightness in range of [62, 86].
-			return setBrightness(62 + 0.6 * (value - 10));
-		case value > 50:
-			// Set brightness in range of [86, 95].
-			return setBrightness(86 + 0.18 * (value - 50));
+			return setBrightness(69 + 2 / 3 * (value - 20));
+		case value >= 50:
+			// Set brightness in range of [85, 98.75].
+			return setBrightness(85 + 0.275 * (value - 50));
 		default:
 			throw new Error('unhandled brightness value');
 	}
