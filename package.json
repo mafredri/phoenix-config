@@ -11,9 +11,10 @@
 	},
 	"devDependencies": {
 		"prettier": "^1.5.2",
-		"ts-loader": "^2.2.1",
+		"ts-loader": "^4.2.0",
 		"tslint": "^5.4.3",
-		"webpack": "^3.0.0"
+		"webpack": "^4.5.0",
+		"webpack-cli": "^2.0.14"
 	},
 	"scripts": {
 		"start": "npm run watch",
