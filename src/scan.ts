@@ -1,9 +1,21 @@
 import {getHandler} from './key';
 
-const normalKeys = `§1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`;
-const shiftKeys = `°!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`;
-const altKeys = ` ©@£$∞§|[]≈±•Ωé®†µüıœπ˙ß∂ƒ¸˛√ªﬁøæ™  ≈ç‹›‘’‚ –`;
-const altShiftKeys = `•      \\{}`;
+const layout = {
+	fi: {
+		normal: `§1234567890+qwertyuiopåasdfghjklöä'<zxcvbnm,.-`,
+		shift: `°!"#€%&/()=?QWERTYUIOPÅASDFGHJKLÖÄ*>ZXCVBNM;:_`,
+		alt: ` ©@£$∞§|[]≈±•Ωé®†µüıœπ˙ß∂ƒ¸˛√ªﬁøæ™  ≈ç‹›‘’‚ –`,
+		altShift: `•      \\{}`,
+	},
+	us: {
+		normal: `§1234567890-=qwertyuiop[]asdfghjkl;'\\\`zxcvbnm,./`,
+		shift: `±!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:"|~ZXCVBNM<>?`,
+		alt: ` ¡™£¢∞§¶•ªº–≠œ∑´®†¥¨ˆøπ“‘åß∂ƒ©˙∆˚¬…æ«  ≈ç√∫˜µ≤≥÷`,
+		altShift: `±⁄€‹›ﬁﬂ‡°·‚—±Œ„´‰ˇÁ¨ Ø∏”’  Î ˝ÓÔÒÚÆ» ¸˛Ç◊ı˜Â¯˘¿`,
+	},
+};
+
+const keys = layout.us;
 const specialKeys = ['delete', 'escape', 'return', 'space'];
 
 type ScanCallback = (s: string) => void;
@@ -12,10 +24,10 @@ type ScanCallback = (s: string) => void;
  * Scanner scans input from the user.
  */
 export class Scanner {
-	private scanned: string;
+	private scanned = '';
 	private keyHandlers: Key[];
-	private doneCallback: ScanCallback;
-	private updateCallback: ScanCallback;
+	private doneCallback: ScanCallback | undefined;
+	private updateCallback: ScanCallback | undefined;
 
 	constructor() {
 		this.keyHandlers = [];
@@ -25,7 +37,6 @@ export class Scanner {
 	 * scan scans a single character.
 	 */
 	public scan(done: ScanCallback) {
-		this.enable();
 		this.doneCallback = done;
 		this.updateCallback = s => {
 			if (!s) {
@@ -34,6 +45,7 @@ export class Scanner {
 			this.disable();
 			done(s);
 		};
+		this.enable();
 	}
 
 	/**
@@ -50,15 +62,15 @@ export class Scanner {
 		this.keyHandlers.length = 0; // remove stale keyhandlers
 
 		if (!this.keyHandlers.length) {
-			for (let i = 0; i < normalKeys.length; i++) {
-				const k = normalKeys[i];
-				const ask = altShiftKeys[i] || ' ';
+			for (let i = 0; i < keys.normal.length; i++) {
+				const k = keys.normal[i];
+				const ask = keys.altShift[i] || ' ';
 				this.keyHandlers.push(
 					new Key(k, [], () => this.handleKeyPress(k)),
 					new Key(k, ['shift'], () =>
-						this.handleKeyPress(shiftKeys[i]),
+						this.handleKeyPress(keys.shift[i]),
 					),
-					new Key(k, ['alt'], () => this.handleKeyPress(altKeys[i])),
+					new Key(k, ['alt'], () => this.handleKeyPress(keys.alt[i])),
 					new Key(k, ['alt', 'shift'], () =>
 						this.handleKeyPress(ask),
 					),
@@ -86,6 +98,9 @@ export class Scanner {
 	}
 
 	private handleKeyPress(key: Phoenix.KeyIdentifier, handler?: Key) {
+		if (!this.doneCallback || !this.updateCallback) {
+			throw new Error('Scanner callbacks are not set up properly');
+		}
 		switch (key) {
 			case 'delete':
 				this.scanned = this.scanned.slice(0, -1);
