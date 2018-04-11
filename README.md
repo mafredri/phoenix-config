@@ -38,6 +38,7 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 * `Cmd + §` (Cycle between Terminal windows)
 * `Cmd + Escape` (Cycle between windows of current application, including minimized and windows on a different screen)
 * `Cmd + Shift + Escape` (Same as `Cmd + Escape` except in reverse order)
+* `Cmd + h` (Hides the focused app or all visible apps if held down)
 
 ## Misc features
 

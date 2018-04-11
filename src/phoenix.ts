@@ -7,8 +7,8 @@ import {cycleBackward, cycleForward} from './cycle';
 import {onKey} from './key';
 import log from './logger';
 import {brightness} from './misc/brightness';
-import coffeTimer from './misc/coffee';
 import {TimerStopper} from './misc/coffee';
+import coffeTimer from './misc/coffee';
 import {Profile, selectProfile} from './misc/karabiner';
 import * as terminal from './misc/terminal';
 import {titleModal} from './modal';
@@ -403,6 +403,21 @@ onKey('space', hyper, () => {
 
 	function results(n: number) {
 		return `\n${n} results`;
+	}
+});
+
+// Always hide apps, even if they're the last one on the desktop.
+onKey('h', ['cmd'], (_: Key, repeated: boolean) => {
+	// Hide all windows when Cmd+H is held.
+	if (repeated) {
+		const apps = Window.all({visible: true}).map(w => w.app());
+		new Set(apps).forEach(a => a.hide());
+		return;
+	}
+
+	const win = Window.focused();
+	if (win) {
+		win.app().hide();
 	}
 });
 
