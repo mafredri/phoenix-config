@@ -1,14 +1,27 @@
+declare var console: any;
+
 function log(...args: any[]): void {
 	args = args.map(arg => stringify(arg));
 	Phoenix.log(...args);
+	// tslint:disable-next-line:no-console
+	console.trace(...args);
 }
 
 // tslint:disable-next-line:prefer-object-spread
 export default Object.assign(log, {
 	notify: (...args: any[]): void => {
-		log(...args);
-		const message = args.map(arg => stringify(arg)).join(' ');
+		args = args.map(arg => stringify(arg));
+		Phoenix.log(...args);
+		const message = args.join(' ');
 		Phoenix.notify(message);
+		// tslint:disable-next-line:no-console
+		console.trace(...args);
+	},
+	noTrace: (...args: any[]): void => {
+		args = args.map(arg => stringify(arg));
+		Phoenix.log(...args);
+		// tslint:disable-next-line:no-console
+		console.log(...args);
 	},
 });
 
