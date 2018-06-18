@@ -52,9 +52,19 @@ onKey(['left', 'j'], hyper, () => {
 		return;
 	}
 
-	let {width, height, x, y} = win.screen().flippedVisibleFrame();
-	width = Math.ceil(width / 2);
-	win.setFrame({width, height, x, y});
+	const {width, height, x, y} = win.screen().flippedVisibleFrame();
+	const frame2 = {width: Math.floor(width / 2), height, x, y};
+	const frame3 = {width: Math.floor(width / 3), height, x, y};
+	const frame4 = {width: Math.floor(width / 4), height, x, y};
+	let frame = frame2;
+	if (objEq(win.frame(), frame2)) {
+		frame = frame3;
+	}
+	if (objEq(win.frame(), frame3)) {
+		frame = frame4;
+	}
+
+	win.setFrame(frame);
 	win.clearUnmaximized();
 });
 
@@ -64,12 +74,34 @@ onKey(['right', 'l'], hyper, () => {
 		return;
 	}
 
-	let {width, height, x, y} = win.screen().flippedVisibleFrame();
-	width /= 2;
-	x += Math.ceil(width);
-	width = Math.floor(width);
+	const {width, height, x, y} = win.screen().flippedVisibleFrame();
+	const frame2 = {
+		width: Math.floor(width / 2),
+		height,
+		x: x + Math.ceil(width / 2),
+		y,
+	};
+	const frame3 = {
+		width: Math.floor(width / 3),
+		height,
+		x: x + Math.ceil((width / 3) * 2),
+		y,
+	};
+	const frame4 = {
+		width: Math.floor(width / 4),
+		height,
+		x: x + Math.ceil((width / 4) * 3),
+		y,
+	};
+	let frame = frame2;
+	if (objEq(win.frame(), frame2)) {
+		frame = frame3;
+	}
+	if (objEq(win.frame(), frame3)) {
+		frame = frame4;
+	}
 
-	win.setFrame({width, height, x, y});
+	win.setFrame(frame);
 	win.clearUnmaximized();
 });
 
@@ -420,6 +452,14 @@ onKey('h', ['cmd'], (_: Key, repeated: boolean) => {
 		win.app().hide();
 	}
 });
+
+function objEq(a: {[key: string]: any}, b: {[key: string]: any}) {
+	const akeys = Object.keys(a);
+	if (akeys.length !== Object.keys(b).length) {
+		return false;
+	}
+	return akeys.every(k => a[k] === b[k]);
+}
 
 const phoenixApp = App.get('Phoenix');
 titleModal('Phoenix (re)loaded!', 2, phoenixApp && phoenixApp.icon());
