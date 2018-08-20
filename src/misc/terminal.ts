@@ -65,10 +65,5 @@ function cycleWindows() {
 }
 
 function launchOrFocus() {
-	// We don't need to care if the app is running or not,
-	// launch + focus will take care of that for us.
-	const app = App.launch(TERMINAL_APP);
-	if (app) {
-		app.focus();
-	}
+	App.launch(TERMINAL_APP, {focus: true});
 }
