@@ -3,6 +3,9 @@ import task from '../../task';
 
 const brightnessBinary = '/usr/local/bin/brightness';
 
+const delay = (duration: number) =>
+	new Promise(resolve => setTimeout(resolve, duration));
+
 /**
  * brightness runs the brightness command with provided arguments.
  */
@@ -16,7 +19,9 @@ export function activateDisplayPreferences() {
 		tell application "System Preferences"
 			reveal anchor "displaysDisplayTab" of pane "com.apple.preference.displays"
 		end tell
-	`).then(() => launched);
+	`)
+		.then(() => delay(50))
+		.then(() => launched);
 }
 
 function setBrightness(value: number) {
