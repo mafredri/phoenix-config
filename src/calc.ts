@@ -1,6 +1,6 @@
 type FrameRatio = (frame: Rectangle) => Rectangle;
 
-export {FrameRatio, frameRatio, pointInsideFrame, sizeMatches};
+export {FrameRatio, frameRatio, moveToFrame, pointInsideFrame, sizeMatches};
 
 function frameRatio(a: Rectangle, b: Rectangle): FrameRatio {
 	const widthRatio = b.width / a.width;
@@ -12,6 +12,15 @@ function frameRatio(a: Rectangle, b: Rectangle): FrameRatio {
 		x = Math.round(b.x + (x - a.x) * widthRatio);
 		y = Math.round(b.y + (y - a.y) * heightRatio);
 
+		return {width, height, x, y};
+	};
+}
+
+function moveToFrame(a: Rectangle, b: Rectangle): FrameRatio {
+	// TODO(mafredri): Try to keep window edges within b.
+	return ({width, height, x, y}) => {
+		x = b.x + x - a.x;
+		y = b.y + y - a.y;
 		return {width, height, x, y};
 	};
 }

@@ -1,7 +1,7 @@
 import './screen';
 import './window';
 
-import {frameRatio} from './calc';
+import {frameRatio, moveToFrame} from './calc';
 import {hyper, hyperShift} from './config';
 import {cycleBackward, cycleForward} from './cycle';
 import {onKey} from './key';
@@ -44,6 +44,26 @@ onKey('tab', hyper, () => {
 		newScreen.flippedVisibleFrame(),
 	);
 	win.setFrame(ratio(win.frame()));
+});
+
+onKey('tab', hyperShift, () => {
+	const win = Window.focused();
+	if (!win) {
+		return;
+	}
+
+	const oldScreen = win.screen();
+	const newScreen = oldScreen.next();
+
+	if (oldScreen.isEqual(newScreen)) {
+		return;
+	}
+
+	const move = moveToFrame(
+		oldScreen.flippedVisibleFrame(),
+		newScreen.flippedVisibleFrame(),
+	);
+	win.setFrame(move(win.frame()));
 });
 
 onKey(['left', 'j'], hyper, () => {
