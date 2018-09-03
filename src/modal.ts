@@ -31,11 +31,11 @@ function showAt(
 	widthDiv: number,
 	heightDiv: number,
 ) {
-	const {height, width} = modal.frame();
-	const sf = screen.flippedVisibleFrame();
+	const {height, width, x, y} = modal.frame();
+	const sf = screen.visibleFrame();
 	modal.origin = {
-		x: sf.x + (sf.width - width) / widthDiv,
-		y: sf.y + (sf.height - height) / heightDiv,
+		x: sf.x + (sf.width / widthDiv - width / 2),
+		y: sf.y + (sf.height / heightDiv - height / 2),
 	};
 	modal.show();
 }
@@ -45,23 +45,36 @@ function originOnScreen(
 	screen: Screen,
 	orientation: Orientation,
 ): Point {
-	const {width: mWidth} = modal.frame();
-	let {width, height, x, y} = screen.flippedVisibleFrame();
-	const {height: fHeight} = screen.flippedFrame();
+	const {width: mWidth, height: mHeight} = modal.frame();
+	let {width, height, x, y} = screen.visibleFrame();
 
 	if (orientation === Orientation.SouthEast) {
 		x = x + width - mWidth;
-		y = fHeight - height - y;
+		y = y;
 	} else if (orientation === Orientation.SouthWest) {
-		x = 0;
-		y = fHeight - height - y;
+		x = x;
+		y = y;
 	}
 
 	return {x, y};
 }
 
-function applyMargin({x, y}: Point, xmargin: number, ymargin: number) {
-	x -= xmargin;
-	y += ymargin;
+function applyMargin(
+	{x, y}: Point,
+	screen: Screen,
+	xmargin: number,
+	ymargin: number,
+) {
+	const f = screen.visibleFrame();
+	if (x < f.x + f.width / 2) {
+		x += xmargin;
+	} else {
+		x -= xmargin;
+	}
+	if (y < f.y + f.height / 2) {
+		y += ymargin;
+	} else {
+		y -= ymargin;
+	}
 	return {x, y};
 }

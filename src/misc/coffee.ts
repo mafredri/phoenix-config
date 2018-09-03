@@ -67,6 +67,7 @@ function updater(timer: CoffeTimer) {
 		);
 		timer.modal.origin = applyMargin(
 			screenOrigin,
+			timer.screen,
 			MODAL_MARGIN,
 			MODAL_MARGIN,
 		);
