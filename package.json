@@ -17,7 +17,7 @@
 		"webpack-cli": "^3.1.0"
 	},
 	"scripts": {
-		"start": "npm run watch",
+		"start": "yarn run watch",
 		"watch": "webpack --watch",
 		"build": "webpack",
 		"typings": "typings install",
