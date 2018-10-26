@@ -26,6 +26,27 @@ Event.on('screensDidChange', () => {
 	log('Screens changed');
 });
 
+const closeAppsOnBlur = ['com.apple.Preview', 'com.apple.ActivityMonitor'];
+let prevActiveAppClose: App | null = null;
+Event.on('appDidActivate', (app, h) => {
+	// Close certain apps if they have no windows and lose focus.
+	const prevClose = prevActiveAppClose;
+	prevActiveAppClose = null;
+
+	const id = app.bundleIdentifier();
+	if (closeAppsOnBlur.some(v => v === id)) {
+		prevActiveAppClose = app;
+	}
+
+	if (
+		prevClose &&
+		!prevClose.isTerminated() &&
+		prevClose.windows().length === 0
+	) {
+		prevClose.terminate();
+	}
+});
+
 onKey('tab', hyper, () => {
 	const win = Window.focused();
 	if (!win) {
