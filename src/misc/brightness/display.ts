@@ -2,7 +2,7 @@ import {debounce, once} from 'lodash';
 
 import log from '../../logger';
 
-import {activateDisplayPreferences, syncInternalBrightness} from './brightness';
+import {syncInternalBrightness} from './brightness';
 import {getDisplays, setBrightness} from './ddcctl';
 import {showBrightness} from './modal';
 
@@ -29,9 +29,17 @@ let brightnessValue = 0;
 function updateBrightnessValue(): void {
 	getDisplays()
 		.then(displays => {
+			if (displays.length === 0) {
+				return;
+			}
+
 			brightnessValue = displays
 				.map(d => d.current)
 				.reduce((a, b) => Math.max(a, b), 0);
+
+			syncInternalBrightness(brightnessValue);
+
+			return brightnessValue;
 		})
 		.catch(e => log.notify('Refresh displays failed:', e));
 }
@@ -48,24 +56,11 @@ Event.on('screensDidChange', () => {
 });
 
 const debouncedApplyBrightness = debounce(applyBrightness, 510);
-const prepareSync = () => activateDisplayPreferences();
-let oncePrepareSync = once(prepareSync);
 
 function applyBrightness() {
 	setBrightness(1, brightnessValue);
 	setBrightness(2, brightnessValue);
-	syncInternalBrightness(brightnessValue)
-		.then(() => oncePrepareSync())
-		.then(launched => {
-			if (launched) {
-				const sp = App.get('System Preferences');
-				if (sp) {
-					sp.terminate();
-				}
-			}
-			oncePrepareSync = once(prepareSync);
-		})
-		.catch(log);
+	syncInternalBrightness(brightnessValue).catch(log);
 }
 
 function brightness(value: number): void {
@@ -73,5 +68,4 @@ function brightness(value: number): void {
 
 	showBrightness(brightnessValue);
 	debouncedApplyBrightness();
-	oncePrepareSync();
 }

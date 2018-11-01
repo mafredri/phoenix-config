@@ -1,10 +1,8 @@
 import osascript from '../../misc/osascript';
 import task from '../../task';
 
-const brightnessBinary = '/usr/local/bin/brightness';
-
-const delay = (duration: number) =>
-	new Promise(resolve => setTimeout(resolve, duration));
+// https://github.com/mafredri/macos-brightness
+const brightnessBinary = '/Users/maf/Golang/bin/brightness';
 
 /**
  * brightness runs the brightness command with provided arguments.
@@ -13,25 +11,8 @@ export function brightness(...args: string[]): Promise<string> {
 	return task(brightnessBinary, ...args).then(t => t.output);
 }
 
-export function activateDisplayPreferences() {
-	const launched = !App.get('System Preferences');
-	return osascript(`
-		tell application "System Preferences"
-			reveal anchor "displaysDisplayTab" of pane "com.apple.preference.displays"
-		end tell
-	`)
-		.then(() => delay(50))
-		.then(() => launched);
-}
-
 function setBrightness(value: number) {
-	value *= 0.01;
-
-	return osascript(`
-		tell application "System Events" to tell process "System Preferences" to tell window "Built-in Retina Display"
-			set value of value indicator 1 of slider 1 of group 1 of tab group 1 to ${value}
-		end tell
-	`);
+	return brightness('-b', '' + value);
 }
 
 /**
