@@ -1,6 +1,7 @@
 import {debounce, once} from 'lodash';
 
 import log from '../../logger';
+import * as dark from '../dark';
 
 import {syncInternalBrightness} from './brightness';
 import {getDisplays, setBrightness} from './ddcctl';
@@ -58,6 +59,12 @@ Event.on('screensDidChange', () => {
 const debouncedApplyBrightness = debounce(applyBrightness, 510);
 
 function applyBrightness() {
+	if (brightnessValue <= 30) {
+		dark.enable();
+	} else {
+		dark.disable();
+	}
+
 	setBrightness(1, brightnessValue);
 	setBrightness(2, brightnessValue);
 	syncInternalBrightness(brightnessValue).catch(log);
