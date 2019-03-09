@@ -91,30 +91,42 @@ function getBrightness(displayId: number) {
  * displayBrightness returns brightness when no value is given and sets the
  * brightness when given a value.
  */
-function displayBrightness(
+async function displayBrightness(
 	displayId: number,
 	value?: number,
+	retry = 0,
 ): Promise<DisplayBrightness> {
 	const bval = typeof value === 'number' ? value.toString() : '?';
-	return ddcctl('-w', '0', '-d', displayId.toString(), '-b', bval)
-		.then(out => {
-			if (typeof value === 'number') {
-				// ddcctl currently only returns current/max output on query ?.
-				return ddcctl('-w', '0', '-d', displayId.toString(), '-b', '?');
-			}
-			return out;
-		})
-		.then(parseBrightness);
+	const id = displayId.toString();
+
+	let output = await ddcctl('-d', id, '-b', bval);
+	if (typeof value === 'number') {
+		// ddcctl currently only returns current/max output on query ?.
+		output = await ddcctl('-d', id, '-b', '?');
+	}
+
+	try {
+		return parseBrightness(output);
+	} catch (e) {
+		retry++;
+		if (retry >= 4) {
+			throw e;
+		}
+		log(e);
+		log(`Retrying (${retry}/3)...`);
+		return displayBrightness(displayId, value, retry);
+	}
 }
 
 /**
  * ddcctl runs the ddcctl command with provided arguments.
  */
-function ddcctl(...args: string[]): Promise<string> {
-	return task(ddcctlBinary, ...args)
-		.then(t => t.output)
-		.catch(err => {
-			log.notify(err);
-			throw err;
-		});
+async function ddcctl(...args: string[]): Promise<string> {
+	try {
+		const t = await task(ddcctlBinary, ...args);
+		return t.output;
+	} catch (err) {
+		log.notify(err);
+		throw err;
+	}
 }

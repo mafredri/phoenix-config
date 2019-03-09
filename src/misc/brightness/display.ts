@@ -1,4 +1,10 @@
-import {debounce, once} from 'lodash';
+import {from, ReplaySubject} from 'rxjs';
+import {
+	debounceTime,
+	distinctUntilChanged,
+	switchMap,
+	take,
+} from 'rxjs/operators';
 
 import log from '../../logger';
 import * as dark from '../dark';
@@ -24,55 +30,109 @@ interface Display extends DisplayIdentifier, DisplayBrightness {
 export {Display, DisplayBrightness, DisplayIdentifier};
 export {brightness};
 
-// TODO: Refactor to avoid reliance on single global.
-let brightnessValue = 0;
+const brightnessSubject = new ReplaySubject<number>(1);
+const brightnessSubscription = brightnessSubject
+	.pipe(
+		debounceTime(510),
+		distinctUntilChanged(),
+		switchMap(v => {
+			return from(
+				Promise.all([
+					applyExternalBrightness(v).then(() => updateBrightness()),
+					applyInternalBrightness(v),
+					setDarkModeBasedOnBrightness(v),
+				]),
+			);
+		}),
+	)
+	.subscribe();
 
-function updateBrightnessValue(): void {
-	getDisplays()
-		.then(displays => {
-			if (displays.length === 0) {
-				return;
-			}
+let displays: Display[] = [];
 
-			brightnessValue = displays
-				.map(d => d.current)
-				.reduce((a, b) => Math.max(a, b), 0);
-
-			syncInternalBrightness(brightnessValue);
-
-			return brightnessValue;
-		})
-		.catch(e => log.notify('Refresh displays failed:', e));
+function sleep(ms: number): Promise<void> {
+	return new Promise(resolve => {
+		setTimeout(() => resolve(), ms);
+	});
 }
 
+async function updateBrightness(): Promise<number | undefined> {
+	try {
+		let newDisplays: Display[] = [];
+		while (true) {
+			newDisplays = await getDisplays();
+			if (newDisplays.length === Screen.all().length - 1) {
+				break;
+			}
+			await sleep(1000);
+		}
+
+		displays = newDisplays;
+
+		if (!displays.length) {
+			return;
+		}
+
+		const v = displays
+			.map(d => d.current)
+			.reduce((a, b) => Math.max(a, b), 0);
+
+		return v;
+	} catch (e) {
+		log.notify('Refresh displays failed:', e);
+	}
+}
+
+function syncBrightness() {
+	updateBrightness().then(v => {
+		if (v !== undefined) {
+			applyInternalBrightness(v);
+			brightnessSubject.next(v);
+		}
+	});
+}
 // TODO: Handle in main script (phoenix.ts).
-updateBrightnessValue();
-const debouncedUpdateBrightnessValue = debounce(
-	updateBrightnessValue,
-	1000 * 7,
-);
 Event.on('screensDidChange', () => {
-	// Give the displays time to settle before querying state.
-	debouncedUpdateBrightnessValue();
+	log('screensDidChange', Screen.all().map(s => s.identifier()));
+	syncBrightness();
 });
+syncBrightness();
 
-const debouncedApplyBrightness = debounce(applyBrightness, 510);
-
-function applyBrightness() {
-	if (brightnessValue <= 30) {
-		dark.enable();
-	} else {
+async function setDarkModeBasedOnBrightness(v: number) {
+	const enabled = await dark.isDarkMode();
+	if (v <= 40) {
+		if (!enabled) {
+			dark.enable();
+		}
+		return;
+	}
+	if (enabled) {
 		dark.disable();
 	}
+}
 
-	setBrightness(1, brightnessValue);
-	setBrightness(2, brightnessValue);
-	syncInternalBrightness(brightnessValue).catch(log);
+async function applyInternalBrightness(v: number) {
+	await syncInternalBrightness(v).catch(err =>
+		log.notify('Sync internal brightness failed:', err),
+	);
+}
+
+async function applyExternalBrightness(v: number) {
+	await Promise.all(
+		displays.map(d => {
+			log(d, d.id, v);
+			if (d.current === v) {
+				return;
+			}
+			return setBrightness(d.id, v).catch(log.notify);
+		}),
+	);
 }
 
 function brightness(value: number): void {
-	brightnessValue = Math.max(Math.min(brightnessValue + value, 100), 0);
+	brightnessSubject.pipe(take(1)).subscribe(v => {
+		v = Math.max(Math.min(v + value, 100), 0);
 
-	showBrightness(brightnessValue);
-	debouncedApplyBrightness();
+		showBrightness(v);
+		brightnessSubject.next(v);
+	});
 }

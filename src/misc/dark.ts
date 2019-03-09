@@ -25,20 +25,21 @@ export async function disable() {
 	await setAlfredTheme(AlfredTheme.Light);
 }
 
-function isDarkMode(): Promise<boolean> {
+export async function isDarkMode(): Promise<boolean> {
 	/*
 		task('defaults', 'read', '-g', 'AppleInterfaceStyle').then(
 			({output}) => output === 'Dark',
 			() => false,
 		);
 	*/
-	return osascript(`
+	const output = await osascript(`
 		tell application "System Events"
 			tell appearance preferences
 				get dark mode as boolean
 			end tell
 		end tell
-	`).then(output => output.trim().toLowerCase() === 'true');
+	`);
+	return output.trim().toLowerCase() === 'true';
 }
 
 function setDarkMode(enabled: boolean) {
