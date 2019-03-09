@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-	mode: 'development',
+	mode: 'production',
 	entry: './src/phoenix.ts',
 	output: {
 		path: path.resolve(__dirname, 'out'),
@@ -11,8 +11,6 @@ module.exports = {
 		extensions: ['.ts', '.js'],
 	},
 	module: {
-		rules: [
-			{ test: /\.ts$/, loader: 'ts-loader' },
-		],
+		rules: [{test: /\.ts$/, loader: 'ts-loader'}],
 	},
 };
