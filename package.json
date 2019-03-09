@@ -4,11 +4,9 @@
 	"description": "Configuration for kasper/phoenix written in TypeScript",
 	"main": "src/phoenix.ts",
 	"dependencies": {
-		"@types/lodash": "^4.14.122",
-		"lodash": "^4.17.11",
+		"@types/phoenix": "github:mafredri/phoenix-typings#master",
 		"rxjs": "^6.4.0",
-		"typescript": "^3.3.3333",
-		"typings": "^2.1.1"
+		"typescript": "^3.3.3333"
 	},
 	"devDependencies": {
 		"prettier": "^1.16.4",
@@ -21,7 +19,6 @@
 		"start": "yarn run watch",
 		"watch": "webpack --watch",
 		"build": "webpack",
-		"typings": "typings install",
 		"lint": "tslint src/**/*.ts",
 		"format": "prettier --write src/**/*.ts",
 		"test": "echo \"Error: no test specified\" && exit 1"

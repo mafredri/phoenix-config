@@ -1,7 +1,0 @@
-{
-  "name": "phoenix-config",
-  "globalDependencies": {
-    "phoenix-typings": "github:mafredri/phoenix-typings"
-  },
-  "dependencies": {}
-}

@@ -52,7 +52,7 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ```
 git clone https://github.com/mafredri/phoenix-config.git
 cd phoenix-config
-yarn && yarn run typings
+yarn install
 yarn run build
 ```
 
