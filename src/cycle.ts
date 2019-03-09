@@ -1,5 +1,5 @@
-import {debounce} from 'lodash';
-
+import {Subject} from 'rxjs';
+import {debounceTime, tap} from 'rxjs/operators';
 import log from './logger';
 
 enum Direction {
@@ -10,10 +10,16 @@ enum Direction {
 const focused: Map<number, number> = new Map();
 
 let modal = new Modal();
-const closeModal = debounce(() => {
-	modal.close();
-	modal = new Modal();
-}, 2000);
+const closeModal = new Subject<void>();
+const closeModalSubscription = closeModal
+	.pipe(
+		debounceTime(2000),
+		tap(() => {
+			modal.close();
+			modal = new Modal();
+		}),
+	)
+	.subscribe();
 
 export function cycleForward(win?: Window) {
 	return cycle(Direction.Forward, win);
@@ -58,7 +64,7 @@ function cycle(dir: Direction, win?: Window) {
 	modal.icon = app.icon();
 	modal.showCenterOn(next.screen());
 	next.focus();
-	closeModal();
+	closeModal.next();
 }
 
 function updateTimestamp(w: Window) {
