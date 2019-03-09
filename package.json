@@ -4,17 +4,18 @@
 	"description": "Configuration for kasper/phoenix written in TypeScript",
 	"main": "src/phoenix.ts",
 	"dependencies": {
-		"@types/lodash": "^4.14.116",
-		"lodash": "^4.17.10",
-		"typescript": "^3.0.1",
+		"@types/lodash": "^4.14.122",
+		"lodash": "^4.17.11",
+		"rxjs": "^6.4.0",
+		"typescript": "^3.3.3333",
 		"typings": "^2.1.1"
 	},
 	"devDependencies": {
-		"prettier": "^1.14.2",
-		"ts-loader": "^4.4.2",
-		"tslint": "^5.11.0",
-		"webpack": "^4.16.5",
-		"webpack-cli": "^3.1.0"
+		"prettier": "^1.16.4",
+		"ts-loader": "^5.3.3",
+		"tslint": "^5.13.1",
+		"webpack": "^4.29.6",
+		"webpack-cli": "^3.2.3"
 	},
 	"scripts": {
 		"start": "yarn run watch",
