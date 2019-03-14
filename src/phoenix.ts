@@ -280,8 +280,18 @@ onKey('return', hyperShift, () => {
 	});
 });
 
-onKey('§', [], () => terminal.toggle());
-onKey('§', ['cmd'], () => terminal.cycleWindows());
+onKey('§', [], (_, repeated) => {
+	if (repeated) {
+		return;
+	}
+	terminal.toggle();
+});
+onKey('§', ['cmd'], (_, repeated) => {
+	if (repeated) {
+		return;
+	}
+	terminal.cycleWindows();
+});
 
 onKey('p', hyper, () => {
 	const win = Window.focused();
