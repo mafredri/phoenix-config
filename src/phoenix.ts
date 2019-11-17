@@ -9,7 +9,6 @@ import log from './logger';
 import {brightness} from './misc/brightness';
 import {TimerStopper} from './misc/coffee';
 import coffeTimer from './misc/coffee';
-import {Profile, selectProfile} from './misc/karabiner';
 import * as terminal from './misc/terminal';
 import {titleModal} from './modal';
 import {Scanner} from './scan';
@@ -24,27 +23,6 @@ Phoenix.set({
 
 Event.on('screensDidChange', () => {
 	log('Screens changed');
-});
-
-const closeAppsOnBlur = ['com.apple.Preview', 'com.apple.ActivityMonitor'];
-let prevActiveAppClose: App | null = null;
-Event.on('appDidActivate', (app, h) => {
-	// Close certain apps if they have no windows and lose focus.
-	const prevClose = prevActiveAppClose;
-	prevActiveAppClose = null;
-
-	const id = app.bundleIdentifier();
-	if (closeAppsOnBlur.some(v => v === id)) {
-		prevActiveAppClose = app;
-	}
-
-	if (
-		prevClose &&
-		!prevClose.isTerminated() &&
-		prevClose.windows().length === 0
-	) {
-		prevClose.terminate();
-	}
 });
 
 onKey('tab', hyper, () => {
