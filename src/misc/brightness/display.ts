@@ -33,15 +33,14 @@ export {brightness};
 const brightnessSubject = new ReplaySubject<number>(1);
 const brightnessSubscription = brightnessSubject
 	.pipe(
-		debounceTime(510),
+		debounceTime(1000),
 		distinctUntilChanged(),
 		switchMap(v => {
 			return from(
 				Promise.all([
 					applyExternalBrightness(v).then(() => updateBrightness()),
 					applyInternalBrightness(v),
-					setDarkModeBasedOnBrightness(v),
-				]),
+				]).then(() => setDarkModeBasedOnBrightness(v)),
 			);
 		}),
 	)
@@ -63,7 +62,7 @@ async function updateBrightness(): Promise<number | undefined> {
 			if (newDisplays.length === Screen.all().length - 1) {
 				break;
 			}
-			await sleep(1000);
+			await sleep(1500);
 		}
 
 		displays = newDisplays;

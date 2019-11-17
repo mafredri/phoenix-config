@@ -1,8 +1,8 @@
 import osascript from '../../misc/osascript';
 import task from '../../task';
 
-// https://github.com/mafredri/macos-brightness
-const brightnessBinary = '/Users/maf/Golang/bin/brightness';
+// https://github.com/nriley/brightness
+const brightnessBinary = '/Users/maf/.bin/brightness';
 
 /**
  * brightness runs the brightness command with provided arguments.
@@ -12,7 +12,7 @@ export function brightness(...args: string[]): Promise<string> {
 }
 
 function setBrightness(value: number) {
-	return brightness('-b', '' + value);
+	return brightness('-v', '' + value / 100);
 }
 
 /**
