@@ -3,39 +3,8 @@
 // information about the terminal application through Phoenix event handlers.
 export {toggle, cycleWindows};
 
-const TERMINAL_NAME = 'iTerm2';
+const TERMINAL_NAME = 'Alacritty';
 const TERMINAL_APP = TERMINAL_NAME.replace(/[0-9]+$/, '');
-
-// Initialize with current app status.
-let term = App.get(TERMINAL_NAME);
-let termIsActive = (() => {
-	const win = Window.focused();
-	if (!win) {
-		return false;
-	}
-
-	return isTerminal(win.app());
-})();
-
-// Keep terminal app cached through event handlers to
-// optimize performance.
-Event.on('appDidLaunch', (app: App) => {
-	if (isTerminal(app)) {
-		term = app;
-	}
-});
-Event.on('appDidTerminate', (app: App) => {
-	if (isTerminal(app)) {
-		term = undefined;
-	}
-});
-
-// Cache if terminal is active so we don't need to fetch
-// the active window. This is beneficial in the event that
-// the currently active window isn't responding.
-Event.on('appDidActivate', (app: App) => {
-	termIsActive = isTerminal(app);
-});
 
 function isTerminal(app: App) {
 	const name = app.name();
@@ -43,20 +12,28 @@ function isTerminal(app: App) {
 }
 
 function toggle() {
-	// Only hide terminal if it's active and has windows.
-	if (termIsActive && term && term.windows().length) {
-		term.hide();
-		return;
+	const win = Window.focused();
+	const app = win ? win.app() : undefined;
+	if (!app || !isTerminal(app)) {
+		return launchOrFocus();
 	}
+
+	// Only hide terminal if it's active and has windows.
+	if (app.windows().length) {
+		return app.hide();
+	}
+
 	launchOrFocus();
 }
 
 function cycleWindows() {
-	if (!term || !termIsActive) {
+	const win = Window.focused();
+	const app = win ? win.app() : undefined;
+	if (!app || !isTerminal(app)) {
 		return launchOrFocus();
 	}
 
-	const windows = term.windows();
+	const windows = app.windows();
 	if (!windows.length) {
 		return launchOrFocus();
 	}
