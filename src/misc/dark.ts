@@ -1,9 +1,6 @@
 import task from '../task';
 import osascript from './osascript';
 
-// Binary from https://github.com/mafredri/macos-darkmode
-const darkmodeBin = '/Users/maf/Golang/bin/darkmode';
-
 enum AlfredTheme {
 	Light = 'Alfred macOS',
 	Dark = 'Alfred macOS Dark',
@@ -29,15 +26,26 @@ export async function disable() {
 }
 
 export async function isDarkMode(): Promise<boolean> {
-	const {output} = await task(darkmodeBin);
-	return output.trim() === 'on';
+	const output = await osascript(`
+		tell application "System Events"
+			tell appearance preferences
+				get dark mode as boolean
+			end tell
+		end tell
+	`);
+	return output.trim().toLowerCase() === 'true';
 }
 
-async function setDarkMode(enabled: boolean) {
-	const {output} = await task(darkmodeBin, enabled ? 'on' : 'off');
-	return output;
+function setDarkMode(enabled: boolean) {
+	return osascript(`
+		tell application "System Events"
+			tell appearance preferences
+				set dark mode to ${enabled}
+			end tell
+		end tell
+	`);
 }
 
 function setAlfredTheme(theme: AlfredTheme) {
-	return osascript(`tell application "Alfred 3" to set theme "${theme}"`);
+	return osascript(`tell application "Alfred 4" to set theme "${theme}"`);
 }
