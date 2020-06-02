@@ -5,15 +5,15 @@
 	"main": "src/phoenix.ts",
 	"dependencies": {
 		"@types/phoenix": "github:mafredri/phoenix-typings#master",
-		"rxjs": "^6.5.3",
-		"typescript": "^3.7.2"
+		"rxjs": "^6.5.5",
+		"typescript": "^3.9.3"
 	},
 	"devDependencies": {
-		"prettier": "^1.19.1",
-		"ts-loader": "^6.2.1",
-		"tslint": "^5.20.1",
-		"webpack": "^4.41.2",
-		"webpack-cli": "^3.3.10"
+		"prettier": "^2.0.5",
+		"ts-loader": "^7.0.5",
+		"tslint": "^6.1.2",
+		"webpack": "^4.43.0",
+		"webpack-cli": "^3.3.11"
 	},
 	"scripts": {
 		"start": "yarn run watch",
