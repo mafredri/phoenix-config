@@ -7,7 +7,7 @@ enum AlfredTheme {
 }
 
 export async function toggle() {
-	await isDarkMode().then(enabled => {
+	await isDarkMode().then((enabled) => {
 		if (enabled) {
 			return disable();
 		}
