@@ -1,3 +1,5 @@
+import {showCenterOn} from '../../modal';
+
 let modal: Modal | null = null;
 let closeModal = 0;
 
@@ -8,7 +10,7 @@ export function showBrightness(value: number) {
 	}
 
 	modal.text = `Brightness: ${value}`;
-	modal.showCenterOn(Screen.main());
+	showCenterOn(modal, Screen.main());
 
 	closeModal = setTimeout(close, 1000);
 }

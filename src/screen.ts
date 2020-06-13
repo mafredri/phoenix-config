@@ -1,5 +1,10 @@
 import {pointInsideFrame} from './calc';
 
+export {screenAt};
+
+/**
+ * Returns the screen at the provided point.
+ */
 function screenAt(point: Point) {
 	const screens = Screen.all();
 
@@ -11,6 +16,3 @@ function screenAt(point: Point) {
 
 	throw new Error('point out of range');
 }
-
-// Extend ScreenObject.
-Screen.at = screenAt;

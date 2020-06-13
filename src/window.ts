@@ -1,7 +1,7 @@
-import {frameRatio, sizeMatches} from './calc';
+import {frameRatio} from './calc';
 import log from './logger';
 
-export {toggleMaximized, clearUnmaximized};
+export {setFrame, maximize, toggleMaximized};
 
 interface FrameCache {
 	screen: Rectangle;
@@ -15,13 +15,9 @@ interface FrameCache {
 const frameCache: Map<number, FrameCache> = new Map();
 
 Event.on('windowDidClose', (win: Window) => {
-	// Cleanup references to unmaximized window frames
+	// Cleanup references to unmaximized window frames.
 	frameCache.delete(win.hash());
 });
-
-function clearUnmaximized(win: Window) {
-	frameCache.delete(win.hash());
-}
 
 function unmaximizedFrame(win: Window): Rectangle {
 	let c = frameCache.get(win.hash());
@@ -69,18 +65,27 @@ function isMaximized(win: Window): boolean {
 	);
 }
 
-function toggleMaximized(win: Window) {
+function toggleMaximized(win: Window): boolean {
 	if (isMaximized(win)) {
-		win.setFrame(unmaximizedFrame(win));
-		win.clearUnmaximized();
-		return;
+		return setFrame(win, unmaximizedFrame(win));
 	}
+	return maximize(win);
+}
+
+function setFrame(win: Window, frame: Rectangle): boolean {
+	const ok = win.setFrame(frame);
+	if (ok) {
+		frameCache.delete(win.hash());
+	}
+	return ok;
+}
+
+function maximize(win: Window): boolean {
 	const previous = {
 		screen: win.screen().flippedVisibleFrame(),
 		window: win.frame(),
 	};
-	win.maximize();
-
+	const ok = win.maximize();
 	const id = win.hash();
 	frameCache.set(id, {
 		...previous,
@@ -89,25 +94,5 @@ function toggleMaximized(win: Window) {
 			window: win.frame(),
 		},
 	});
-}
-
-function setFrame(win: Window, frame: Rectangle): boolean {
-	const ok = win.setFrame(frame);
-	if (ok) {
-		// Invalidate cache.
-		// No maximized.
-	}
 	return ok;
 }
-
-function maximize(win: Window): boolean {
-	const ok = win.maximize();
-	return ok;
-}
-
-Window.prototype.clearUnmaximized = function _clearUnmaximized() {
-	clearUnmaximized(this);
-};
-Window.prototype.toggleMaximized = function _toggleMaximized() {
-	toggleMaximized(this);
-};

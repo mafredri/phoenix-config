@@ -1,6 +1,3 @@
-import './screen';
-import './window';
-
 import {frameRatio, moveToFrame} from './calc';
 import {hyper, hyperShift} from './config';
 import {cycleBackward, cycleForward} from './cycle';
@@ -10,8 +7,10 @@ import {brightness} from './misc/brightness';
 import {TimerStopper} from './misc/coffee';
 import coffeTimer from './misc/coffee';
 import * as terminal from './misc/terminal';
-import {titleModal} from './modal';
+import {titleModal, showCenterOn} from './modal';
 import {Scanner} from './scan';
+import {setFrame, toggleMaximized} from './window';
+import {screenAt} from './screen';
 
 const scanner = new Scanner();
 let coffee: TimerStopper | null;
@@ -42,7 +41,7 @@ onKey('tab', hyper, () => {
 		oldScreen.flippedVisibleFrame(),
 		newScreen.flippedVisibleFrame(),
 	);
-	win.setFrame(ratio(win.frame()));
+	setFrame(win, ratio(win.frame()));
 });
 
 onKey('tab', hyperShift, () => {
@@ -62,7 +61,7 @@ onKey('tab', hyperShift, () => {
 		oldScreen.flippedVisibleFrame(),
 		newScreen.flippedVisibleFrame(),
 	);
-	win.setFrame(move(win.frame()));
+	setFrame(win, move(win.frame()));
 });
 
 onKey(['left', 'j'], hyper, () => {
@@ -83,8 +82,7 @@ onKey(['left', 'j'], hyper, () => {
 		frame = frame4;
 	}
 
-	win.setFrame(frame);
-	win.clearUnmaximized();
+	setFrame(win, frame);
 });
 
 onKey(['right', 'l'], hyper, () => {
@@ -120,8 +118,7 @@ onKey(['right', 'l'], hyper, () => {
 		frame = frame4;
 	}
 
-	win.setFrame(frame);
-	win.clearUnmaximized();
+	setFrame(win, frame);
 });
 
 onKey(['up', 'i'], hyper, () => {
@@ -134,8 +131,7 @@ onKey(['up', 'i'], hyper, () => {
 	let {height, y} = win.screen().flippedVisibleFrame();
 	height = Math.ceil(height / 2);
 
-	win.setFrame({height, width, x, y});
-	win.clearUnmaximized();
+	setFrame(win, {height, width, x, y});
 });
 
 onKey(['down', 'k'], hyper, () => {
@@ -149,14 +145,13 @@ onKey(['down', 'k'], hyper, () => {
 	height /= 2;
 	[height, y] = [Math.ceil(height), y + Math.floor(height)];
 
-	win.setFrame({height, width, x, y});
-	win.clearUnmaximized();
+	setFrame(win, {height, width, x, y});
 });
 
 onKey('return', hyper, () => {
 	const win = Window.focused();
 	if (win) {
-		win.toggleMaximized();
+		toggleMaximized(win);
 	}
 });
 
@@ -175,7 +170,7 @@ onKey(['left', 'j'], hyperShift, () => {
 		x = center - half;
 	}
 
-	win.setFrame({width, height, y, x});
+	setFrame(win, {width, height, y, x});
 });
 
 onKey(['right', 'l'], hyperShift, () => {
@@ -195,7 +190,7 @@ onKey(['right', 'l'], hyperShift, () => {
 		x = x + sWidth - width;
 	}
 
-	win.setFrame({width, height, y, x});
+	setFrame(win, {width, height, y, x});
 });
 
 onKey(['up', 'i'], hyperShift, () => {
@@ -213,7 +208,7 @@ onKey(['up', 'i'], hyperShift, () => {
 		y = center - half;
 	}
 
-	win.setFrame({width, height, x, y});
+	setFrame(win, {width, height, x, y});
 });
 
 onKey(['down', 'k'], hyperShift, () => {
@@ -233,7 +228,7 @@ onKey(['down', 'k'], hyperShift, () => {
 		y = y + sHeight - height;
 	}
 
-	win.setFrame({width, height, x, y});
+	setFrame(win, {width, height, x, y});
 });
 
 onKey('return', hyperShift, () => {
@@ -250,7 +245,7 @@ onKey('return', hyperShift, () => {
 		y,
 	} = win.screen().flippedVisibleFrame();
 
-	win.setFrame({
+	setFrame(win, {
 		height,
 		width,
 		x: x + sWidth / 2 - width / 2,
@@ -298,7 +293,7 @@ onKey('p', hyper, () => {
 		text: msg,
 		weight: 16,
 	});
-	modal.showCenterOn(Screen.main());
+	showCenterOn(modal, Screen.main());
 });
 
 onKey('.', hyper, () => {
@@ -342,7 +337,7 @@ onKey('delete', hyper, () => {
 });
 
 onKey('m', hyper, () => {
-	const s = Screen.at(Mouse.location());
+	const s = screenAt(Mouse.location());
 	log(s.identifier(), Mouse.location());
 });
 
@@ -366,7 +361,7 @@ onKey('space', hyper, () => {
 	const m = new Modal();
 	const msg = 'Search: ';
 	m.text = msg;
-	m.showCenterOn(Screen.main());
+	showCenterOn(m, Screen.main());
 	const originalWindow = Window.focused();
 	const winCache = Window.all({visible: true});
 	let matches = [...winCache];
@@ -443,7 +438,7 @@ onKey('space', hyper, () => {
 				m.icon = undefined;
 			}
 
-			m.showCenterOn(mainScreen);
+			showCenterOn(m, mainScreen);
 
 			function appName(w: Window) {
 				return w

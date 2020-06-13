@@ -1,7 +1,7 @@
 /**
  * This module starts a timer to notify you when your coffee is done.
  */
-import {applyMargin, Orientation, originOnScreen} from '../modal';
+import {applyMargin, Orientation, originOnScreen, showCenterOn} from '../modal';
 
 export default start;
 
@@ -83,6 +83,6 @@ function alerter(timer: CoffeTimer, updateInterval: number) {
 		}
 		timer.modal = new Modal();
 		timer.modal.text = DONE_MSG.trim();
-		timer.modal.showCenterOn(timer.screen);
+		showCenterOn(timer.modal, timer.screen);
 	};
 }

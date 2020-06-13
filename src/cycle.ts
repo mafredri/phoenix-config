@@ -1,6 +1,7 @@
 import {Subject} from 'rxjs';
 import {debounceTime, tap} from 'rxjs/operators';
 import log from './logger';
+import {showCenterOn} from './modal';
 
 enum Direction {
 	Forward,
@@ -62,7 +63,7 @@ function cycle(dir: Direction, win?: Window) {
 	modal.weight = 18;
 	modal.text = next.title();
 	modal.icon = app.icon();
-	modal.showCenterOn(next.screen());
+	showCenterOn(modal, next.screen());
 	next.focus();
 	closeModal.next();
 }

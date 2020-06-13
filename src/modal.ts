@@ -5,7 +5,14 @@ enum Orientation {
 	SouthEast,
 }
 
-export {titleModal, originOnScreen, applyMargin, Orientation};
+export {
+	titleModal,
+	originOnScreen,
+	applyMargin,
+	showCenterOn,
+	showTitleOn,
+	Orientation,
+};
 
 function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
 	const m = new Modal();
@@ -14,16 +21,22 @@ function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
 	if (icon) {
 		m.icon = icon;
 	}
-	m.showTitleOn(Screen.main());
+	showTitleOn(m, Screen.main());
 }
 
-Modal.prototype.showTitleOn = function _showTitleOn(screen: Screen) {
-	showAt(this, screen, 2, 1 + 1 / 3);
-};
+/**
+ * Show modal in title position on screen.
+ */
+function showTitleOn(modal: Modal, screen: Screen) {
+	showAt(modal, screen, 2, 1 + 1 / 3);
+}
 
-Modal.prototype.showCenterOn = function _showCenterOn(screen: Screen) {
-	showAt(this, screen, 2, 2);
-};
+/**
+ * Show modal in center position on screen.
+ */
+function showCenterOn(modal: Modal, screen: Screen) {
+	showAt(modal, screen, 2, 2);
+}
 
 function showAt(
 	modal: Modal,
