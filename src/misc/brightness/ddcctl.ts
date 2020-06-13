@@ -13,7 +13,7 @@ const ddcctlBinary = '/Users/maf/.bin/ddcctl';
  */
 async function getDisplays(): Promise<Display[]> {
 	const displays = await ddcctl().then(parseDisplays);
-	const values = await Promise.all(displays.map(d => getBrightness(d.id)));
+	const values = await Promise.all(displays.map((d) => getBrightness(d.id)));
 
 	return displays.map(merge(Screen.all(), values));
 }
@@ -54,12 +54,10 @@ function merge(
 	values: DisplayBrightness[],
 ): (d: DisplayIdentifier, i: number) => Display {
 	return (d, i) => {
-		const screen = screens.find(s => s.hash() === d.hash);
+		const screen = screens.find((s) => s.hash() === d.hash);
 		if (!screen) {
 			throw new Error(
-				`could not find screen for display id: ${d.id}; hash: ${
-					d.hash
-				}`,
+				`could not find screen for display id: ${d.id}; hash: ${d.hash}`,
 			);
 		}
 		return {identifier: screen.identifier(), ...d, ...values[i]};

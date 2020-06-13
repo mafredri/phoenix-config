@@ -8,7 +8,7 @@ const brightnessBinary = '/Users/maf/.bin/brightness';
  * brightness runs the brightness command with provided arguments.
  */
 export function brightness(...args: string[]): Promise<string> {
-	return task(brightnessBinary, ...args).then(t => t.output);
+	return task(brightnessBinary, ...args).then((t) => t.output);
 }
 
 function setBrightness(value: number) {

@@ -38,7 +38,7 @@ export class Scanner {
 	 */
 	public scan(done: ScanCallback) {
 		this.doneCallback = done;
-		this.updateCallback = s => {
+		this.updateCallback = (s) => {
 			if (!s) {
 				return; // an update requires a character
 			}
@@ -79,12 +79,12 @@ export class Scanner {
 			for (const sk of specialKeys) {
 				this.keyHandlers.push(
 					new Key(sk, [], () => this.handleKeyPress(sk)),
-					new Key(sk, ['shift'], h => this.handleKeyPress(sk, h)),
+					new Key(sk, ['shift'], (h) => this.handleKeyPress(sk, h)),
 				);
 			}
 		}
 
-		this.keyHandlers.forEach(h => h.enable()); // Make sure all handlers are enabled.
+		this.keyHandlers.forEach((h) => h.enable()); // Make sure all handlers are enabled.
 	}
 
 	private disable() {

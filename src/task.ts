@@ -29,7 +29,7 @@ export class TaskError extends Error {
 
 export default function task(name: string, ...args: string[]): Promise<Task> {
 	return new Promise((resolve, reject) => {
-		Task.run(name, args, t => {
+		Task.run(name, args, (t) => {
 			if (t.status !== 0) {
 				reject(new TaskError(t, name));
 			}

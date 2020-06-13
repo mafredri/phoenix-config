@@ -303,13 +303,13 @@ onKey('.', hyper, () => {
 			win
 				.screen()
 				.windows({visible: true})
-				.map(w => w.title()),
+				.map((w) => w.title()),
 		);
 		log(
 			win
 				.screen()
 				.windows()
-				.map(w => w.title()),
+				.map((w) => w.title()),
 		);
 	}
 });
@@ -318,7 +318,7 @@ onKey('delete', hyper, () => {
 	const win = Window.focused();
 	if (win) {
 		const visible = win.screen().windows({visible: true});
-		log(visible.map(w => w.title()));
+		log(visible.map((w) => w.title()));
 		// log(win.screen().windows({visible: true}).map(w => w.title()));
 		// log(win.others({visible: true}).map(w => w.title()));
 		win.minimize();
@@ -398,14 +398,14 @@ onKey('space', hyper, () => {
 
 		w.focus();
 		m.icon = w.app().icon();
-		m.showCenterOn(mainScreen);
+		showCenterOn(m, mainScreen);
 	};
 
 	const tab = new Key('tab', [], tabFn(false));
 	const shiftTab = new Key('tab', ['shift'], tabFn(true));
 
 	scanner.scanln(
-		s => {
+		(s) => {
 			m.close();
 			tab.disable();
 			shiftTab.disable();
@@ -419,13 +419,13 @@ onKey('space', hyper, () => {
 				setTimeout(() => originalWindow.focus(), 200);
 			}
 		},
-		s => {
+		(s) => {
 			tab.enable();
 			shiftTab.enable();
 
 			prevReverse = true; // Reset.
 
-			matches = winCache.filter(w => appName(w) || title(w));
+			matches = winCache.filter((w) => appName(w) || title(w));
 			m.text = msg + s + (s ? results(matches.length) : '');
 
 			if (s && matches.length) {
@@ -441,18 +441,11 @@ onKey('space', hyper, () => {
 			showCenterOn(m, mainScreen);
 
 			function appName(w: Window) {
-				return w
-					.app()
-					.name()
-					.toLowerCase()
-					.match(s.toLowerCase());
+				return w.app().name().toLowerCase().match(s.toLowerCase());
 			}
 
 			function title(w: Window) {
-				return w
-					.title()
-					.toLowerCase()
-					.match(s.toLowerCase());
+				return w.title().toLowerCase().match(s.toLowerCase());
 			}
 		},
 	);
@@ -466,8 +459,8 @@ onKey('space', hyper, () => {
 onKey('h', ['cmd'], (_: Key, repeated: boolean) => {
 	// Hide all windows when Cmd+H is held.
 	if (repeated) {
-		const apps = Window.all({visible: true}).map(w => w.app());
-		new Set(apps).forEach(a => a.hide());
+		const apps = Window.all({visible: true}).map((w) => w.app());
+		new Set(apps).forEach((a) => a.hide());
 		return;
 	}
 
@@ -482,7 +475,7 @@ function objEq(a: {[key: string]: any}, b: {[key: string]: any}) {
 	if (akeys.length !== Object.keys(b).length) {
 		return false;
 	}
-	return akeys.every(k => a[k] === b[k]);
+	return akeys.every((k) => a[k] === b[k]);
 }
 
 const phoenixApp = App.get('Phoenix');

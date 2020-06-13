@@ -9,8 +9,8 @@ function onKey(
 	cb: (handler: Key, repeated: boolean) => any,
 ) {
 	if (Array.isArray(keys)) {
-		const unbinds = keys.map(key => onKeySingle(key, mod, cb));
-		return () => unbinds.forEach(u => u());
+		const unbinds = keys.map((key) => onKeySingle(key, mod, cb));
+		return () => unbinds.forEach((u) => u());
 	}
 	return onKeySingle(keys, mod, cb);
 }

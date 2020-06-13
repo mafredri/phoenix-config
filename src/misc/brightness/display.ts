@@ -35,7 +35,7 @@ const brightnessSubscription = brightnessSubject
 	.pipe(
 		debounceTime(1000),
 		distinctUntilChanged(),
-		switchMap(v => {
+		switchMap((v) => {
 			return from(
 				Promise.all([
 					applyExternalBrightness(v).then(() => updateBrightness()),
@@ -49,7 +49,7 @@ const brightnessSubscription = brightnessSubject
 let displays: Display[] = [];
 
 function sleep(ms: number): Promise<void> {
-	return new Promise(resolve => {
+	return new Promise((resolve) => {
 		setTimeout(() => resolve(), ms);
 	});
 }
@@ -72,7 +72,7 @@ async function updateBrightness(): Promise<number | undefined> {
 		}
 
 		const v = displays
-			.map(d => d.current)
+			.map((d) => d.current)
 			.reduce((a, b) => Math.max(a, b), 0);
 
 		return v;
@@ -82,7 +82,7 @@ async function updateBrightness(): Promise<number | undefined> {
 }
 
 function syncBrightness() {
-	updateBrightness().then(v => {
+	updateBrightness().then((v) => {
 		if (v !== undefined) {
 			applyInternalBrightness(v);
 			brightnessSubject.next(v);
@@ -110,14 +110,14 @@ async function setDarkModeBasedOnBrightness(v: number) {
 }
 
 async function applyInternalBrightness(v: number) {
-	await syncInternalBrightness(v).catch(err =>
+	await syncInternalBrightness(v).catch((err) =>
 		log.notify('Sync internal brightness failed:', err),
 	);
 }
 
 async function applyExternalBrightness(v: number) {
 	await Promise.all(
-		displays.map(d => {
+		displays.map((d) => {
 			log(d, d.id, v);
 			if (d.current === v) {
 				return;
@@ -128,7 +128,7 @@ async function applyExternalBrightness(v: number) {
 }
 
 function brightness(value: number): void {
-	brightnessSubject.pipe(take(1)).subscribe(v => {
+	brightnessSubject.pipe(take(1)).subscribe((v) => {
 		v = Math.max(Math.min(v + value, 100), 0);
 
 		showBrightness(v);
