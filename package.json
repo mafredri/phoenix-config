@@ -20,7 +20,7 @@
 		"watch": "webpack --watch",
 		"build": "webpack",
 		"lint": "tslint src/**/*.ts",
-		"format": "prettier --write src/**/*.ts",
+		"format": "prettier --write \"src/**/*.ts\"",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {
