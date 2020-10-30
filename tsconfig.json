@@ -5,6 +5,7 @@
 		"baseUrl": "src",
 		"outDir": "out/src",
 		"target": "es2018",
+		"sourceMap": true,
 		"strict": true,
 		"noFallthroughCasesInSwitch": true,
 		"pretty": true,
