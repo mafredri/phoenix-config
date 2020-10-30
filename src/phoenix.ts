@@ -478,5 +478,5 @@ function objEq(a: {[key: string]: any}, b: {[key: string]: any}) {
 	return akeys.every((k) => a[k] === b[k]);
 }
 
-const phoenixApp = App.get('Phoenix');
+const phoenixApp = App.get('Phoenix') || App.get('Phoenix (Debug)');
 titleModal('Phoenix (re)loaded!', 2, phoenixApp && phoenixApp.icon());

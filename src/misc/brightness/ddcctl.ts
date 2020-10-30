@@ -4,7 +4,7 @@ import task from '../../task';
 import {syncInternalBrightness} from './brightness';
 import {Display, DisplayBrightness, DisplayIdentifier} from './display';
 
-export {getBrightness, setBrightness, getDisplays, Display};
+export {getBrightness, setBrightness, getDisplays};
 
 const ddcctlBinary = '/Users/maf/.bin/ddcctl';
 

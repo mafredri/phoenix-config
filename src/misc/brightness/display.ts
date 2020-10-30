@@ -13,6 +13,9 @@ import {syncInternalBrightness} from './brightness';
 import {getDisplays, setBrightness} from './ddcctl';
 import {showBrightness} from './modal';
 
+export {Display, DisplayBrightness, DisplayIdentifier};
+export {brightness};
+
 interface DisplayIdentifier {
 	id: number;
 	hash: number;
@@ -26,9 +29,6 @@ interface DisplayBrightness {
 interface Display extends DisplayIdentifier, DisplayBrightness {
 	identifier: string;
 }
-
-export {Display, DisplayBrightness, DisplayIdentifier};
-export {brightness};
 
 const brightnessSubject = new ReplaySubject<number>(1);
 const brightnessSubscription = brightnessSubject
