@@ -37,3 +37,18 @@ export default function task(name: string, ...args: string[]): Promise<Task> {
 		});
 	});
 }
+
+export function taskWithOpts(
+	opts: {allowFailure: boolean},
+	name: string,
+	...args: string[]
+): Promise<Task> {
+	return new Promise((resolve, reject) => {
+		Task.run(name, args, (t) => {
+			if (!opts?.allowFailure && t.status !== 0) {
+				reject(new TaskError(t, name));
+			}
+			return resolve(t);
+		});
+	});
+}

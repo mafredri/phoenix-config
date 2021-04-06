@@ -2,7 +2,7 @@ import osascript from '../../misc/osascript';
 import task from '../../task';
 
 // https://github.com/nriley/brightness
-const brightnessBinary = '/Users/maf/.bin/brightness';
+const brightnessBinary = '/usr/local/bin/brightness';
 
 /**
  * brightness runs the brightness command with provided arguments.

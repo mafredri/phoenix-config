@@ -1,5 +1,5 @@
 import log from '../../logger';
-import task from '../../task';
+import {taskWithOpts} from '../../task';
 
 import {syncInternalBrightness} from './brightness';
 import {Display, DisplayBrightness, DisplayIdentifier} from './display';
@@ -29,7 +29,7 @@ function parseDisplays(output: string): DisplayIdentifier[] {
 	const numDisplays = parseInt(numMatch[1], 10);
 
 	const displays: DisplayIdentifier[] = [];
-	const re = /D: NSScreen #([0-9]+)/gm;
+	const re = /D:.*#([0-9]+)/gm;
 
 	for (let i = 1; i <= numDisplays; i++) {
 		const match = re.exec(output);
@@ -121,7 +121,11 @@ async function displayBrightness(
  */
 async function ddcctl(...args: string[]): Promise<string> {
 	try {
-		const t = await task(ddcctlBinary, ...args);
+		const t = await taskWithOpts(
+			{allowFailure: true},
+			ddcctlBinary,
+			...args,
+		);
 		return t.output;
 	} catch (err) {
 		log.notify(err);
