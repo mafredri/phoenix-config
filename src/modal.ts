@@ -14,7 +14,7 @@ export {
 	Orientation,
 };
 
-function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
+function titleModal(text: string, duration: number = 1, icon?: Image) {
 	const m = new Modal();
 	m.text = text;
 	m.duration = duration;
