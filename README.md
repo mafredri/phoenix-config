@@ -2,13 +2,10 @@
 
 This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, written in TypeScript and forked from [mafredri's config](https://github.com/mafredri/phoenix-config/).
 
-## Key bindings
-The definition of `modKey` and `modKeyShift` can be found in [src/config.ts](src/config.ts).
-
-### Overview
+## Overview
 This config provides per-monitor virtual desktops. I use it with my laptop monitor + an external monitor. It's a reimplementation of my xmonad setup at work.
 
-### Intended Usage
+## Intended Usage
 1. Use `modKey + Left/Right` to select a monitor
 2. Use `modKey + 1-9`  to select a workspace
 3. Use `modKeyShift + 1-9` to move windows between workspaces
@@ -16,7 +13,7 @@ This config provides per-monitor virtual desktops. I use it with my laptop monit
 
 This setup allows you assign your apps to workspaces, and quickly retrieve them on either monitor. And if you have a lot of Chrome windows like I do, you can just cycle through them.
 
-### Basic bindings
+## Basic bindings
 * `modKey + 1-9` Select workspace
 * `modKeyShift + 1-9` Move focused window to workspace
 * `modKey + Left/Right` Select left/right monitor
@@ -30,10 +27,15 @@ This setup allows you assign your apps to workspaces, and quickly retrieve them 
 * `modKeyShift + c` Close focused window
 * `modKeyShift + space` Rerender current layout. Useful if you drag around windows and can't figure out what belongs where. Or if things go haywire.
 
-### Notes
+## Key bindings
+The definition of `modKey` and `modKeyShift` can be found in [src/config.ts](src/config.ts). Otherwise modify keys in phoenix.ts.
+
+## Notes
 The active monitor is defined by the mouse position.
 
 Focus follows the mouse but can be turned off in config.ts
+
+Some apps do random things on focus, like focusing all their windows. You might need custom hacks to get a good experiece =(
 
 ## Quick install
 git clone https://github.com/nik3daz/spin2win.git

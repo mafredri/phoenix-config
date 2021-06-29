@@ -178,7 +178,6 @@ Event.on('windowDidOpen', (w) => {
 if (focusOnMouseMove) {
   Event.on('mouseDidMove', (p) => {
     let w = Window.recent().find(w => pointInsideFrame(p, w.frame()));
-    // log(w?.title());
     w?.focus();
   });
 }
@@ -189,7 +188,7 @@ onKey('`', modKey, () => {
     for (let w of s.workspace?.windows || []) {
       const m = new Modal();
       m.text = (s.workspace?.id.toString() || '') + ' ' + w.title();
-      m.duration = 5;
+      m.duration = 3;
       m.icon = w.app().icon();
       let modalBounds = m.frame();
       let windowBounds = w.frame();
