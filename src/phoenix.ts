@@ -86,6 +86,7 @@ class Workspace {
 		if (this.windows.length > 0) {
 			this.windows[0].focus();
 		}
+		saveState();
 	}
 
 	rotate() {
@@ -116,25 +117,40 @@ class Workspace {
 		}
 	}
 }
-function mapToJson(map) {
+function mapToJson(map: Map<any, any>) {
 	return JSON.stringify([...map]);
 }
 function jsonToMap(jsonStr: string) {
 	return new Map(JSON.parse(jsonStr));
 }
 
+function saveState() {
+	let saveState = {
+		workspaces: [] as Array<Object>,
+	};
+	for (let ws of workspaces) {
+		saveState.workspaces.push({
+			windows: ws.windows.map(w => w.hash())
+		});
+	}
+	Storage.set('state', saveState)
+}
+
 let windows = Window.all();
 log(Window.all()
 		.map((w) => w.hash() + " " + w.title()));
 
-let loadedWorkspaces = Storage.get('workspaces') as Array<Workspace> | undefined;
-if (loadedWorkspaces) {
-	for (let ws of loadedWorkspaces) {
-		log('Workspace ' + ws.id);
-		for (let w of ws.windows) {
-			log(w.hash());
+function loadState() {
+	let loadedWorkspaces = Storage.get('state');
+	if (loadedWorkspaces) {
+		for (let ws of loadedWorkspaces) {
+			log('Workspace ' + ws.id);
+			for (let w of ws.windows) {
+				log(w.hash());
+			}
 		}
 	}
+
 }
 
 let workspaces : Array<Workspace> = [];
