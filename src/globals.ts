@@ -121,6 +121,13 @@ function saveState() {
     };
   }
   
+
+
+function getActiveWorkspace() : Workspace {
+    let screen = getActiveScreen();
+    log('getActiveWorkspace: screen: ' + screen.id + ' workspace: ' + screen.workspace?.id);
+    return screen.workspace as Workspace;
+  } 
 export {
     getActiveScreen,
     workspaces,
@@ -129,4 +136,5 @@ export {
     focusWindow,
     saveState,
     moveFocusedWindowToWorkspace,
+    getActiveWorkspace,
   }

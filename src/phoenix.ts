@@ -1,35 +1,17 @@
-import {frameRatio, moveToFrame, pointInsideFrame} from './calc';
-import {hyper, hyperShift} from './config';
-import {cycleBackward, cycleForward} from './cycle';
-import {onKey} from './key';
+import { pointInsideFrame } from './calc';
+import { onKey } from './key';
 import log from './logger';
-import {brightness} from './misc/brightness';
-import {TimerStopper} from './misc/coffee';
-import coffeTimer from './misc/coffee';
-import * as terminal from './misc/terminal';
-import {titleModal, showCenterOn, titleModalOn} from './modal';
-import {Scanner} from './scan';
-import {setFrame, toggleMaximized} from './window';
-import {screenAt} from './screen';
-import { window } from 'rxjs/operators';
-import { textChangeRangeIsUnchanged } from 'typescript';
 import { Workspace } from './workspace';
-import { ScreenProxy } from './screen_proxy';
 import {
   getActiveScreen,
   workspaces,
   screens,
   windowMap,
   focusWindow,
-  saveState,
   moveFocusedWindowToWorkspace,
+  getActiveWorkspace,
 } from './globals';
-
-
-
-const phoenixApp = App.get('Phoenix') || App.get('Phoenix (Debug)');
-const scanner = new Scanner();
-let coffee: TimerStopper | null;
+import { focusOnMouseMove, modKey, modKeyShift } from './config';
 
 /*
 Dev journal
@@ -55,31 +37,16 @@ Still haven't figured out if I should do something with existing windows, but de
 
 */
 
-
-
 Phoenix.set({
   daemon: false,
   openAtLogin: true,
 });
 
-const modKey = 'alt';
-
-
-
-
-
-
-function getActiveWorkspace() : Workspace {
-  let screen = getActiveScreen();
-  log('getActiveWorkspace: screen: ' + screen.id + ' workspace: ' + screen.workspace?.id);
-  return screen.workspace as Workspace;
-}
-
 // Debug keys.
-onKey('`', [modKey], () => {
+onKey('`', modKey, () => {
 
 });
-onKey('`', ['shift', modKey], () => {
+onKey('`', modKeyShift, () => {
   let w = Window.focused();
   if (!w) {
     return;
@@ -91,15 +58,10 @@ onKey('`', ['shift', modKey], () => {
   log('=============================================================');
 });
 
-
-
-
-
-
-onKey('right', [modKey], () => {
+onKey('right', modKey, () => {
   focusWindow(screens[0].workspace?.windows[0]);
 });
-onKey('right', ['shift', modKey], () => {
+onKey('right', modKeyShift, () => {
   let ws = screens[0].workspace;
   if (!ws) {
     return;
@@ -107,10 +69,10 @@ onKey('right', ['shift', modKey], () => {
   moveFocusedWindowToWorkspace(ws.id);
   focusWindow(ws.windows[0]);
 });
-onKey('left', [modKey], () => {
+onKey('left', modKey, () => {
   focusWindow(screens[1].workspace?.windows[0]);
 });
-onKey('left', ['shift', modKey], () => {
+onKey('left', modKeyShift, () => {
   let ws = screens[1].workspace;
   if (!ws) {
     return;
@@ -118,21 +80,77 @@ onKey('left', ['shift', modKey], () => {
   moveFocusedWindowToWorkspace(ws.id);
   focusWindow(ws.windows[0]);
 });
-onKey('down', [modKey], () => focusNextWindow());
-onKey('j', [modKey], () => focusNextWindow());
+onKey('down', modKey, () => focusNextWindow());
+onKey('j', modKey, () => focusNextWindow());
 
-onKey('up', [modKey], () => focusNextWindow(-1));
-onKey('k', [modKey], () => focusNextWindow(-1));
+onKey('up', modKey, () => focusNextWindow(-1));
+onKey('k', modKey, () => focusNextWindow(-1));
 
 
-onKey('h', [modKey], () => {
+onKey('h', modKey, () => {
   getActiveWorkspace().mainRatio -= 0.1;
   getActiveWorkspace().render();
 });
-onKey('l', [modKey], () => {
+onKey('l', modKey, () => {
   getActiveWorkspace().mainRatio += 0.1;
   getActiveWorkspace().render();
 });
+
+// Collect current window into active workspace. Make this collect app.
+onKey('return', ['cmd', 'shift'], () => {
+  let window = Window.focused();
+  if (window) {
+    getActiveWorkspace().addWindow(window);
+  }
+});
+
+// Rerender current screens.
+onKey('space', ['cmd', 'shift'], () => {
+  for (let s of screens) {
+    s.workspace?.render();
+    s.vlog('Rerendered');
+  }
+});
+
+onKey('r', modKey, () => {
+  getActiveWorkspace().rotate();
+});
+
+onKey('r', modKeyShift, () => {
+  let oldMousePos = Mouse.location();
+  let screenWorkspaces = screens.map(s => s.workspace as Workspace);
+  let back = screenWorkspaces.shift() as Workspace;
+  screenWorkspaces.push(back);
+  log(screenWorkspaces.map(w => w.id));
+  screens.forEach((screen, i) => {
+    log('setting SCREEN:' + screen.id + ' WINDOW: ' + screenWorkspaces[i].id);
+    screen.setWorkspace(screenWorkspaces[i].id);
+  });
+  screens.forEach((screen) => {
+    log('rendering SCREEN:' + screen.id + ' WINDOW: ' + screen.workspace?.id);
+    screen.workspace?.render();
+  });
+  Mouse.move(oldMousePos);
+});
+
+
+for (let i = 0; i <= 9; i++) {
+  onKey(i.toString(), modKey, () => {
+    let ws = workspaces[i];
+    if (ws.screen) {
+      ws.screen.vlog('Here ');
+      ws.render();
+      if (getActiveScreen() === ws.screen) {
+        focusWindow(ws.windows[0]);
+      }
+      return;
+    }
+    getActiveScreen().activateWorkspace(i);
+  });
+  onKey(i.toString(), modKeyShift, () => {
+    moveFocusedWindowToWorkspace(i);
+  });
+}
 
 function focusNextWindow(dir = 1) {
   let window = Window.focused();
@@ -152,68 +170,12 @@ function focusNextWindow(dir = 1) {
   focusWindow(windows[(workspace.findIndex(window) + dir + windows.length) % windows.length]);
 }
 
-// Collect current window into active workspace. Make this collect app.
-onKey('return', ['cmd', 'shift'], () => {
-  let window = Window.focused();
-  if (window) {
-    getActiveWorkspace().addWindow(window);
-  }
-});
-
-// Rerender current screens.
-onKey('space', ['cmd', 'shift'], () => {
-  for (let s of screens) {
-    s.workspace?.render();
-    s.vlog('Rerendered');
-  }
-});
-
-onKey('r', [modKey], () => {
-  getActiveWorkspace().rotate();
-});
-
-onKey('r', [modKey, 'shift'], () => {
-  let oldMousePos = Mouse.location();
-  let screenWorkspaces = screens.map(s => s.workspace as Workspace);
-  let back = screenWorkspaces.shift() as Workspace;
-  screenWorkspaces.push(back);
-  log(screenWorkspaces.map(w => w.id));
-  screens.forEach((screen, i) => {
-    log('setting SCREEN:' + screen.id + ' WINDOW: ' + screenWorkspaces[i].id);
-    screen.setWorkspace(screenWorkspaces[i].id);
-  });
-  screens.forEach((screen) => {
-    log('rendering SCREEN:' + screen.id + ' WINDOW: ' + screen.workspace?.id);
-    screen.workspace?.render();
-  });
-  Mouse.move(oldMousePos);
-});
-
-
-for (let i = 0; i <= 9; i++) {
-  onKey(i.toString(), [modKey], () => {
-    let ws = workspaces[i];
-    if (ws.screen) {
-      ws.screen.vlog('Here ');
-      ws.render();
-      if (getActiveScreen() === ws.screen) {
-        focusWindow(ws.windows[0]);
-      }
-      return;
-    }
-    getActiveScreen().activateWorkspace(i);
-  });
-  onKey(i.toString(), [modKey, 'shift'], () => {
-    moveFocusedWindowToWorkspace(i);
-  });
-}
-
 Event.on('windowDidClose', (w) => {
   let ws = windowMap.get(w.hash());
   if (!ws) {
     return;
   }
-  log('windowDidClose ' + w.title() + ' APPNAME: ' +  w.app().name() + ' HASH: ' + w.hash() + ' removing from: ' + ws.id);
+  log('windowDidClose ' + w.title() + ' APPNAME: ' + w.app().name() + ' HASH: ' + w.hash() + ' removing from: ' + ws.id);
   ws.removeWindow(w);
 });
 
@@ -228,9 +190,10 @@ Event.on('windowDidOpen', (w) => {
   }
 });
 
-Event.on('mouseDidMove', (p) => {
-  let w = Window.recent().find(w => pointInsideFrame(p, w.frame()));
-  // log(w?.title());
-  w?.focus();
-});
-
+if (focusOnMouseMove) {
+  Event.on('mouseDidMove', (p) => {
+    let w = Window.recent().find(w => pointInsideFrame(p, w.frame()));
+    // log(w?.title());
+    w?.focus();
+  });
+}

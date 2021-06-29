@@ -1,2 +1,9 @@
-export const hyper: Phoenix.ModifierKey[] = ['cmd', 'ctrl', 'alt'];
-export const hyperShift: Phoenix.ModifierKey[] = [...hyper, 'shift'];
+const modKey: Phoenix.ModifierKey[] = [ 'alt'];
+const modKeyShift: Phoenix.ModifierKey[] = [...modKey, 'shift'];
+const focusOnMouseMove = true;
+
+export {
+    modKey,
+    modKeyShift,
+    focusOnMouseMove,
+}
