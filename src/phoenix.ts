@@ -118,7 +118,12 @@ for (let i = 0; i <= 9; i++) {
       let focusedScreen = getActiveScreen();
       log(focusedScreen.id);
       log(focused?.title());
-      ws.screen.vlog('Here ');
+      if (ws.screen !== focusedScreen) {
+        ws.screen.vlog('Here ');
+        focusedScreen.vlog('Already Showing ' + ws.id, false);
+      } else {
+        focusedScreen.vlog('This is');
+      }
       ws.render();
       if (focusedScreen === ws.screen) {
         log(focusedScreen.id);
