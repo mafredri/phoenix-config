@@ -35,12 +35,18 @@ function cycle(dir: Direction, win?: Window) {
 		return;
 	}
 
-	const app = win.app();
-	const others = app
+	const screen = win.screen();
+	log(screen.windows().map((w) => {
+		return w.hash() + ' - ' + w.app().name() + ' - ' + w.title();
+	}));
+
+	const others = screen
 		.windows()
 		// A window without a title is usually unfocusable,
 		// true for e.g. Finder, Chrome, etc.
-		.filter((w) => w.title() !== '');
+		.filter((w) => w.title() !== '' && w.app().name() !== 'Phoenix');
+
+
 
 	// Do nothing when there is only one window.
 	if (others.length < 2) {
@@ -62,7 +68,7 @@ function cycle(dir: Direction, win?: Window) {
 	const next = order[0];
 	modal.weight = 18;
 	modal.text = next.title();
-	modal.icon = app.icon();
+	modal.icon = next.app().icon();
 	showCenterOn(modal, next.screen());
 	next.focus();
 	closeModal.next();

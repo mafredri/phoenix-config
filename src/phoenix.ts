@@ -7,18 +7,222 @@ import {brightness} from './misc/brightness';
 import {TimerStopper} from './misc/coffee';
 import coffeTimer from './misc/coffee';
 import * as terminal from './misc/terminal';
-import {titleModal, showCenterOn} from './modal';
+import {titleModal, showCenterOn, titleModalOn} from './modal';
 import {Scanner} from './scan';
 import {setFrame, toggleMaximized} from './window';
 import {screenAt} from './screen';
+import { window } from 'rxjs/operators';
 
+const phoenixApp = App.get('Phoenix') || App.get('Phoenix (Debug)');
 const scanner = new Scanner();
 let coffee: TimerStopper | null;
 
+/*
+Dev journal
+
+29-06-21
+Many simpsons episodes. Implemented simple window adding and rotaties.
+Need to do some window hiding to make thing usable
+Probably want to store all window hashes so that reloads maintain state
+There's something weird about flipped coordinates to work on too. That should get abstracted.
+MVP Feature list:
+- new window added to current workspace, or apps to workspaces
+- switch workspace and hide all other windows
+- mod + r to rotate
+- mod + left/right to focus monitor
+- mod + 1-9 to render workspace 1-9 on active monitor
+- mod + shift + left/right to move window to left/right monitor workspace
+
+*/
+
+
+
 Phoenix.set({
-	daemon: true,
+	daemon: false,
 	openAtLogin: true,
 });
+
+type WindowProps = {
+	x: number
+};
+let windowMap = new Map<number, WindowProps>();
+
+class Workspace {
+	windows: Array<Window> = [];
+	id;
+	screen : ScreenProxy | null = null;
+	mainRatio = 0.8;
+
+	constructor(id: number) {
+		this.id = id;
+	}
+
+	render() {
+		if (!this.screen) {
+			throw new Error("render without a screen");
+		}
+		let screen = this.screen.screen;
+		let screenBounds = screen.flippedVisibleFrame();
+		log(screenBounds.x + ' '  + screenBounds.y + ' ' + screenBounds.width + ' ' + screenBounds.height );
+		let mainWidth = screenBounds.width * this.mainRatio;
+		for (let [i, win] of this.windows.entries()) {
+			let bounds = Object.assign({}, screenBounds);
+			if (i === 0) {
+				if (this.windows.length > 1) {
+					bounds.width = mainWidth;
+				}
+			} else {
+				let sidebarWindows = this.windows.length - 1;
+				bounds.x = screenBounds.x + mainWidth + 1;
+				bounds.width = screenBounds.width - mainWidth;
+				// TODO sort out the boundary conditions lol
+				bounds.height = screenBounds.height / sidebarWindows;;
+				bounds.y = screenBounds.y + screenBounds.height / sidebarWindows * (i - 1) + 1;
+			}
+			log(bounds.x + ' '  + bounds.y + ' ' + bounds.width + ' ' + bounds.height + ' ' + win.title());
+			win.setFrame(bounds);
+			win.focus();
+		}
+		if (this.windows.length > 0) {
+			this.windows[0].focus();
+		}
+	}
+
+	rotate() {
+		let x = this.windows.pop();
+		if (x)
+			this.windows.unshift(x);
+		log(this.windows.map((w) => w.title()));
+		this.modal('Rotating ');
+		this.render();
+	}
+
+	modal(message: String) {
+		let screen = this.screen;
+		if (screen) {
+			titleModalOn(screen.screen, message + this.id.toString(), 1, phoenixApp && phoenixApp.icon());
+		}
+	}
+
+	addWindow(window: Window) {
+		if (!this.windows.find(w => window == w)) {
+			this.windows.push(window);
+			if (this.screen) {
+				this.render();
+			}
+			this.modal('Adding window to ');
+		} else {
+			this.modal('Window already on ');
+		}
+	}
+}
+function mapToJson(map) {
+	return JSON.stringify([...map]);
+}
+function jsonToMap(jsonStr: string) {
+	return new Map(JSON.parse(jsonStr));
+}
+
+let windows = Window.all();
+log(Window.all()
+		.map((w) => w.hash() + " " + w.title()));
+
+let loadedWorkspaces = Storage.get('workspaces') as Array<Workspace> | undefined;
+if (loadedWorkspaces) {
+	for (let ws of loadedWorkspaces) {
+		log('Workspace ' + ws.id);
+		for (let w of ws.windows) {
+			log(w.hash());
+		}
+	}
+}
+
+let workspaces : Array<Workspace> = [];
+for (let i = 0; i <= 9; i++) {
+	workspaces.push(new Workspace(i));
+}
+
+class ScreenProxy {
+	screen;
+	id;
+	workspace: Workspace | null = null;
+	constructor(screen: Screen, id: number) {
+		this.screen = screen;
+		this.id = id;
+		if (id < 2) {
+			this.activateWorkspace(id + 1);
+		}
+	}
+
+	activateWorkspace(workspaceId: number) {
+		if (this.workspace)
+			this.workspace.screen = null;
+
+		this.workspace = workspaces[workspaceId];
+		this.workspace.screen = this;
+		Phoenix.log(this.id + ' ' + this.workspace.id);
+		titleModalOn(this.screen, 'Activated ' + workspaceId, 1, phoenixApp && phoenixApp.icon());
+	}
+}
+
+// We assume that the number of screens does no`t change. Just reload Phoenix.
+let screens: Array<ScreenProxy> = [];
+for (let [i, screen] of Screen.all().entries()) {
+	screens.push(new ScreenProxy(screen, i));
+}
+
+function getActiveWorkspace() : Workspace {
+	let screen = getActiveScreen();
+	return screen.workspace as Workspace;
+}
+
+// Collect current window into active workspace. Make this collect app.
+onKey('return', ['cmd', 'shift'], () => {
+	let window = Window.focused();
+	if (window) {
+		getActiveWorkspace().addWindow(window);
+	}
+});
+
+// Rerender current screens.
+onKey('space', ['cmd', 'shift'], () => {
+	for (let s of screens) {
+		(s.workspace as Workspace).render();
+	}
+});
+
+onKey('r', ['alt'], () => {
+	getActiveWorkspace().rotate();
+});
+
+onKey('r', ['alt', 'shift'], () => {
+	let screenWorkspaces = screens.map(s => s.workspace as Workspace);
+	let back = screenWorkspaces.shift() as Workspace;
+	screenWorkspaces.push(back);
+	screens.forEach((screen, i) => {
+		screen.activateWorkspace(screenWorkspaces[i].id);
+	});
+});
+
+
+function getActiveScreen() : ScreenProxy {
+	let screenId = screens.findIndex((s) => s.screen === Window.focused()?.screen());
+	let screen = screens[screenId === -1 ? 0 : screenId];
+	return screen;
+}
+
+for (let i = 0; i < 9; i++) {
+	onKey(i.toString(), ['alt'], () => {
+		getActiveScreen().activateWorkspace(i);
+	});
+	onKey(i.toString(), ['alt', 'shift'], () => {
+		let window = Window.focused();
+		if (window) {
+			workspaces[i].addWindow(window);
+		}
+	});
+}
+
 
 Event.on('screensDidChange', () => {
 	log('Screens changed');
@@ -455,6 +659,7 @@ onKey('space', hyper, () => {
 	}
 });
 
+
 // Always hide apps, even if they're the last one on the desktop.
 onKey('h', ['cmd'], (_: Key, repeated: boolean) => {
 	// Hide all windows when Cmd+H is held.
@@ -478,5 +683,4 @@ function objEq(a: {[key: string]: any}, b: {[key: string]: any}) {
 	return akeys.every((k) => a[k] === b[k]);
 }
 
-const phoenixApp = App.get('Phoenix') || App.get('Phoenix (Debug)');
-titleModal('Phoenix (re)loaded!', 2, phoenixApp && phoenixApp.icon());
+// titleModal('Phoenix (re)loaded!', 2, phoenixApp && phoenixApp.icon());

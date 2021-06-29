@@ -9,7 +9,6 @@
 		"strict": true,
 		"noFallthroughCasesInSwitch": true,
 		"pretty": true,
-		"stripInternal": true,
 		"typeRoots": ["node_modules/@types"],
 		"lib": ["es2018"]
 	},

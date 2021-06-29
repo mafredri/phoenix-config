@@ -7,6 +7,7 @@ enum Orientation {
 
 export {
 	titleModal,
+	titleModalOn,
 	originOnScreen,
 	applyMargin,
 	showCenterOn,
@@ -15,13 +16,17 @@ export {
 };
 
 function titleModal(text: string, duration: number = 1, icon?: Phoenix.Icon) {
+	titleModalOn(Screen.main(), text, duration, icon);
+}
+
+function titleModalOn(screen: Screen, text: string, duration: number = 1, icon?: Phoenix.Icon) {
 	const m = new Modal();
 	m.text = text;
 	m.duration = duration;
 	if (icon) {
 		m.icon = icon;
 	}
-	showTitleOn(m, Screen.main());
+	showTitleOn(m, screen);
 }
 
 /**
