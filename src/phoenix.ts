@@ -1,4 +1,4 @@
-import {frameRatio, moveToFrame} from './calc';
+import {frameRatio, moveToFrame, pointInsideFrame} from './calc';
 import {hyper, hyperShift} from './config';
 import {cycleBackward, cycleForward} from './cycle';
 import {onKey} from './key';
@@ -12,6 +12,7 @@ import {Scanner} from './scan';
 import {setFrame, toggleMaximized} from './window';
 import {screenAt} from './screen';
 import { window } from 'rxjs/operators';
+import { textChangeRangeIsUnchanged } from 'typescript';
 
 const phoenixApp = App.get('Phoenix') || App.get('Phoenix (Debug)');
 const scanner = new Scanner();
@@ -20,7 +21,7 @@ let coffee: TimerStopper | null;
 /*
 Dev journal
 
-29-06-21
+28-06-21
 Many simpsons episodes. Implemented simple window adding and rotaties.
 Need to do some window hiding to make thing usable
 Probably want to store all window hashes so that reloads maintain state
@@ -33,6 +34,12 @@ MVP Feature list:
 - mod + 1-9 to render workspace 1-9 on active monitor
 - mod + shift + left/right to move window to left/right monitor workspace
 
+29-06-21
+Boom shakalaka, making good headway.
+The basic version works, but I think there might be some weird issues with automagically
+adding/removing windows. But maybe not.
+Still haven't figured out if I should do something with existing windows, but declaring window bankruptcy for now!
+
 */
 
 
@@ -42,10 +49,12 @@ Phoenix.set({
   openAtLogin: true,
 });
 
-type WindowProps = {
-  x: number
-};
-let windowMap = new Map<number, WindowProps>();
+let windowMap = new Map<number, Workspace>();
+
+function hideAllApps() {
+  const apps = Window.all({visible: true}).map((w) => w.app());
+  new Set(apps).forEach((a) => a.hide());
+}
 
 class Workspace {
   windows: Array<Window> = [];
@@ -57,20 +66,40 @@ class Workspace {
     this.id = id;
   }
 
-  render() {
+  garbageCollect() {
+    let live = new Set(Window.all().map(w => w.hash()));
+    this.windows = this.windows.filter(w => live.has(w.hash()));
+  }
+
+  render(hideEmpty = true) {
+    this.garbageCollect();
     if (!this.screen) {
-      throw new Error("render without a screen");
+      throw new Error("render called without a screen: " + this.id);
     }
+
+    if (hideEmpty && this.windows.length == 0 && this.screen.screen.windows({visible: true}).length > 0) {
+      hideAllApps();
+      screens.forEach(s => {
+        let ws = s.workspace;
+        if (ws && ws.windows.length > 0) {
+          ws.render(false);
+        } 
+      });
+    }
+
     let screen = this.screen.screen;
     let screenBounds = screen.flippedVisibleFrame();
     log(screenBounds.x + ' '  + screenBounds.y + ' ' + screenBounds.width + ' ' + screenBounds.height );
     let mainWidth = screenBounds.width * this.mainRatio;
-    for (let [i, win] of this.windows.entries()) {
+    for (let i = this.windows.length - 1; i >= 0; i--) {
+      let win = this.windows[i];
       let bounds = Object.assign({}, screenBounds);
       if (i === 0) {
         if (this.windows.length > 1) {
           bounds.width = mainWidth;
         }
+        win.setTopLeft(bounds);
+        win.setSize(bounds);
       } else {
         let sidebarWindows = this.windows.length - 1;
         bounds.x = screenBounds.x + mainWidth + 1;
@@ -78,21 +107,25 @@ class Workspace {
         // TODO sort out the boundary conditions lol
         bounds.height = screenBounds.height / sidebarWindows;;
         bounds.y = screenBounds.y + screenBounds.height / sidebarWindows * (i - 1) + 1;
+        if (win.frame().width < bounds.width) {
+        win.setTopLeft(bounds);
+        }
+        win.setSize(bounds);
+        win.setTopLeft(bounds);
       }
       log(bounds.x + ' '  + bounds.y + ' ' + bounds.width + ' ' + bounds.height + ' ' + win.title());
-      win.setFrame(bounds);
       win.focus();
     }
-    if (this.windows.length > 0) {
-      this.windows[0].focus();
-    }
+    // if (this.windows.length > 0) {
+    //   this.windows[0].focus();
+    // }
     saveState();
   }
 
   rotate() {
-    let x = this.windows.pop();
+    let x = this.windows.shift();
     if (x)
-      this.windows.unshift(x);
+      this.windows.push(x);
     log(this.windows.map((w) => w.title()));
     this.modal('Rotating ');
     this.render();
@@ -105,16 +138,46 @@ class Workspace {
     }
   }
 
-  addWindow(window: Window) {
-    if (!this.windows.find(w => window == w)) {
-      this.windows.push(window);
-      if (this.screen) {
-        this.render();
-      }
-      this.modal('Adding window to ');
-    } else {
-      this.modal('Window already on ');
+  findIndexByHash(hash : number) {
+    return this.windows.findIndex(w => hash === w.hash());
+  }
+
+  findIndex(window: Window) {
+    return this.findIndexByHash(window.hash());
+  }
+
+  removeWindow(window: Window) {
+    let idx = this.findIndex(window);
+    if (idx == -1) {
+      return;
     }
+    this.windows.splice(idx, 1);
+    if (this.screen) {
+      this.render();
+    }
+  }
+
+  addWindow(window: Window, asMain?: boolean) {
+    let idx = this.findIndex(window);
+    if (idx != -1) {
+      this.modal('Window already on ');
+      return;
+    }
+
+    let oldWorkspace = windowMap.get(window.hash());
+    if (oldWorkspace) {
+      oldWorkspace.removeWindow(window);
+    }
+    if (asMain) {
+      this.windows.unshift(window);
+    } else {
+      this.windows.push(window);
+    }
+    windowMap.set(window.hash(), this);
+    if (this.screen) {
+      this.render();
+    }
+    this.modal('Adding window to ');
   }
 }
 function mapToJson(map: Map<any, any>) {
@@ -127,35 +190,57 @@ function jsonToMap(jsonStr: string) {
 function saveState() {
   let saveState = {
     workspaces: [] as Array<Object>,
+    screens: [] as Array<Object>,
   };
-  for (let ws of workspaces) {
-    saveState.workspaces.push({
-      windows: ws.windows.map(w => w.hash())
+  for (let s of screens) {
+    saveState.screens.push({
+      id: s.id,
+      workspace: s.workspace?.id,
     });
   }
+  for (let ws of workspaces) {
+    saveState.workspaces.push({
+      id: ws.id,
+      mainRatio: ws.mainRatio,
+      windows: ws.windows.map(w => w.hash()),
+    });
+  }
+  log('============SAVING============');
+  // log(saveState);
   Storage.set('state', saveState)
 }
 
-let windows = Window.all();
-log(Window.all()
-    .map((w) => w.hash() + " " + w.title()));
-
-function loadState() {
-  let loadedWorkspaces = Storage.get('state');
-  if (loadedWorkspaces) {
-    for (let ws of loadedWorkspaces) {
-      log('Workspace ' + ws.id);
-      for (let w of ws.windows) {
-        log(w.hash());
-      }
-    }
-  }
-
-}
+log(Window.all().map((w) => w.hash() + " " + w.title()));
 
 let workspaces : Array<Workspace> = [];
 for (let i = 0; i <= 9; i++) {
   workspaces.push(new Workspace(i));
+}
+
+
+function loadState() {
+  let currentWindows = Window.all();
+  let loadState = Storage.get('state');
+  log('============LOADING============');
+  log(loadState);
+  if (loadState) {
+    for (let ws of (loadState.workspaces || [])) {
+      log('Workspace ' + ws.id);
+      let workspace = workspaces[ws.id];
+      if (ws.mainRatio)
+        workspace.mainRatio = ws.mainRatio;
+      for (let hash of ws.windows) {
+        let currentWindow = currentWindows.find(w => w.hash() === hash);
+        if (currentWindow)
+          workspace.addWindow(currentWindow);
+      }
+    }
+    for (let s of (loadState.screens || [])) {
+      if (s.workspace) {
+        screens[s.id].activateWorkspace(s.workspace);
+      }
+    }
+  }
 }
 
 class ScreenProxy {
@@ -165,31 +250,150 @@ class ScreenProxy {
   constructor(screen: Screen, id: number) {
     this.screen = screen;
     this.id = id;
-    if (id < 2) {
-      this.activateWorkspace(id + 1);
-    }
   }
 
-  activateWorkspace(workspaceId: number) {
-    if (this.workspace)
+  setWorkspace(workspaceId: number) {
+    if (this.workspace?.screen?.id === this.id) {
       this.workspace.screen = null;
+    }
 
-    this.workspace = workspaces[workspaceId];
-    this.workspace.screen = this;
-    Phoenix.log(this.id + ' ' + this.workspace.id);
-    titleModalOn(this.screen, 'Activated ' + workspaceId, 1, phoenixApp && phoenixApp.icon());
+    let ws = workspaces[workspaceId];
+    this.workspace = ws;
+    ws.screen = this;
+  }
+
+  activateWorkspace(workspaceId: number, swap?: boolean, force?: boolean) {
+    this.setWorkspace(workspaceId);
+    let ws = workspaces[workspaceId];
+    ws.render();
+    focusWindow(ws.windows[0]);
+    Phoenix.log(this.id + ' ' + this.workspace?.id);
+    this.vlog('Activated');
+  }
+
+  vlog(msg: string) {
+    titleModalOn(this.screen, msg + ' ' + this.workspace?.id, 1, phoenixApp && phoenixApp.icon());
   }
 }
 
-// We assume that the number of screens does no`t change. Just reload Phoenix.
+// We assume that the number of screens does not change. Just reload Phoenix.
+let startupMousePos = Mouse.location();
 let screens: Array<ScreenProxy> = [];
 for (let [i, screen] of Screen.all().entries()) {
   screens.push(new ScreenProxy(screen, i));
 }
 
+loadState();
+
+for (let [i, s] of screens.entries()) {
+  if (!s.workspace) {
+    s.activateWorkspace(i + 1);
+  }
+}
+
+Mouse.move(startupMousePos);
+
 function getActiveWorkspace() : Workspace {
   let screen = getActiveScreen();
+  log('getActiveWorkspace: screen: ' + screen.id + ' workspace: ' + screen.workspace?.id);
   return screen.workspace as Workspace;
+}
+
+const modKey = 'alt';
+
+// Debug keys.
+onKey('`', [modKey], () => {
+
+});
+onKey('`', ['shift', modKey], () => {
+  let w = Window.focused();
+  if (!w) {
+    return;
+  }
+  log('=============================================================');
+  log(w.hash() + ' - ' + w.app.name + ' - ' + w.title());
+  let loadState = Storage.get('state');
+  log(loadState);
+  log('=============================================================');
+});
+
+function mid(x1 : number, x2 : number) {
+  return (x1 + x2) / 2;
+}
+
+function center(r: Rectangle) {
+  return {
+    x: mid(r.x, r.x + r.width),
+    y: mid(r.y, r.y + r.height),
+  };
+}
+
+function focusWindow(window: Window | undefined | null) {
+  if (!window) {
+    return;
+  }
+  window.focus();
+  let b = window.frame();
+  log('Focusing: ' + window.title());
+  // log(b);
+  Mouse.move(center(b));
+}
+
+
+onKey('right', [modKey], () => {
+  focusWindow(screens[0].workspace?.windows[0]);
+});
+onKey('right', ['shift', modKey], () => {
+  let ws = screens[0].workspace;
+  if (!ws) {
+    return;
+  }
+  moveFocusedWindowToWorkspace(ws.id);
+  focusWindow(ws.windows[0]);
+});
+onKey('left', [modKey], () => {
+  focusWindow(screens[1].workspace?.windows[0]);
+});
+onKey('left', ['shift', modKey], () => {
+  let ws = screens[1].workspace;
+  if (!ws) {
+    return;
+  }
+  moveFocusedWindowToWorkspace(ws.id);
+  focusWindow(ws.windows[0]);
+});
+onKey('down', [modKey], () => focusNextWindow());
+onKey('j', [modKey], () => focusNextWindow());
+
+onKey('up', [modKey], () => focusNextWindow(-1));
+onKey('k', [modKey], () => focusNextWindow(-1));
+
+
+onKey('h', [modKey], () => {
+  getActiveWorkspace().mainRatio -= 0.1;
+  getActiveWorkspace().render();
+});
+onKey('l', [modKey], () => {
+  getActiveWorkspace().mainRatio += 0.1;
+  getActiveWorkspace().render();
+});
+
+function focusNextWindow(dir = 1) {
+  let window = Window.focused();
+  if (!window) {
+    // TODO use mouse to figure our current screen?
+    let screen = getActiveScreen();
+    if (screen.workspace)
+      screen.activateWorkspace(screen.workspace.id);
+    return;
+  }
+  let hash = window.hash();
+  let workspace = windowMap.get(hash);
+  if (!workspace) {
+    return;
+  }
+  let windows = workspace.windows;
+  focusWindow(windows[(workspace.findIndex(window) + dir + windows.length) % windows.length]);
 }
 
 // Collect current window into active workspace. Make this collect app.
@@ -203,42 +407,95 @@ onKey('return', ['cmd', 'shift'], () => {
 // Rerender current screens.
 onKey('space', ['cmd', 'shift'], () => {
   for (let s of screens) {
-    (s.workspace as Workspace).render();
+    s.workspace?.render();
+    s.vlog('Rerendered');
   }
 });
 
-onKey('r', ['alt'], () => {
+onKey('r', [modKey], () => {
   getActiveWorkspace().rotate();
 });
 
-onKey('r', ['alt', 'shift'], () => {
+onKey('r', [modKey, 'shift'], () => {
+  let oldMousePos = Mouse.location();
   let screenWorkspaces = screens.map(s => s.workspace as Workspace);
   let back = screenWorkspaces.shift() as Workspace;
   screenWorkspaces.push(back);
+  log(screenWorkspaces.map(w => w.id));
   screens.forEach((screen, i) => {
-    screen.activateWorkspace(screenWorkspaces[i].id);
+    log('setting SCREEN:' + screen.id + ' WINDOW: ' + screenWorkspaces[i].id);
+    screen.setWorkspace(screenWorkspaces[i].id);
   });
+  screens.forEach((screen, i) => {
+    log('rendering SCREEN:' + screen.id + ' WINDOW: ' + screen.workspace?.id);
+    screen.workspace?.render();
+  });
+  Mouse.move(oldMousePos);
 });
 
 
+
 function getActiveScreen() : ScreenProxy {
-  let screenId = screens.findIndex((s) => s.screen === Window.focused()?.screen());
-  let screen = screens[screenId === -1 ? 0 : screenId];
-  return screen;
+  let pos = Mouse.location();
+
+  let screen = screens.find(s => {
+    let b = s.screen.flippedFrame();
+    return pointInsideFrame(pos, b);
+  });
+
+  return screen || screens[0];
 }
 
-for (let i = 0; i < 9; i++) {
-  onKey(i.toString(), ['alt'], () => {
+function moveFocusedWindowToWorkspace(workspaceId: number) {
+  let window = Window.focused();
+  if (window) {
+    workspaces[workspaceId].addWindow(window, true);
+  }
+}
+
+for (let i = 0; i <= 9; i++) {
+  onKey(i.toString(), [modKey], () => {
+    let ws = workspaces[i];
+    if (ws.screen) {
+      ws.screen.vlog('Here ');
+      ws.render();
+      if (getActiveScreen() === ws.screen) {
+        focusWindow(ws.windows[0]);
+      }
+      return;
+    }
     getActiveScreen().activateWorkspace(i);
   });
-  onKey(i.toString(), ['alt', 'shift'], () => {
-    let window = Window.focused();
-    if (window) {
-      workspaces[i].addWindow(window);
-    }
+  onKey(i.toString(), [modKey, 'shift'], () => {
+    moveFocusedWindowToWorkspace(i);
   });
 }
 
+Event.on('windowDidClose', (w) => {
+  let ws = windowMap.get(w.hash());
+  if (!ws) {
+    return;
+  }
+  log('windowDidClose ' + w.title() + ' APPNAME: ' +  w.app().name() + ' HASH: ' + w.hash() + ' removing from: ' + ws.id);
+  ws.removeWindow(w);
+});
+
+Event.on('windowDidOpen', (w) => {
+  if (!w.isVisible() || windowMap.get(w.hash())) {
+    return;
+  }
+  log('windowDidOpen ' + w.title() + ' APPNAME: ' + w.app().name() + ' HASH: ' + w.hash()) + ' adding to: ' + getActiveWorkspace().id;
+  // Phoenix modals shouldn't be part of our system.
+  if (w.app().name() != 'Phoenix') {
+    getActiveWorkspace().addWindow(w, true);
+  }
+});
+
+Event.on('mouseDidMove', (p) => {
+  let w = Window.recent().find(w => pointInsideFrame(p, w.frame()));
+  // log(w?.title());
+  w?.focus();
+});
 
 Event.on('screensDidChange', () => {
   log('Screens changed');
