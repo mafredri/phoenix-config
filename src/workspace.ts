@@ -17,20 +17,15 @@ export class Workspace {
       this.windows = this.windows.filter(w => live.has(w.hash()));
     }
   
-    render(hideEmpty = true) {
+    render() {
       this.garbageCollect();
       if (!this.screen) {
         throw new Error("render called without a screen: " + this.id);
       }
   
-      if (hideEmpty && this.windows.length == 0 && this.screen.screen.windows({visible: true}).length > 0) {
+      if (this.windows.length == 0) {
         this.screen.hideAllApps();
-        screens.forEach(s => {
-          let ws = s.workspace;
-          if (ws && ws.windows.length > 0) {
-            ws.render(false);
-          } 
-        });
+        return;
       }
   
       let screen = this.screen.screen;

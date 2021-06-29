@@ -1,5 +1,3 @@
-import log from './logger';
-
 const handlers: Map<string, Key> = new Map();
 
 function onKey(

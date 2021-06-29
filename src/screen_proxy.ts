@@ -21,7 +21,7 @@ export class ScreenProxy {
       ws.screen = this;
     }
   
-    activateWorkspace(workspaceId: number, swap?: boolean, force?: boolean) {
+    activateWorkspace(workspaceId: number) {
       this.setWorkspace(workspaceId);
       let ws = workspaces[workspaceId];
       ws.render();

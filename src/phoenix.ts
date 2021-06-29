@@ -10,52 +10,14 @@ import {
   focusWindow,
   moveFocusedWindowToWorkspace,
   getActiveWorkspace,
+  center,
 } from './globals';
 import { focusOnMouseMove, modKey, modKeyShift } from './config';
 
-/*
-Dev journal
-
-28-06-21
-Many simpsons episodes. Implemented simple window adding and rotaties.
-Need to do some window hiding to make thing usable
-Probably want to store all window hashes so that reloads maintain state
-There's something weird about flipped coordinates to work on too. That should get abstracted.
-MVP Feature list:
-- new window added to current workspace, or apps to workspaces
-- switch workspace and hide all other windows
-- mod + r to rotate
-- mod + left/right to focus monitor
-- mod + 1-9 to render workspace 1-9 on active monitor
-- mod + shift + left/right to move window to left/right monitor workspace
-
-29-06-21
-Boom shakalaka, making good headway.
-The basic version works, but I think there might be some weird issues with automagically
-adding/removing windows. But maybe not.
-Still haven't figured out if I should do something with existing windows, but declaring window bankruptcy for now!
-
-*/
 
 Phoenix.set({
   daemon: false,
   openAtLogin: true,
-});
-
-// Debug keys.
-onKey('`', modKey, () => {
-
-});
-onKey('`', modKeyShift, () => {
-  let w = Window.focused();
-  if (!w) {
-    return;
-  }
-  log('=============================================================');
-  log(w.hash() + ' - ' + w.app.name + ' - ' + w.title());
-  let loadState = Storage.get('state');
-  log(loadState);
-  log('=============================================================');
 });
 
 onKey('right', modKey, () => {
@@ -96,20 +58,34 @@ onKey('l', modKey, () => {
   getActiveWorkspace().render();
 });
 
-// Collect current window into active workspace. Make this collect app.
-onKey('return', ['cmd', 'shift'], () => {
+// Collect current window into active workspace.
+onKey('return', modKeyShift, () => {
   let window = Window.focused();
   if (window) {
     getActiveWorkspace().addWindow(window);
   }
 });
 
+onKey('delete', modKeyShift, () => {
+  let window = Window.focused();
+  if (window) {
+    getActiveWorkspace().removeWindow(window);
+  }
+});
+
+onKey('c', modKeyShift, () => {
+  let window = Window.focused();
+  window?.close();
+});
+
 // Rerender current screens.
-onKey('space', ['cmd', 'shift'], () => {
+onKey('space', modKeyShift, () => {
+  let window = Window.focused();
   for (let s of screens) {
     s.workspace?.render();
     s.vlog('Rerendered');
   }
+  focusWindow(window);
 });
 
 onKey('r', modKey, () => {
@@ -138,11 +114,20 @@ for (let i = 0; i <= 9; i++) {
   onKey(i.toString(), modKey, () => {
     let ws = workspaces[i];
     if (ws.screen) {
+      let focused = Window.focused();
+      let focusedScreen = getActiveScreen();
+      log(focusedScreen.id);
+      log(focused?.title());
       ws.screen.vlog('Here ');
       ws.render();
-      if (getActiveScreen() === ws.screen) {
+      if (focusedScreen === ws.screen) {
+        log(focusedScreen.id);
         focusWindow(ws.windows[0]);
+      } else {
+        log(focused?.title());
+        focusWindow(focused);
       }
+
       return;
     }
     getActiveScreen().activateWorkspace(i);
@@ -197,3 +182,37 @@ if (focusOnMouseMove) {
     w?.focus();
   });
 }
+
+// Debug keys.
+onKey('`', modKey, () => {
+  for (let s of screens) {
+    for (let w of s.workspace?.windows || []) {
+      const m = new Modal();
+      m.text = (s.workspace?.id.toString() || '') + ' ' + w.title();
+      m.duration = 5;
+      m.icon = w.app().icon();
+      let modalBounds = m.frame();
+      let windowBounds = w.frame();
+      let origin = center(windowBounds);
+      let screenBounds = s.screen.flippedFrame();
+      let y = origin.y - screenBounds.y;
+      y = screenBounds.height - y;
+      origin.x -= modalBounds.width / 2;
+      origin.y = y - modalBounds.height + s.screen.frame().y;
+      m.origin = origin;
+      m.show();
+    }
+  }
+});
+
+onKey('`', modKeyShift, () => {
+  let w = Window.focused();
+  if (!w) {
+    return;
+  }
+  log('=============================================================');
+  log(w.hash() + ' - ' + w.app.name + ' - ' + w.title());
+  let loadState = Storage.get('state');
+  log(loadState);
+  log('=============================================================');
+});

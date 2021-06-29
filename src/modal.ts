@@ -1,3 +1,5 @@
+import log from './logger';
+
 enum Orientation {
 	NorthWest,
 	NorthEast,
@@ -55,6 +57,7 @@ function showAt(
 		x: sf.x + (sf.width / widthDiv - width / 2),
 		y: sf.y + (sf.height / heightDiv - height / 2),
 	};
+	log(modal.origin);
 	modal.show();
 }
 

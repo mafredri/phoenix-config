@@ -1,57 +1,50 @@
 # Phoenix configuration
 
-This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, written in TypeScript. I also created [typings](https://github.com/mafredri/phoenix-typings) for it, feel free to use them.
+This is my personal [Phoenix](https://github.com/kasper/phoenix) configuration, written in TypeScript and forked from [mafredri's config](https://github.com/mafredri/phoenix-config/).
 
 ## Key bindings
+The definition of `modKey` and `modKeyShift` can be found in [src/config.ts](src/config.ts).
 
-The definition of `hyper` and `hyperShift` can be found in [src/config.ts](src/config.ts).
+### Overview
+This config provides per-monitor virtual desktops. I use it with my laptop monitor + an external monitor. It's a reimplementation of my xmonad setup at work.
+
+### Intended Usage
+1. Use `modKey + Left/Right` to select a monitor
+2. Use `modKey + 1-9`  to select a workspace
+3. Use `modKeyShift + 1-9` to move windows between workspaces
+4. Extra windows on a workspace are stacked to the side. Press `modKey + r` to cycle through the windows on a workspace.
+
+This setup allows you assign your apps to workspaces, and quickly retrieve them on either monitor. And if you have a lot of Chrome windows like I do, you can just cycle through them.
 
 ### Basic bindings
+* `modKey + 1-9` Select workspace
+* `modKeyShift + 1-9` Move focused window to workspace
+* `modKey + Left/Right` Select left/right monitor
+* `modKeyShift + Left/Right` Move active window to left/right monitor
+* `modKey + r` Spin windows on current workspace
+* `modKeyShift + r` Spin workspaces across monitors
+* `modKey + h/l` Decrease/increase the main area size
+* `modKey + up/down/j/k` Focus next/previous window on current workspace
+* `modKeyShift + return` Add focused window to current workspace
+* `modKeyShift + backspace` Remove focused window from workspace
+* `modKeyShift + c` Close focused window
+* `modKeyShift + space` Rerender current layout. Useful if you drag around windows and can't figure out what belongs where. Or if things go haywire.
 
-* `hyper + Left` (Left half of screen)
-* `hyper + Right` (Right half of screen)
-* `hyper + Up` (Top half of screen height, keeps current width)
-* `hyper + Down` (Bottom half of screen height, keeps current width)
-* `hyper + Return` (Toggle maximize, remembers unmaximized position)
-* `hyper + Tab` (Jump to next screen whilst keeping relative size and placement)
-* `hyper + Delete` (Minimize focused window)
-* `hyperShift + Left` (Move window to left edge of screen)
-* `hyperShift + Right` (Move window to right edge of screen)
-* `hyperShift + Up` (Move window to top edge of screen)
-* `hyperShift + Down` (Move window to bottom edge of screen)
-* `hyperShift + Return` (Move window to center of screen)
-* `hyperShift + Tab` (Jump to next screen whilst maintaining current window size)
+### Notes
+The active monitor is defined by the mouse position.
 
-Use combos of the key bindings to further place the windows:
+Focus follows the mouse but can be turned off in config.ts
 
-* `hyper + Left` + `hyper + Down` (Bottom left corner of screen)
-* `hyper + Enter` + `hyper + Up` (Top half of screen, full width)
-
-I've optimized the key bindings for my common use-case, showing two windows on one screen and moving windows between screens.
-
-### Misc bindings
-
-* `hyper + c` (Start coffee timer, defaults to 8 minutes)
-* `hyper + +` (Increase monitor brightness using external script)
-* `hyper + -` (Decrease monitor brightness using external script)
-* `hyper + Space` (Experimental: search for windows, tab to cycle, enter to switch, esc to cancel)
-* `§` (Show or hide the last used Terminal window)
-* `Cmd + §` (Cycle between Terminal windows)
-* `Cmd + Escape` (Cycle between windows of current application, including minimized and windows on a different screen)
-* `Cmd + Shift + Escape` (Same as `Cmd + Escape` except in reverse order)
-* `Cmd + h` (Hides the focused app or all visible apps if held down)
-
-## Misc features
-
-* Switch between Karabiner-Elements profiles when screens change
-* Refresh screen brightness info when screens change (using `ddcctl`)
-* Support disabling / re-enabling all current keybindings via [src/key.ts](src/key.ts) (used by scanner)
+## Quick install
+git clone https://github.com/nik3daz/spin2win.git
+cd spin2win
+ln -s \`pwd\`/out/phoenix.js ~/.phoenix.config.js 
 
 ## Building
 
 ```
-git clone https://github.com/mafredri/phoenix-config.git
-cd phoenix-config
+git clone https://github.com/nik3daz/spin2win.git
+cd spin2win
 yarn install
 yarn run build
 ```
