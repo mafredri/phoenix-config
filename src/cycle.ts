@@ -40,7 +40,7 @@ function cycle(dir: Direction, win?: Window) {
 		.windows()
 		// A window without a title is usually unfocusable,
 		// true for e.g. Finder, Chrome, etc.
-		.filter((w) => w.title() !== '');
+		.filter((w) => w.title() !== '' && !w.isMinimized());
 
 	// Do nothing when there is only one window.
 	if (others.length < 2) {
