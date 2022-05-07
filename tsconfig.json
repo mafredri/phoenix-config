@@ -1,17 +1,18 @@
 {
 	"compilerOptions": {
-		"module": "esnext",
-		"moduleResolution": "node",
+		"module": "ESNext",
+		"moduleResolution": "Node",
 		"baseUrl": "src",
 		"outDir": "out/src",
-		"target": "es2018",
+		"target": "ES2021",
 		"sourceMap": true,
 		"strict": true,
 		"noFallthroughCasesInSwitch": true,
 		"pretty": true,
 		"stripInternal": true,
+		"types": ["phoenix"],
 		"typeRoots": ["node_modules/@types"],
-		"lib": ["es2018"]
+		"lib": ["ES2021"]
 	},
 	"exclude": ["node_modules"]
 }
