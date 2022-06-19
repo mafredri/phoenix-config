@@ -2,7 +2,13 @@ import osascript from '../../misc/osascript';
 import task from '../../task';
 
 // https://github.com/nriley/brightness
-const brightnessBinary = '/usr/local/bin/brightness';
+//
+// Brew release is outdated, build from source.
+//     git clone https://github.com/nriley/brightness.git
+//     cd brightness
+//     make
+//     make prefix=/usr/local install
+const brightnessBinary = 'brightness';
 
 /**
  * brightness runs the brightness command with provided arguments.
