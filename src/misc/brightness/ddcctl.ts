@@ -6,8 +6,6 @@ import {Display, DisplayBrightness, DisplayIdentifier} from './display';
 
 export {getBrightness, setBrightness, getDisplays};
 
-const ddcctlBinary = '/Users/maf/.bin/ddcctl';
-
 /**
  * getDisplays updates the current (external) display information.
  */
@@ -121,12 +119,12 @@ async function displayBrightness(
  */
 async function ddcctl(...args: string[]): Promise<string> {
 	try {
-		const t = await taskWithOpts(
+		const {output} = await taskWithOpts(
 			{allowFailure: true},
-			ddcctlBinary,
+			'ddcctl',
 			...args,
 		);
-		return t.output;
+		return output;
 	} catch (err) {
 		log.notify(err);
 		throw err;

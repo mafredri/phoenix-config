@@ -27,22 +27,37 @@ export class TaskError extends Error {
 	}
 }
 
-export default function task(name: string, ...args: string[]): Promise<Task> {
-	return new Promise((resolve, reject) => {
-		Task.run(name, args, (t) => {
-			if (t.status !== 0) {
-				reject(new TaskError(t, name));
-			}
-			return resolve(t);
-		});
-	});
+export default async function task(name: string, ...args: string[]) {
+	return await taskPromise({allowFailure: false}, name, ...args);
 }
 
-export function taskWithOpts(
-	opts: {allowFailure: boolean},
+export async function taskWithOpts(
+	opts: {allowFailure?: boolean} | undefined,
+	name: string,
+	...args: string[]
+) {
+	return await taskPromise(opts, name, ...args);
+}
+
+// lookPath uses /bin/sh to detect the full path to a command, assumes
+// the users login environment contains all relevant PATHs.
+export async function lookPath(name: string) {
+	const t = await task('/bin/sh', '-c', `command -v ${name}`);
+	if (t.status === 0) {
+		return t.output.trim();
+	}
+	throw new TaskError(t, name);
+}
+
+function taskPromise(
+	opts: {allowFailure?: boolean} | undefined,
 	name: string,
 	...args: string[]
 ): Promise<Task> {
+	if (name[0] !== '/') {
+		return lookPath(name).then((n) => taskPromise(opts, n, ...args));
+	}
+
 	return new Promise((resolve, reject) => {
 		Task.run(name, args, (t) => {
 			if (!opts?.allowFailure && t.status !== 0) {
