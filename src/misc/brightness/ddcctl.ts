@@ -6,6 +6,11 @@ import {Display, DisplayBrightness, DisplayIdentifier} from './display';
 
 export {getBrightness, setBrightness, getDisplays};
 
+// https://github.com/kfix/ddcctl
+//
+//     brew install ddcctl
+const ddcctlBinary = 'ddcctl';
+
 /**
  * getDisplays updates the current (external) display information.
  */
@@ -121,7 +126,7 @@ async function ddcctl(...args: string[]): Promise<string> {
 	try {
 		const {output} = await taskWithOpts(
 			{allowFailure: true},
-			'ddcctl',
+			ddcctlBinary,
 			...args,
 		);
 		return output;
