@@ -5,10 +5,7 @@ import {
 	switchMap,
 	take,
 } from 'rxjs/operators';
-
 import log from '../../logger';
-import * as dark from '../dark';
-
 import {syncInternalBrightness} from './brightness';
 import {getDisplays, setBrightness} from './ddcctl';
 import {showBrightness} from './modal';
@@ -40,7 +37,7 @@ const brightnessSubscription = brightnessSubject
 				Promise.all([
 					applyExternalBrightness(v).then(() => updateBrightness()),
 					applyInternalBrightness(v),
-				]).then(() => setDarkModeBasedOnBrightness(v)),
+				]),
 			);
 		}),
 	)
@@ -91,23 +88,10 @@ function syncBrightness() {
 }
 // TODO: Handle in main script (phoenix.ts).
 Event.on('screensDidChange', () => {
-	log('screensDidChange', Screen.all().map(s => s.identifier()));
-	syncBrightness();
+	// log('screensDidChange', Screen.all().map((s) => s.identifier()));
+	// syncBrightness();
 });
-syncBrightness();
-
-async function setDarkModeBasedOnBrightness(v: number) {
-	const enabled = await dark.isDarkMode();
-	if (v <= 40) {
-		if (!enabled) {
-			dark.enable();
-		}
-		return;
-	}
-	if (enabled) {
-		dark.disable();
-	}
-}
+// syncBrightness();
 
 async function applyInternalBrightness(v: number) {
 	await syncInternalBrightness(v).catch((err) =>
