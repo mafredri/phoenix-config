@@ -23,6 +23,128 @@ Event.on('screensDidChange', () => {
 	log('Screens changed');
 });
 
+// MouseAction WIP.
+interface MouseAction {
+	type: 'move' | 'resize';
+	win: Window;
+	wf: Rectangle;
+	sf: Rectangle;
+	mp: MousePoint;
+}
+
+let enableMouseAction = false;
+let mouseAction: MouseAction | undefined;
+
+const enableMouseActionHandler: (handler: Key, repeated: boolean) => void = (
+	_,
+	repeat,
+) => {
+	if (repeat) {
+		return;
+	}
+	enableMouseAction = !enableMouseAction;
+};
+
+function hasMouseModifiers(
+	{modifiers}: {modifiers: Phoenix.ModifierKey[]},
+	compare: Phoenix.ModifierKey[],
+): boolean {
+	return (
+		Math.ceil(modifiers.length / 2) == compare.length &&
+		compare.map((key) => modifiers.includes(key)).every((x) => x)
+	);
+}
+
+const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
+	target,
+) => {
+	let type: 'move' | 'resize';
+	if (enableMouseAction && hasMouseModifiers(target, hyper)) {
+		type = 'move';
+	} else if (enableMouseAction && hasMouseModifiers(target, hyperShift)) {
+		type = 'resize';
+	} else {
+		enableMouseAction = false;
+		mouseAction = undefined;
+		return;
+	}
+	if (!mouseAction) {
+		const win = Window.at(target);
+		if (!win) {
+			return;
+		}
+		mouseAction = {
+			type,
+			win,
+			wf: win.frame(),
+			sf: win.screen().flippedVisibleFrame(),
+			mp: {...target},
+		};
+	} else if (mouseAction.type !== type) {
+		// Reset origin on type change because
+		// resizing the old frame is weird.
+		mouseAction = {
+			type,
+			win: mouseAction.win,
+			wf: mouseAction.win.frame(),
+			sf: mouseAction.sf,
+			mp: {...target},
+		};
+	}
+	const x = mouseAction.mp.x - target.x;
+	const y = mouseAction.mp.y - target.y;
+	if (x === 0 && y === 0) {
+		return;
+	}
+	log(mouseAction.win.screen().flippedVisibleFrame());
+	const nf = {...mouseAction.wf};
+	if (type === 'move') {
+		if (target.y === 0) {
+			// TODO: Make it non-instant, revert if dragged back.
+			mouseAction.win.maximize();
+			return;
+		}
+		nf.x -= x;
+		nf.y -= y;
+		// Handle sticky edges.
+		const stickyThreshold = 15;
+		if (Math.abs(mouseAction.sf.x - nf.x) <= stickyThreshold) {
+			nf.x = mouseAction.sf.x;
+		}
+		const rx = mouseAction.sf.width - nf.width;
+		if (Math.abs(rx - nf.x) <= stickyThreshold) {
+			nf.x = rx;
+		}
+		if (Math.abs(mouseAction.sf.y - nf.y) <= stickyThreshold) {
+			nf.y = mouseAction.sf.y;
+		}
+		const by = mouseAction.sf.y + mouseAction.sf.height - nf.height;
+		if (Math.abs(by - nf.y) <= stickyThreshold) {
+			nf.y = by;
+		}
+
+		mouseAction.win.setTopLeft(nf);
+	} else {
+		// Keep window centered at origin.
+		nf.x += x;
+		if (nf.x < mouseAction.sf.x) {
+			nf.x = mouseAction.sf.x;
+		}
+		nf.y += y;
+		if (nf.y < mouseAction.sf.y) {
+			nf.y = mouseAction.sf.y;
+		}
+		// TODO(mafredri): Keep within screen frame.
+		nf.width -= x * 2;
+		nf.height -= y * 2;
+		mouseAction.win.setFrame(nf);
+	}
+};
+
+Event.on('mouseDidMove', mouseActionHandler);
+onKey('a', hyper, enableMouseActionHandler);
+onKey('a', hyperShift, enableMouseActionHandler);
+
 onKey('tab', hyper, async () => {
 	const win = Window.focused();
 	if (!win) {
