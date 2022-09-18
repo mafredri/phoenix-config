@@ -16,7 +16,7 @@ interface Config {
 	timeout: number;
 }
 
-interface CoffeTimer extends Config {
+interface CoffeeTimer extends Config {
 	modal?: Modal;
 }
 
@@ -25,7 +25,7 @@ export interface TimerStopper {
 }
 
 function start({screen, timeout}: Config): TimerStopper {
-	const timer: CoffeTimer = {
+	const timer: CoffeeTimer = {
 		modal: new Modal(),
 		screen,
 		timeout,
@@ -51,7 +51,7 @@ function start({screen, timeout}: Config): TimerStopper {
 	};
 }
 
-function updater(timer: CoffeTimer) {
+function updater(timer: CoffeeTimer) {
 	return () => {
 		if (!timer.modal) {
 			return;
@@ -75,7 +75,7 @@ function updater(timer: CoffeTimer) {
 	};
 }
 
-function alerter(timer: CoffeTimer, updateInterval: number) {
+function alerter(timer: CoffeeTimer, updateInterval: number) {
 	return () => {
 		clearTimeout(updateInterval);
 		if (timer.modal) {

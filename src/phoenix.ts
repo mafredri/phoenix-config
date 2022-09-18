@@ -3,7 +3,7 @@ import {hyper, hyperShift} from './config';
 import {cycleBackward, cycleForward} from './cycle';
 import {onKey} from './key';
 import log from './logger';
-import coffeTimer, {TimerStopper} from './misc/coffee';
+import coffeeTimer, {TimerStopper} from './misc/coffee';
 import * as terminal from './misc/terminal';
 import {showCenterOn, titleModal} from './modal';
 import {Scanner} from './scan';
@@ -367,7 +367,7 @@ onKey('c', hyper, () => {
 		coffee = null;
 		return;
 	}
-	coffee = coffeTimer({screen: Screen.main(), timeout: 8});
+	coffee = coffeeTimer({screen: Screen.main(), timeout: 8});
 });
 
 onKey('escape', ['cmd'], () => cycleForward(Window.focused()));
