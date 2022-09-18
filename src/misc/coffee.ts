@@ -5,7 +5,7 @@ import {applyMargin, Orientation, originOnScreen, showCenterOn} from '../modal';
 
 export default start;
 
-const MODAL_MARGIN = 3;
+const MODAL_MARGIN = 10;
 const DONE_MSG = `
 Your coffee is done,
 go get it!
