@@ -3,14 +3,13 @@ import {hyper, hyperShift} from './config';
 import {cycleBackward, cycleForward} from './cycle';
 import {onKey} from './key';
 import log from './logger';
-import {brightness} from './misc/brightness';
-import {TimerStopper} from './misc/coffee';
-import coffeTimer from './misc/coffee';
+import coffeTimer, {TimerStopper} from './misc/coffee';
 import * as terminal from './misc/terminal';
-import {titleModal, showCenterOn} from './modal';
+import {showCenterOn, titleModal} from './modal';
 import {Scanner} from './scan';
-import {setFrame, toggleMaximized} from './window';
 import {screenAt} from './screen';
+import {sleep} from './util';
+import {setFrame, toggleMaximized} from './window';
 
 const scanner = new Scanner();
 let coffee: TimerStopper | null;
@@ -24,10 +23,20 @@ Event.on('screensDidChange', () => {
 	log('Screens changed');
 });
 
-onKey('tab', hyper, () => {
+onKey('tab', hyper, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
+	}
+
+	const fullscreen = win.isFullScreen();
+	if (fullscreen) {
+		win.setFullScreen(false);
+		// If we don't wait until the animation is finished,
+		// bad things will happen (at least with VS Code).
+		//
+		// 750ms seems to work, but just to be safe.
+		await sleep(900);
 	}
 
 	const oldScreen = win.screen();
@@ -42,6 +51,14 @@ onKey('tab', hyper, () => {
 		newScreen.flippedVisibleFrame(),
 	);
 	setFrame(win, ratio(win.frame()));
+
+	if (fullscreen) {
+		await sleep(900);
+		win.setFullScreen(true);
+	}
+
+	// Force space switch, in case another one is focused on the screen.
+	win.focus();
 });
 
 onKey('tab', hyperShift, () => {
@@ -341,8 +358,8 @@ onKey('m', hyper, () => {
 	log(s.identifier(), Mouse.location());
 });
 
-onKey('=', hyper, () => brightness(+10));
-onKey('-', hyper, () => brightness(-10));
+// onKey('=', hyper, () => brightness(+10));
+// onKey('-', hyper, () => brightness(-10));
 
 onKey('c', hyper, () => {
 	if (coffee) {

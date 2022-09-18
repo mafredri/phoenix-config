@@ -6,7 +6,7 @@ const handlers: Map<string, Key> = new Map();
 function onKey(
 	keys: Phoenix.KeyIdentifier | Phoenix.KeyIdentifier[],
 	mod: Phoenix.ModifierKey[],
-	cb: (handler: Key, repeated: boolean) => any,
+	cb: (handler: Key, repeated: boolean) => Promise<any> | any,
 ) {
 	if (Array.isArray(keys)) {
 		const unbinds = keys.map((key) => onKeySingle(key, mod, cb));
@@ -18,9 +18,23 @@ function onKey(
 function onKeySingle(
 	key: Phoenix.KeyIdentifier,
 	mod: Phoenix.ModifierKey[],
-	cb: (handler: Key, repeated: boolean) => any,
+	cb: (handler: Key, repeated: boolean) => Promise<any> | any,
 ) {
-	const handler = new Key(key, mod, cb);
+	const handler = new Key(key, mod, (handler: Key, repeated: boolean) => {
+		const notify = (e: any) => {
+			log.notify(`Key: ${key} + [${mod}]:`, e);
+		};
+
+		try {
+			const ret = cb(handler, repeated);
+			if (ret instanceof Promise) {
+				return ret.catch(notify);
+			}
+			return ret;
+		} catch (e) {
+			notify(e);
+		}
+	});
 	const id = createID(key, mod);
 	handlers.set(id, handler);
 
