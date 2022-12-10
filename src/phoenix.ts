@@ -480,9 +480,6 @@ onKey('m', hyper, () => {
 	log(s.identifier(), Mouse.location());
 });
 
-// onKey('=', hyper, () => brightness(+10));
-// onKey('-', hyper, () => brightness(-10));
-
 onKey('c', hyper, () => {
 	if (coffee) {
 		coffee.stop();

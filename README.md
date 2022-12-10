@@ -32,8 +32,8 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ### Misc bindings
 
 * `hyper + c` (Start coffee timer, defaults to 8 minutes)
-* `hyper + +` (Increase monitor brightness using external script)
-* `hyper + -` (Decrease monitor brightness using external script)
+* ~~`hyper + +` (Increase monitor brightness using external script)~~ - Use [MonitorControl](https://github.com/MonitorControl/MonitorControl) instead
+* ~~`hyper + -` (Decrease monitor brightness using external script)~~ - Use [MonitorControl](https://github.com/MonitorControl/MonitorControl) instead
 * `hyper + Space` (Experimental: search for windows, tab to cycle, enter to switch, esc to cancel)
 * `§` (Show or hide the last used Terminal window)
 * `Cmd + §` (Cycle between Terminal windows)
@@ -44,7 +44,7 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ## Misc features
 
 * Switch between Karabiner-Elements profiles when screens change
-* Refresh screen brightness info when screens change (using `ddcctl`)
+* ~~Refresh screen brightness info when screens change (using `ddcctl`)~~ - Use [MonitorControl](https://github.com/MonitorControl/MonitorControl) instead
 * Support disabling / re-enabling all current keybindings via [src/key.ts](src/key.ts) (used by scanner)
 
 ## Building
