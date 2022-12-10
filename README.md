@@ -19,7 +19,8 @@ The definition of `hyper` and `hyperShift` can be found in [src/config.ts](src/c
 * `hyperShift + Right` (Move window to right edge of screen)
 * `hyperShift + Up` (Move window to top edge of screen)
 * `hyperShift + Down` (Move window to bottom edge of screen)
-* `hyperShift + Return` (Move window to center of screen)
+* `hyperShift + Return` (Toggle window fullscreen, i.e. separate space)
+* `hyperShift + Space` (Move window to center of screen)
 * `hyperShift + Tab` (Jump to next screen whilst maintaining current window size)
 
 Use combos of the key bindings to further place the windows:

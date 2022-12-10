@@ -375,6 +375,14 @@ onKey('return', hyperShift, () => {
 	if (!win) {
 		return;
 	}
+	win.setFullScreen(!win.isFullScreen());
+});
+
+onKey('space', hyperShift, () => {
+	const win = Window.focused();
+	if (!win) {
+		return;
+	}
 
 	const {width, height} = win.frame();
 	const {
