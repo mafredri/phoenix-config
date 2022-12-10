@@ -301,15 +301,10 @@ onKey(['left', 'j'], hyperShift, () => {
 	}
 
 	const {width, height, y, x: fX} = win.frame();
-	let {width: sWidth, x} = win.screen().flippedVisibleFrame();
+	let {x} = win.screen().flippedVisibleFrame();
 
-	const center = x + Math.ceil(sWidth / 2);
-	const half = Math.floor(width / 2);
-	if (fX + half > center) {
-		x = center - half;
-	}
-
-	setFrame(win, {width, height, y, x});
+	// TODO(mafredri): Move to next screen when at the edge.
+	setFrame(win, {width, height, y, x: Math.max(x, fX - width)});
 });
 
 onKey(['right', 'l'], hyperShift, () => {
@@ -321,15 +316,15 @@ onKey(['right', 'l'], hyperShift, () => {
 	const {width, height, y, x: fX} = win.frame();
 	let {width: sWidth, x} = win.screen().flippedVisibleFrame();
 
-	const center = x + Math.floor(sWidth / 2);
-	const half = Math.ceil(width / 2);
-	if (fX + half < center) {
-		x = center - half;
-	} else {
-		x = x + sWidth - width;
-	}
+	const sEdge = x + sWidth - width;
 
-	setFrame(win, {width, height, y, x});
+	// TODO(mafredri): Move to next screen when at the edge.
+	setFrame(win, {
+		width,
+		height,
+		y,
+		x: Math.min(sEdge, fX + width),
+	});
 });
 
 onKey(['up', 'i'], hyperShift, () => {
