@@ -1,9 +1,3 @@
-interface TaskData {
-	error: string;
-	output: string;
-	status: number;
-}
-
 export class TaskError extends Error {
 	public task: Task;
 
@@ -15,10 +9,10 @@ export class TaskError extends Error {
 
 	public toString(): string {
 		let extra = `status ${this.task.status}`;
-		if (this.task.output || this.task.error) {
-			const data: TaskData = {
-				error: this.task.error,
-				output: this.task.output,
+		if (this.task.output.trim() || this.task.error.trim()) {
+			const data = {
+				error: this.task.error.trim(),
+				output: this.task.output.trim(),
 				status: this.task.status,
 			};
 			extra = `${JSON.stringify(data, null, '\t')}`;
@@ -39,29 +33,55 @@ export async function taskWithOpts(
 	return await taskPromise(opts, name, ...args);
 }
 
+const pathCache = new Map<string, string>();
+
 // lookPath uses /bin/sh to detect the full path to a command, assumes
 // the users login environment contains all relevant PATHs.
 export async function lookPath(name: string) {
-	const t = await task('/bin/sh', '-c', `command -v ${name}`);
-	if (t.status === 0) {
-		return t.output.trim();
+	if (pathCache.has(name)) {
+		return pathCache.get(name)!;
 	}
-	throw new TaskError(t, name);
+	try {
+		const t = await task(
+			'/bin/zsh',
+			'-c',
+			`command -v ${JSON.stringify(name)}`, // Shell safe quoting.
+		);
+		const path = t.output.trim();
+		pathCache.set(name, path);
+		return path;
+	} catch (e) {
+		throw new TaskError((e as TaskError).task, name);
+	}
 }
 
-function taskPromise(
+async function taskPromise(
 	opts: {allowFailure?: boolean} | undefined,
 	name: string,
 	...args: string[]
 ): Promise<Task> {
-	if (name[0] !== '/') {
-		return lookPath(name).then((n) => taskPromise(opts, n, ...args));
+	let path = name;
+	if (path[0] !== '/') {
+		path = await lookPath(name);
 	}
 
-	return new Promise((resolve, reject) => {
-		Task.run(name, args, (t) => {
+	return await new Promise<Task>((resolve, reject) => {
+		Task.run(path, args, (t) => {
+			// Status 127 means the command was not found,
+			// perhaps it was removed or renamed.
+			if (t.status === 127 && pathCache.delete(name)) {
+				// Try again, but only if an a
+				// absolute path wasn't given.
+				if (path !== name) {
+					return taskPromise(opts, name, ...args).then(
+						resolve,
+						reject,
+					);
+				}
+			}
+
 			if (!opts?.allowFailure && t.status !== 0) {
-				reject(new TaskError(t, name));
+				return reject(new TaskError(t, name));
 			}
 			return resolve(t);
 		});
