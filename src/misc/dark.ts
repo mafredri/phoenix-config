@@ -1,4 +1,3 @@
-import task from '../task';
 import osascript from './osascript';
 
 enum AlfredTheme {

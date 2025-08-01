@@ -5,11 +5,18 @@ import {onKey} from './key';
 import log from './logger';
 import coffeeTimer, {TimerStopper} from './misc/coffee';
 import * as terminal from './misc/terminal';
-import {showCenterOn, titleModal} from './modal';
+import {
+	Orientation,
+	applyMargin,
+	originOnScreen,
+	showCenterOn,
+	titleModal,
+} from './modal';
 import {Scanner} from './scan';
 import {screenAt} from './screen';
 import {sleep} from './util';
 import {setFrame, toggleMaximized} from './window';
+// import * as lgtv from './misc/lgtv';
 
 const scanner = new Scanner();
 let coffee: TimerStopper | null;
@@ -301,7 +308,7 @@ onKey(['left', 'j'], hyperShift, () => {
 	}
 
 	const {width, height, y, x: fX} = win.frame();
-	let {x} = win.screen().flippedVisibleFrame();
+	const {x} = win.screen().flippedVisibleFrame();
 
 	// TODO(mafredri): Move to next screen when at the edge.
 	setFrame(win, {width, height, y, x: Math.max(x, fX - width)});
@@ -314,7 +321,7 @@ onKey(['right', 'l'], hyperShift, () => {
 	}
 
 	const {width, height, y, x: fX} = win.frame();
-	let {width: sWidth, x} = win.screen().flippedVisibleFrame();
+	const {width: sWidth, x} = win.screen().flippedVisibleFrame();
 
 	const sEdge = x + sWidth - width;
 
@@ -334,7 +341,7 @@ onKey(['up', 'i'], hyperShift, () => {
 	}
 
 	const {width, height, x, y: frameY} = win.frame();
-	let {y} = win.screen().flippedVisibleFrame();
+	const {y} = win.screen().flippedVisibleFrame();
 
 	// TODO(mafredri): Move to next screen when at the edge.
 	setFrame(win, {width, height, x, y: Math.max(y, frameY - height)});
@@ -347,7 +354,7 @@ onKey(['down', 'k'], hyperShift, () => {
 	}
 
 	const {width, height, x, y: frameY} = win.frame();
-	let {height: sHeight, y} = win.screen().flippedVisibleFrame();
+	const {height: sHeight, y} = win.screen().flippedVisibleFrame();
 
 	const sEdge = y + sHeight - height;
 
@@ -486,103 +493,103 @@ onKey('escape', ['cmd'], () => cycleForward(Window.focused()));
 onKey('escape', ['cmd', 'shift'], () => cycleBackward(Window.focused()));
 
 // Experimental: Search for windows and cycle between results.
-onKey('space', hyper, () => {
-	const m = new Modal();
-	const msg = 'Search: ';
-	m.text = msg;
-	showCenterOn(m, Screen.main());
-	const originalWindow = Window.focused();
-	const winCache = Window.all({visible: true});
-	let matches = [...winCache];
+// onKey('space', hyper, () => {
+// 	const m = new Modal();
+// 	const msg = 'Search: ';
+// 	m.text = msg;
+// 	showCenterOn(m, Screen.main());
+// 	const originalWindow = Window.focused();
+// 	const winCache = Window.all({visible: true});
+// 	let matches = [...winCache];
 
-	// Prevent modal from hopping from screen to screen.
-	const mainScreen = Screen.main();
+// 	// Prevent modal from hopping from screen to screen.
+// 	const mainScreen = Screen.main();
 
-	// Since we focus the first window, start in reverse mode.
-	let prevReverse = true;
+// 	// Since we focus the first window, start in reverse mode.
+// 	let prevReverse = true;
 
-	function nextWindow(reverse: boolean): Window | undefined {
-		if (prevReverse !== reverse) {
-			prevReverse = reverse;
-			nextWindow(reverse); // Rotate.
-		}
+// 	function nextWindow(reverse: boolean): Window | undefined {
+// 		if (prevReverse !== reverse) {
+// 			prevReverse = reverse;
+// 			nextWindow(reverse); // Rotate.
+// 		}
 
-		const w = reverse ? matches.pop() : matches.shift();
-		if (!w) {
-			return;
-		}
-		reverse ? matches.unshift(w) : matches.push(w);
-		return w;
-	}
+// 		const w = reverse ? matches.pop() : matches.shift();
+// 		if (!w) {
+// 			return;
+// 		}
+// 		reverse ? matches.unshift(w) : matches.push(w);
+// 		return w;
+// 	}
 
-	const tabFn = (reverse: boolean) => () => {
-		if (!matches.length) {
-			return;
-		}
+// 	const tabFn = (reverse: boolean) => () => {
+// 		if (!matches.length) {
+// 			return;
+// 		}
 
-		const w = nextWindow(reverse);
-		if (!w) {
-			return;
-		}
+// 		const w = nextWindow(reverse);
+// 		if (!w) {
+// 			return;
+// 		}
 
-		w.focus();
-		m.icon = w.app().icon();
-		showCenterOn(m, mainScreen);
-	};
+// 		w.focus();
+// 		m.icon = w.app().icon();
+// 		showCenterOn(m, mainScreen);
+// 	};
 
-	const tab = new Key('tab', [], tabFn(false));
-	const shiftTab = new Key('tab', ['shift'], tabFn(true));
+// 	const tab = new Key('tab', [], tabFn(false));
+// 	const shiftTab = new Key('tab', ['shift'], tabFn(true));
 
-	scanner.scanln(
-		(s) => {
-			m.close();
-			tab.disable();
-			shiftTab.disable();
-			if (s === '' && originalWindow) {
-				// No window selected, restore original.
-				originalWindow.focus();
+// 	scanner.scanln(
+// 		(s) => {
+// 			m.close();
+// 			tab.disable();
+// 			shiftTab.disable();
+// 			if (s === '' && originalWindow) {
+// 				// No window selected, restore original.
+// 				originalWindow.focus();
 
-				// Window management on macOS with multiple monitors is pretty
-				// bad, the right window might not be focused when an app is not
-				// focused and has multiple windows on multiple monitors.
-				setTimeout(() => originalWindow.focus(), 200);
-			}
-		},
-		(s) => {
-			tab.enable();
-			shiftTab.enable();
+// 				// Window management on macOS with multiple monitors is pretty
+// 				// bad, the right window might not be focused when an app is not
+// 				// focused and has multiple windows on multiple monitors.
+// 				setTimeout(() => originalWindow.focus(), 200);
+// 			}
+// 		},
+// 		(s) => {
+// 			tab.enable();
+// 			shiftTab.enable();
 
-			prevReverse = true; // Reset.
+// 			prevReverse = true; // Reset.
 
-			matches = winCache.filter((w) => appName(w) || title(w));
-			m.text = msg + s + (s ? results(matches.length) : '');
+// 			matches = winCache.filter((w) => appName(w) || title(w));
+// 			m.text = msg + s + (s ? results(matches.length) : '');
 
-			if (s && matches.length) {
-				matches[0].focus();
-				m.icon = matches[0].app().icon();
-			} else {
-				if (originalWindow) {
-					originalWindow.focus();
-				}
-				m.icon = undefined;
-			}
+// 			if (s && matches.length) {
+// 				matches[0].focus();
+// 				m.icon = matches[0].app().icon();
+// 			} else {
+// 				if (originalWindow) {
+// 					originalWindow.focus();
+// 				}
+// 				m.icon = undefined;
+// 			}
 
-			showCenterOn(m, mainScreen);
+// 			showCenterOn(m, mainScreen);
 
-			function appName(w: Window) {
-				return w.app().name().toLowerCase().match(s.toLowerCase());
-			}
+// 			function appName(w: Window) {
+// 				return w.app().name().toLowerCase().match(s.toLowerCase());
+// 			}
 
-			function title(w: Window) {
-				return w.title().toLowerCase().match(s.toLowerCase());
-			}
-		},
-	);
+// 			function title(w: Window) {
+// 				return w.title().toLowerCase().match(s.toLowerCase());
+// 			}
+// 		},
+// 	);
 
-	function results(n: number) {
-		return `\n${n} results`;
-	}
-});
+// 	function results(n: number) {
+// 		return `\n${n} results`;
+// 	}
+// });
 
 // Always hide apps, even if they're the last one on the desktop.
 onKey('h', ['cmd'], (_: Key, repeated: boolean) => {
@@ -606,6 +613,8 @@ function objEq(a: {[key: string]: any}, b: {[key: string]: any}) {
 	}
 	return akeys.every((k) => a[k] === b[k]);
 }
+
+// lgtv.enable();
 
 const phoenixApp = App.get('Phoenix') || App.get('Phoenix (Debug)');
 titleModal('Phoenix (re)loaded!', 2, phoenixApp && phoenixApp.icon());

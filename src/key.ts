@@ -1,4 +1,3 @@
-import {hyper, hyperShift} from './config';
 import log from './logger';
 
 const handlers: Map<string, Key> = new Map();
@@ -6,7 +5,7 @@ const handlers: Map<string, Key> = new Map();
 function onKey(
 	keys: Phoenix.KeyIdentifier | Phoenix.KeyIdentifier[],
 	mod: Phoenix.ModifierKey[],
-	cb: (handler: Key, repeated: boolean) => Promise<any> | any,
+	cb: (handler: Key, repeated: boolean) => Promise<unknown> | unknown,
 ) {
 	if (Array.isArray(keys)) {
 		const unbinds = keys.map((key) => onKeySingle(key, mod, cb));
@@ -18,10 +17,10 @@ function onKey(
 function onKeySingle(
 	key: Phoenix.KeyIdentifier,
 	mod: Phoenix.ModifierKey[],
-	cb: (handler: Key, repeated: boolean) => Promise<any> | any,
+	cb: (handler: Key, repeated: boolean) => Promise<unknown> | unknown,
 ) {
 	const handler = new Key(key, mod, (handler: Key, repeated: boolean) => {
-		const notify = (e: any) => {
+		const notify = (e: unknown) => {
 			log.notify(`Key: ${key} + [${mod}]:`, e);
 		};
 

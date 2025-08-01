@@ -4,7 +4,8 @@
 export {toggle, cycleWindows};
 
 // const TERMINAL_NAME = 'Alacritty';
-const TERMINAL_NAME = 'iTerm2';
+// const TERMINAL_NAME = 'iTerm2';
+const TERMINAL_NAME = 'Ghostty';
 const TERMINAL_APP = TERMINAL_NAME.replace(/[0-9]+$/, '');
 
 function isTerminal(app: App) {

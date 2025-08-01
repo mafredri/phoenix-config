@@ -1,3 +1,5 @@
+import log from './logger';
+
 export class TaskError extends Error {
 	public task: Task;
 
@@ -33,26 +35,43 @@ export async function taskWithOpts(
 	return await taskPromise(opts, name, ...args);
 }
 
-const pathCache = new Map<string, string>();
+const pathCache = new Map<string, Promise<string>>();
 
 // lookPath uses /bin/sh to detect the full path to a command, assumes
 // the users login environment contains all relevant PATHs.
-export async function lookPath(name: string) {
-	if (pathCache.has(name)) {
-		return pathCache.get(name)!;
+export async function lookPath(name: string, retry = false) {
+	if (!retry && pathCache.has(name)) {
+		return await pathCache.get(name)!;
 	}
-	try {
-		const t = await task(
-			'/bin/zsh',
+	const p = new Promise<string>((resolve) => {
+		const args = [
 			'-c',
 			`command -v ${JSON.stringify(name)}`, // Shell safe quoting.
-		);
-		const path = t.output.trim();
-		pathCache.set(name, path);
-		return path;
-	} catch (e) {
-		throw new TaskError((e as TaskError).task, name);
-	}
+		];
+		Task.run('/bin/zsh', args, (t) => {
+			if (t.status !== 0) {
+				log(
+					`lookPath(${name}): failed status=${t.status} stdout=${t.output} stderr=${t.error}`,
+				);
+				resolve(name);
+				pathCache.delete(name);
+				return;
+			}
+			const path = t.output.trim();
+			if (path === '') {
+				log(
+					`lookPath(${name}): BUG: Phoenix returned empty string, retrying...`,
+				);
+				resolve(lookPath(name, true));
+				return;
+			}
+			log(`lookPath(${name}): ${path}`);
+			resolve(path);
+		});
+	});
+	pathCache.set(name, p);
+
+	return await p;
 }
 
 async function taskPromise(
@@ -60,6 +79,7 @@ async function taskPromise(
 	name: string,
 	...args: string[]
 ): Promise<Task> {
+	log(name, args);
 	let path = name;
 	if (path[0] !== '/') {
 		path = await lookPath(name);

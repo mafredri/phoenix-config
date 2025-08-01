@@ -44,7 +44,7 @@ function showAt(
 	widthDiv: number,
 	heightDiv: number,
 ) {
-	const {height, width, x, y} = modal.frame();
+	const {height, width} = modal.frame();
 	const sf = screen.visibleFrame();
 	modal.origin = {
 		x: sf.x + (sf.width / widthDiv - width / 2),
@@ -59,14 +59,18 @@ function originOnScreen(
 	orientation: Orientation,
 ): Point {
 	const {width: mWidth, height: mHeight} = modal.frame();
-	let {width, height, x, y} = screen.visibleFrame();
+	const {width, height} = screen.visibleFrame();
+	let {x, y} = screen.visibleFrame();
 
-	if (orientation === Orientation.SouthEast) {
+	if (orientation === Orientation.SouthWest) {
+		// Default origin.
+	} else if (orientation === Orientation.SouthEast) {
 		x = x + width - mWidth;
-		y = y;
-	} else if (orientation === Orientation.SouthWest) {
-		x = x;
-		y = y;
+	} else if (orientation === Orientation.NorthWest) {
+		y = y + height - mHeight;
+	} else if (orientation === Orientation.NorthEast) {
+		y = y + height - mHeight;
+		x = x + width - mWidth;
 	}
 
 	return {x, y};

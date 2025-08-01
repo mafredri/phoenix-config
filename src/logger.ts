@@ -1,31 +1,30 @@
-declare var console: any;
+declare let console: {
+	trace: (...args: unknown[]) => void;
+	log: (...args: unknown[]) => void;
+};
 
-function log(...args: any[]): void {
+function log(...args: unknown[]): void {
 	args = args.map((arg) => stringify(arg));
 	Phoenix.log(...args);
-	// tslint:disable-next-line:no-console
 	console.trace(...args);
 }
 
-// tslint:disable-next-line:prefer-object-spread
 export default Object.assign(log, {
-	notify: (...args: any[]): void => {
+	notify: (...args: unknown[]): void => {
 		args = args.map((arg) => stringify(arg));
 		Phoenix.log(...args);
 		const message = args.join(' ');
 		Phoenix.notify(message);
-		// tslint:disable-next-line:no-console
 		console.trace(...args);
 	},
-	noTrace: (...args: any[]): void => {
+	noTrace: (...args: unknown[]): void => {
 		args = args.map((arg) => stringify(arg));
 		Phoenix.log(...args);
-		// tslint:disable-next-line:no-console
 		console.log(...args);
 	},
 });
 
-function stringify(value: any) {
+function stringify(value: unknown) {
 	if (value instanceof Error) {
 		let stack = '';
 		if (value.stack) {
