@@ -5,20 +5,14 @@ import {onKey} from './key';
 import log from './logger';
 import coffeeTimer, {TimerStopper} from './misc/coffee';
 import * as terminal from './misc/terminal';
-import {
-	Orientation,
-	applyMargin,
-	originOnScreen,
-	showCenterOn,
-	titleModal,
-} from './modal';
-import {Scanner} from './scan';
+import {showCenterOn, titleModal} from './modal';
+// import {Scanner} from './scan';
 import {screenAt} from './screen';
-import {sleep} from './util';
+import {objEq, sleep} from './util';
 import {setFrame, toggleMaximized} from './window';
 // import * as lgtv from './misc/lgtv';
 
-const scanner = new Scanner();
+// const scanner = new Scanner();
 let coffee: TimerStopper | null;
 
 Phoenix.set({
@@ -155,12 +149,11 @@ Event.on('mouseDidMove', mouseActionHandler);
 onKey('a', hyper, enableMouseActionHandler);
 onKey('a', hyperShift, enableMouseActionHandler);
 
-onKey('tab', hyper, async () => {
-	const win = Window.focused();
-	if (!win) {
-		return;
-	}
-
+async function moveWindowToScreen(
+	win: Window,
+	newScreen: Screen,
+	scaleWindow: boolean = true,
+): Promise<void> {
 	const fullscreen = win.isFullScreen();
 	if (fullscreen) {
 		win.setFullScreen(false);
@@ -172,17 +165,23 @@ onKey('tab', hyper, async () => {
 	}
 
 	const oldScreen = win.screen();
-	const newScreen = oldScreen.next();
 
 	if (oldScreen.isEqual(newScreen)) {
 		return;
 	}
 
-	const ratio = frameRatio(
-		oldScreen.flippedVisibleFrame(),
-		newScreen.flippedVisibleFrame(),
-	);
-	setFrame(win, ratio(win.frame()));
+	const transform = scaleWindow
+		? frameRatio(
+				oldScreen.flippedVisibleFrame(),
+				newScreen.flippedVisibleFrame(),
+			)
+		: moveToFrame(
+				oldScreen.flippedVisibleFrame(),
+				newScreen.flippedVisibleFrame(),
+			);
+
+	const frame = transform(win.frame());
+	await setFrame(win, frame);
 
 	if (fullscreen) {
 		await sleep(900);
@@ -191,29 +190,25 @@ onKey('tab', hyper, async () => {
 
 	// Force space switch, in case another one is focused on the screen.
 	win.focus();
-});
+}
 
-onKey('tab', hyperShift, () => {
+onKey('tab', hyper, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
 	}
-
-	const oldScreen = win.screen();
-	const newScreen = oldScreen.next();
-
-	if (oldScreen.isEqual(newScreen)) {
-		return;
-	}
-
-	const move = moveToFrame(
-		oldScreen.flippedVisibleFrame(),
-		newScreen.flippedVisibleFrame(),
-	);
-	setFrame(win, move(win.frame()));
+	await moveWindowToScreen(win, win.screen().next(), true);
 });
 
-onKey(['left', 'j'], hyper, () => {
+onKey('tab', hyperShift, async () => {
+	const win = Window.focused();
+	if (!win) {
+		return;
+	}
+	await moveWindowToScreen(win, win.screen().previous(), true);
+});
+
+onKey(['left', 'j'], hyper, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -231,10 +226,10 @@ onKey(['left', 'j'], hyper, () => {
 		frame = frame4;
 	}
 
-	setFrame(win, frame);
+	await setFrame(win, frame);
 });
 
-onKey(['right', 'l'], hyper, () => {
+onKey(['right', 'l'], hyper, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -267,23 +262,23 @@ onKey(['right', 'l'], hyper, () => {
 		frame = frame4;
 	}
 
-	setFrame(win, frame);
+	await setFrame(win, frame);
 });
 
-onKey(['up', 'i'], hyper, () => {
+onKey(['up', 'i'], hyper, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
 	}
 
 	const {width, x} = win.frame();
-	let {height, y} = win.screen().flippedVisibleFrame();
-	height = Math.ceil(height / 2);
+	const {height, y} = win.screen().flippedVisibleFrame();
+	const newHeight = Math.ceil(height / 2);
 
-	setFrame(win, {height, width, x, y});
+	await setFrame(win, {height: newHeight, width, x, y});
 });
 
-onKey(['down', 'k'], hyper, () => {
+onKey(['down', 'k'], hyper, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -294,17 +289,17 @@ onKey(['down', 'k'], hyper, () => {
 	height /= 2;
 	[height, y] = [Math.ceil(height), y + Math.floor(height)];
 
-	setFrame(win, {height, width, x, y});
+	await setFrame(win, {height, width, x, y});
 });
 
-onKey('return', hyper, () => {
+onKey('return', hyper, async () => {
 	const win = Window.focused();
 	if (win) {
-		toggleMaximized(win);
+		await toggleMaximized(win);
 	}
 });
 
-onKey(['left', 'j'], hyperShift, () => {
+onKey(['left', 'j'], hyperShift, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -314,10 +309,10 @@ onKey(['left', 'j'], hyperShift, () => {
 	const {x} = win.screen().flippedVisibleFrame();
 
 	// TODO(mafredri): Move to next screen when at the edge.
-	setFrame(win, {width, height, y, x: Math.max(x, fX - width)});
+	await setFrame(win, {width, height, y, x: Math.max(x, fX - width)});
 });
 
-onKey(['right', 'l'], hyperShift, () => {
+onKey(['right', 'l'], hyperShift, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -329,7 +324,7 @@ onKey(['right', 'l'], hyperShift, () => {
 	const sEdge = x + sWidth - width;
 
 	// TODO(mafredri): Move to next screen when at the edge.
-	setFrame(win, {
+	await setFrame(win, {
 		width,
 		height,
 		y,
@@ -337,7 +332,7 @@ onKey(['right', 'l'], hyperShift, () => {
 	});
 });
 
-onKey(['up', 'i'], hyperShift, () => {
+onKey(['up', 'i'], hyperShift, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -347,10 +342,10 @@ onKey(['up', 'i'], hyperShift, () => {
 	const {y} = win.screen().flippedVisibleFrame();
 
 	// TODO(mafredri): Move to next screen when at the edge.
-	setFrame(win, {width, height, x, y: Math.max(y, frameY - height)});
+	await setFrame(win, {width, height, x, y: Math.max(y, frameY - height)});
 });
 
-onKey(['down', 'k'], hyperShift, () => {
+onKey(['down', 'k'], hyperShift, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -362,7 +357,12 @@ onKey(['down', 'k'], hyperShift, () => {
 	const sEdge = y + sHeight - height;
 
 	// TODO(mafredri): Move to next screen when at the edge.
-	setFrame(win, {width, height, x, y: Math.min(sEdge, frameY + height)});
+	await setFrame(win, {
+		width,
+		height,
+		x,
+		y: Math.min(sEdge, frameY + height),
+	});
 });
 
 onKey('return', hyperShift, () => {
@@ -373,7 +373,7 @@ onKey('return', hyperShift, () => {
 	win.setFullScreen(!win.isFullScreen());
 });
 
-onKey('space', hyperShift, () => {
+onKey('space', hyperShift, async () => {
 	const win = Window.focused();
 	if (!win) {
 		return;
@@ -387,7 +387,7 @@ onKey('space', hyperShift, () => {
 		y,
 	} = win.screen().flippedVisibleFrame();
 
-	setFrame(win, {
+	await setFrame(win, {
 		height,
 		width,
 		x: x + sWidth / 2 - width / 2,
@@ -608,14 +608,6 @@ onKey('h', ['cmd'], (_: Key, repeated: boolean) => {
 		win.app().hide();
 	}
 });
-
-function objEq(a: {[key: string]: any}, b: {[key: string]: any}) {
-	const akeys = Object.keys(a);
-	if (akeys.length !== Object.keys(b).length) {
-		return false;
-	}
-	return akeys.every((k) => a[k] === b[k]);
-}
 
 // lgtv.enable();
 

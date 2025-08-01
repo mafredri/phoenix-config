@@ -1,3 +1,4 @@
+import {objEq, retry} from './util';
 import {frameRatio} from './calc';
 import log from './logger';
 
@@ -31,26 +32,6 @@ function unmaximizedFrame(win: Window): Rectangle {
 	return ratio(c.window);
 }
 
-function objEqual(a: {[key: string]: any}, b: {[key: string]: any}): boolean {
-	if (typeof a !== 'object') {
-		return a === b;
-	}
-	if (Object.keys(a).length !== Object.keys(b).length) {
-		return false;
-	}
-	for (const key of Object.keys(a)) {
-		if (typeof a[key] === 'object') {
-			if (!objEqual(a[key], b[key])) {
-				return false;
-			}
-		}
-		if (a[key] !== b[key]) {
-			return false;
-		}
-	}
-	return true;
-}
-
 function isMaximized(win: Window): boolean {
 	const cache = frameCache.get(win.hash());
 	if (!cache || !cache.maximized) {
@@ -60,32 +41,36 @@ function isMaximized(win: Window): boolean {
 	log(win.frame(), cache.maximized.window);
 
 	return (
-		objEqual(win.screen().flippedVisibleFrame(), cache.maximized.screen) &&
-		objEqual(win.frame(), cache.maximized.window)
+		objEq(win.screen().flippedVisibleFrame(), cache.maximized.screen) &&
+		objEq(win.frame(), cache.maximized.window)
 	);
 }
 
-function toggleMaximized(win: Window): boolean {
+async function toggleMaximized(win: Window): Promise<boolean> {
 	if (isMaximized(win)) {
 		return setFrame(win, unmaximizedFrame(win));
 	}
 	return maximize(win);
 }
 
-function setFrame(win: Window, frame: Rectangle): boolean {
-	const ok = win.setFrame(frame);
-	if (ok) {
-		frameCache.delete(win.hash());
+async function setFrame(win: Window, frame: Rectangle): Promise<boolean> {
+	if (!(await retry(() => win.setFrame(frame)))) {
+		log.notify('Set window frame failed:', win.title(), frame);
+		return false;
 	}
-	return ok;
+	frameCache.delete(win.hash());
+	return true;
 }
 
-function maximize(win: Window): boolean {
+async function maximize(win: Window): Promise<boolean> {
 	const previous = {
 		screen: win.screen().flippedVisibleFrame(),
 		window: win.frame(),
 	};
-	const ok = win.maximize();
+	if (!(await retry(() => win.maximize()))) {
+		log.notify('Maximize window failed:', win.title());
+		return false;
+	}
 	const id = win.hash();
 	frameCache.set(id, {
 		...previous,
@@ -94,5 +79,5 @@ function maximize(win: Window): boolean {
 			window: win.frame(),
 		},
 	});
-	return ok;
+	return true;
 }

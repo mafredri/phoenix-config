@@ -12,6 +12,7 @@ const focused: Map<number, number> = new Map();
 
 let modal = new Modal();
 const closeModal = new Subject<void>();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const closeModalSubscription = closeModal
 	.pipe(
 		debounceTime(2000),
