@@ -76,9 +76,12 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 		return;
 	}
 	if (!mouseAction) {
-		const win = Window.at(target);
+		let win = Window.at(target);
 		if (!win) {
-			return;
+			win = Window.focused();
+			if (!win) {
+				return;
+			}
 		}
 		mouseAction = {
 			type,
