@@ -8,8 +8,8 @@ The definition of `hyper` and `hyperShift` can be found in [src/config.ts](src/c
 
 ### Basic bindings
 
-* `hyper + Left` (Left half of screen)
-* `hyper + Right` (Right half of screen)
+* `hyper + Left` (Left portion of screen, cycles through 1/2, 1/3, 1/4 on repeat)
+* `hyper + Right` (Right portion of screen, cycles through 1/2, 1/3, 1/4 on repeat)
 * `hyper + Up` (Top half of screen height, keeps current width)
 * `hyper + Down` (Bottom half of screen height, keeps current width)
 * `hyper + Return` (Toggle maximize, remembers unmaximized position)
@@ -21,7 +21,7 @@ The definition of `hyper` and `hyperShift` can be found in [src/config.ts](src/c
 * `hyperShift + Down` (Move window to bottom edge of screen)
 * `hyperShift + Return` (Toggle window fullscreen, i.e. separate space)
 * `hyperShift + Space` (Move window to center of screen)
-* `hyperShift + Tab` (Jump to next screen whilst maintaining current window size)
+* `hyperShift + Tab` (Jump to previous screen whilst keeping relative size and placement)
 
 Use combos of the key bindings to further place the windows:
 
@@ -32,10 +32,10 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 
 ### Misc bindings
 
+* `hyper + a` (Toggle mouse action mode, then hold hyper + move mouse to move window)
 * `hyper + c` (Start coffee timer, defaults to 8 minutes)
-* ~~`hyper + +` (Increase monitor brightness using external script)~~ - Use [MonitorControl](https://github.com/MonitorControl/MonitorControl) instead
-* ~~`hyper + -` (Decrease monitor brightness using external script)~~ - Use [MonitorControl](https://github.com/MonitorControl/MonitorControl) instead
-* `hyper + Space` (Experimental: search for windows, tab to cycle, enter to switch, esc to cancel)
+* `hyper + p` (Show window information in a modal)
+* `hyperShift + a` (Toggle mouse action mode, then hold hyperShift + move mouse to resize window)
 * `§` (Show or hide the last used Terminal window)
 * `Cmd + §` (Cycle between Terminal windows)
 * `Cmd + Escape` (Cycle between windows of current application, including minimized and windows on a different screen)
@@ -44,8 +44,6 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 
 ## Misc features
 
-* Switch between Karabiner-Elements profiles when screens change
-* ~~Refresh screen brightness info when screens change (using `ddcctl`)~~ - Use [MonitorControl](https://github.com/MonitorControl/MonitorControl) instead
 * Support disabling / re-enabling all current keybindings via [src/key.ts](src/key.ts) (used by scanner)
 
 ## Building
