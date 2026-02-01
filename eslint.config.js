@@ -1,9 +1,8 @@
-// @ts-check
-
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
+export default [
+	{ignores: ['build.mjs', 'out']},
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
-);
+];

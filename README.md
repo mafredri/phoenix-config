@@ -57,9 +57,14 @@ pnpm install
 pnpm run build
 ```
 
-The TypeScript compiler and Webpack will produce `out/phoenix.js` that can be used as Phoenix configuration. 
+This produces two files that can be used as Phoenix configuration:
 
-For development, `pnpm run start` will run Webpack in watch-mode.
+* `out/phoenix.js` - minified production build
+* `out/phoenix.debug.js` - unminified with inline source maps
+
+For development, run `pnpm start` to watch for changes and rebuild automatically.
+
+Run `pnpm typecheck` to type-check the code.
 
 ## Debugging
 

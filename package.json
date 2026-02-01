@@ -10,25 +10,20 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.2",
-		"clean-webpack-plugin": "^4.0.0",
+		"esbuild": "^0.25.0",
 		"eslint": "^9.39.2",
-		"fork-ts-checker-webpack-plugin": "^9.1.0",
 		"prettier": "^3.8.1",
-		"ts-loader": "^9.5.4",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.54.0",
-		"webpack": "^5.104.1",
-		"webpack-cli": "^6.0.1",
-		"webpack-merge": "^6.0.1"
+		"typescript-eslint": "^8.54.0"
 	},
 	"scripts": {
 		"start": "pnpm run watch",
-		"watch": "webpack --watch --config webpack.prod.js",
-		"watch-dev": "webpack --watch --config webpack.dev.js",
-		"build": "webpack --config webpack.prod.js",
-		"lint": "eslint --debug --config .eslintrc.js src/**",
-		"format": "prettier --write \"src/**/*.ts\"",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"watch": "node build.mjs --watch",
+		"watch-dev": "node build.mjs --watch --dev",
+		"build": "node build.mjs",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint src",
+		"format": "prettier --write \"src/**/*.ts\""
 	},
 	"keywords": [
 		"phoenix",

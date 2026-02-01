@@ -1,18 +1,16 @@
 {
 	"compilerOptions": {
 		"module": "ESNext",
-		"moduleResolution": "Node",
+		"moduleResolution": "Bundler",
 		"baseUrl": "src",
-		"outDir": "out/src",
-		"target": "esnext",
-		"sourceMap": true,
+		"target": "ES2024",
 		"strict": true,
+		"noEmit": true,
 		"noFallthroughCasesInSwitch": true,
-		"pretty": true,
-		"stripInternal": true,
+		"skipLibCheck": true,
 		"types": ["phoenix"],
-		"typeRoots": ["node_modules/@types"],
-		"lib": ["ESNext"]
+		"lib": ["ES2024"],
 	},
-	"exclude": ["node_modules"]
+	"include": ["src"],
+	"exclude": ["node_modules", "out", "build.mjs"],
 }
