@@ -29,6 +29,7 @@ interface MouseAction {
 	type: 'move' | 'resize';
 	win: Window;
 	wf: Rectangle;
+	screen: Screen;
 	sf: Rectangle;
 	mp: MousePoint;
 }
@@ -77,21 +78,25 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 				return;
 			}
 		}
+		const screen = win.screen();
 		mouseAction = {
 			type,
 			win,
 			wf: win.frame(),
-			sf: win.screen().flippedVisibleFrame(),
+			screen,
+			sf: screen.flippedVisibleFrame(),
 			mp: {...target},
 		};
 	} else if (mouseAction.type !== type) {
 		// Reset origin on type change because
 		// resizing the old frame is weird.
+		const screen = mouseAction.win.screen();
 		mouseAction = {
 			type,
 			win: mouseAction.win,
 			wf: mouseAction.win.frame(),
-			sf: mouseAction.sf,
+			screen,
+			sf: screen.flippedVisibleFrame(),
 			mp: {...target},
 		};
 	}
@@ -128,20 +133,56 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 		}
 
 		mouseAction.win.setTopLeft(nf);
+
+		const currentScreen = mouseAction.win.screen();
+		if (!currentScreen.isEqual(mouseAction.screen)) {
+			mouseAction.screen = currentScreen;
+			mouseAction.sf = currentScreen.flippedVisibleFrame();
+		}
 	} else {
-		// Keep window centered at origin.
-		nf.x += x;
+		const screenRight = mouseAction.sf.x + mouseAction.sf.width;
+		const screenBottom = mouseAction.sf.y + mouseAction.sf.height;
+
+		nf.width -= x;
+		nf.height -= y;
+
+		// Clamp right/bottom to screen, adjust position to fit.
+		const right = Math.min(mouseAction.wf.x + nf.width, screenRight);
+		const bottom = Math.min(mouseAction.wf.y + nf.height, screenBottom);
+		nf.x = right - nf.width;
+		nf.y = bottom - nf.height;
+
+		// Clamp left/top to screen, adjust size to fit.
 		if (nf.x < mouseAction.sf.x) {
 			nf.x = mouseAction.sf.x;
+			nf.width = right - nf.x;
 		}
-		nf.y += y;
 		if (nf.y < mouseAction.sf.y) {
 			nf.y = mouseAction.sf.y;
+			nf.height = bottom - nf.y;
 		}
-		// TODO(mafredri): Keep within screen frame.
-		nf.width -= x * 2;
-		nf.height -= y * 2;
+
 		mouseAction.win.setFrame(nf);
+
+		// Prevent drift when window has size constraints.
+		const actualFrame = mouseAction.win.frame();
+		const threshold = 2;
+
+		const widthChanged =
+			Math.abs(actualFrame.width - mouseAction.wf.width) >= threshold;
+		const heightChanged =
+			Math.abs(actualFrame.height - mouseAction.wf.height) >= threshold;
+
+		if (!widthChanged) {
+			mouseAction.wf.x = actualFrame.x;
+			mouseAction.wf.width = actualFrame.width;
+			mouseAction.mp.x = target.x;
+		}
+		if (!heightChanged) {
+			mouseAction.wf.y = actualFrame.y;
+			mouseAction.wf.height = actualFrame.height;
+			mouseAction.mp.y = target.y;
+		}
 	}
 };
 
