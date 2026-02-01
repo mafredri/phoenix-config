@@ -4,7 +4,7 @@ export function getEnv(name: string): Promise<string> {
 			return reject('no variable name provided');
 		}
 
-		Task.run('/bin/sh', ['-c', `echo "$${name}"`], (t) => {
+		Task.run('/bin/zsh', ['-c', `echo "$${name}"`], (t) => {
 			if (t.status !== 0) {
 				return reject(`could not execute command to fetch '$${name}'`);
 			}

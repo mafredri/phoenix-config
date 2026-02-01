@@ -456,7 +456,7 @@ onKey('.', hyper, () => {
 	}
 });
 
-onKey('delete', hyper, () => {
+onKey('forwardDelete', hyper, () => {
 	const win = Window.focused();
 	if (win) {
 		const visible = win.screen().windows({visible: true});

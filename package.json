@@ -9,15 +9,15 @@
 		"rxjs": "^7.8.2"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.32.0",
+		"@eslint/js": "^9.39.2",
 		"clean-webpack-plugin": "^4.0.0",
-		"eslint": "^9.32.0",
+		"eslint": "^9.39.2",
 		"fork-ts-checker-webpack-plugin": "^9.1.0",
-		"prettier": "^3.6.2",
-		"ts-loader": "^9.5.2",
-		"typescript": "^5.9.2",
-		"typescript-eslint": "^8.38.0",
-		"webpack": "^5.101.0",
+		"prettier": "^3.8.1",
+		"ts-loader": "^9.5.4",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.54.0",
+		"webpack": "^5.104.1",
 		"webpack-cli": "^6.0.1",
 		"webpack-merge": "^6.0.1"
 	},
