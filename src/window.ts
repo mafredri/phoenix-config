@@ -54,14 +54,44 @@ async function toggleMaximized(win: Window): Promise<boolean> {
 }
 
 async function setFrame(win: Window, frame: Rectangle): Promise<boolean> {
-	// macOS may constrain the height by 1px (e.g. when the dock is visible),
-	// accept the frame if it's off by one.
-	if (!win.setFrame(frame) && !frameAlmostEq(win.frame(), frame)) {
-		if (!(await retry(() => win.setFrame(frame)))) {
-			log.notify('Set window frame failed:', win.title(), frame);
+	let prevFrame = frame;
+	if (
+		!(await retry(() => {
+			if (win.setFrame(frame)) {
+				return true;
+			}
+
+			// macOS may constrain the height by 1px (e.g. when the dock is visible),
+			// accept the frame if it's off by one.
+			const newFrame = win.frame();
+			if (frameAlmostEq(newFrame, frame)) {
+				return true;
+			}
+
+			// If the frame keeps changing between setFrames, we want to keep
+			// retrying, but otherwise let's just give up gracefully.
+			if (objEq(newFrame, prevFrame)) {
+				log(
+					'Set window frame did not reach target but frame became stable:',
+					win.title(),
+					frame,
+				);
+				return true;
+			}
+			prevFrame = newFrame;
+
 			return false;
+		}))
+	) {
+		log.notify('Set window frame failed:', win.title(), frame);
+
+		// If the window still changed size, let's clear the cache.
+		if (!objEq(prevFrame, frame)) {
+			frameCache.delete(win.hash());
 		}
+		return false;
 	}
+
 	frameCache.delete(win.hash());
 	return true;
 }
