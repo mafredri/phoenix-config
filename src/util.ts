@@ -1,4 +1,4 @@
-export {sleep, retry, objEq};
+export {sleep, retry, objEq, frameAlmostEq};
 
 function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => {
@@ -20,6 +20,17 @@ async function retry(
 		}
 	}
 	return false;
+}
+
+// Compare two frames allowing off-by-one height difference
+// due to macOS constraining the frame when the dock is visible.
+function frameAlmostEq(a: Rectangle, b: Rectangle): boolean {
+	return (
+		a.x === b.x &&
+		a.y === b.y &&
+		a.width === b.width &&
+		Math.abs(a.height - b.height) <= 1
+	);
 }
 
 function objEq<T extends object>(a: T, b: T): boolean {

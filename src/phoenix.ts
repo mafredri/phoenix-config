@@ -8,7 +8,7 @@ import * as terminal from './misc/terminal';
 import {showCenterOn, titleModal} from './modal';
 // import {Scanner} from './scan';
 import {screenAt} from './screen';
-import {objEq, sleep} from './util';
+import {frameAlmostEq, sleep} from './util';
 import {setFrame, toggleMaximized} from './window';
 // import * as lgtv from './misc/lgtv';
 
@@ -259,11 +259,12 @@ onKey(['left', 'j'], hyper, async () => {
 	const frame2 = {width: Math.floor(width / 2), height, x, y};
 	const frame3 = {width: Math.floor(width / 3), height, x, y};
 	const frame4 = {width: Math.floor(width / 4), height, x, y};
+	const winFrame = win.frame();
 	let frame = frame2;
-	if (objEq(win.frame(), frame2)) {
+	if (frameAlmostEq(winFrame, frame2)) {
 		frame = frame3;
 	}
-	if (objEq(win.frame(), frame3)) {
+	if (frameAlmostEq(winFrame, frame3)) {
 		frame = frame4;
 	}
 
@@ -295,11 +296,12 @@ onKey(['right', 'l'], hyper, async () => {
 		x: x + Math.ceil((width / 4) * 3),
 		y,
 	};
+	const winFrame = win.frame();
 	let frame = frame2;
-	if (objEq(win.frame(), frame2)) {
+	if (frameAlmostEq(winFrame, frame2)) {
 		frame = frame3;
 	}
-	if (objEq(win.frame(), frame3)) {
+	if (frameAlmostEq(winFrame, frame3)) {
 		frame = frame4;
 	}
 

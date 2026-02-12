@@ -1,4 +1,4 @@
-import {objEq, retry} from './util';
+import {frameAlmostEq, objEq, retry} from './util';
 import {frameRatio} from './calc';
 import log from './logger';
 
@@ -54,9 +54,13 @@ async function toggleMaximized(win: Window): Promise<boolean> {
 }
 
 async function setFrame(win: Window, frame: Rectangle): Promise<boolean> {
-	if (!(await retry(() => win.setFrame(frame)))) {
-		log.notify('Set window frame failed:', win.title(), frame);
-		return false;
+	// macOS may constrain the height by 1px (e.g. when the dock is visible),
+	// accept the frame if it's off by one.
+	if (!win.setFrame(frame) && !frameAlmostEq(win.frame(), frame)) {
+		if (!(await retry(() => win.setFrame(frame)))) {
+			log.notify('Set window frame failed:', win.title(), frame);
+			return false;
+		}
 	}
 	frameCache.delete(win.hash());
 	return true;
