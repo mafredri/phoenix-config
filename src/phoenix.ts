@@ -120,7 +120,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 		if (Math.abs(mouseAction.sf.x - nf.x) <= stickyThreshold) {
 			nf.x = mouseAction.sf.x;
 		}
-		const rx = mouseAction.sf.width - nf.width;
+		const rx = mouseAction.sf.x + mouseAction.sf.width - nf.width;
 		if (Math.abs(rx - nf.x) <= stickyThreshold) {
 			nf.x = rx;
 		}
@@ -130,6 +130,15 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 		const by = mouseAction.sf.y + mouseAction.sf.height - nf.height;
 		if (Math.abs(by - nf.y) <= stickyThreshold) {
 			nf.y = by;
+		}
+
+		// Snap to the bottom screen edge (below Dock) as well.
+		const sby =
+			mouseAction.screen.flippedFrame().y +
+			mouseAction.screen.flippedFrame().height -
+			nf.height;
+		if (sby !== by && Math.abs(sby - nf.y) <= stickyThreshold) {
+			nf.y = sby;
 		}
 
 		mouseAction.win.setTopLeft(nf);
