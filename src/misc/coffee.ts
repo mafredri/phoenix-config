@@ -41,7 +41,7 @@ function start({screen, timeout}: Config): TimerStopper {
 
 	return {
 		stop() {
-			clearTimeout(updateInterval);
+			clearInterval(updateInterval);
 			clearTimeout(alertTimeout);
 			if (timer.modal) {
 				timer.modal.close();
@@ -77,7 +77,7 @@ function updater(timer: CoffeeTimer) {
 
 function alerter(timer: CoffeeTimer, updateInterval: number) {
 	return () => {
-		clearTimeout(updateInterval);
+		clearInterval(updateInterval);
 		if (timer.modal) {
 			timer.modal.close();
 		}
