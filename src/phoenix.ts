@@ -30,6 +30,7 @@ interface MouseAction {
 	win: Window;
 	wf: Rectangle;
 	screen: Screen;
+	ff: Rectangle;
 	sf: Rectangle;
 	mp: MousePoint;
 	maximized?: boolean;
@@ -79,6 +80,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 			win,
 			wf: win.frame(),
 			screen,
+			ff: screen.flippedFrame(),
 			sf: screen.flippedVisibleFrame(),
 			mp: {...target},
 		};
@@ -91,6 +93,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 			win: mouseAction.win,
 			wf: mouseAction.win.frame(),
 			screen,
+			ff: screen.flippedFrame(),
 			sf: screen.flippedVisibleFrame(),
 			mp: {...target},
 		};
@@ -104,7 +107,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 	const nf = {...mouseAction.wf};
 	if (type === 'move') {
 		if (target.y < mouseAction.sf.y) {
-			const screenTop = mouseAction.screen.flippedFrame().y;
+			const screenTop = mouseAction.ff.y;
 			const snapThreshold = (screenTop + mouseAction.sf.y) / 2;
 			if (!mouseAction.maximized && target.y < snapThreshold) {
 				mouseAction.maximized = true;
@@ -135,10 +138,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 		}
 
 		// Snap to the bottom screen edge (below Dock) as well.
-		const sby =
-			mouseAction.screen.flippedFrame().y +
-			mouseAction.screen.flippedFrame().height -
-			nf.height;
+		const sby = mouseAction.ff.y + mouseAction.ff.height - nf.height;
 		if (sby !== by && Math.abs(sby - nf.y) <= stickyThreshold) {
 			nf.y = sby;
 		}
@@ -148,6 +148,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 		const currentScreen = mouseAction.win.screen();
 		if (!currentScreen.isEqual(mouseAction.screen)) {
 			mouseAction.screen = currentScreen;
+			mouseAction.ff = currentScreen.flippedFrame();
 			mouseAction.sf = currentScreen.flippedVisibleFrame();
 		}
 	} else {
