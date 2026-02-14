@@ -9,7 +9,7 @@ import {showCenterOn, titleModal} from './modal';
 // import {Scanner} from './scan';
 import {screenAt} from './screen';
 import {frameAlmostEq, sleep} from './util';
-import {setFrame, toggleMaximized} from './window';
+import {clearFrameCache, setFrame, toggleMaximized} from './window';
 // import * as lgtv from './misc/lgtv';
 
 // const scanner = new Scanner();
@@ -32,6 +32,7 @@ interface MouseAction {
 	screen: Screen;
 	sf: Rectangle;
 	mp: MousePoint;
+	maximized?: boolean;
 }
 
 let enableMouseAction = false;
@@ -71,6 +72,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 				return;
 			}
 		}
+		clearFrameCache(win);
 		const screen = win.screen();
 		mouseAction = {
 			type,
@@ -101,10 +103,15 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 	log(mouseAction.win.screen().flippedVisibleFrame());
 	const nf = {...mouseAction.wf};
 	if (type === 'move') {
-		if (target.y === 0) {
-			// TODO: Make it non-instant, revert if dragged back.
-			mouseAction.win.maximize();
+		if (target.y < mouseAction.sf.y) {
+			if (!mouseAction.maximized && target.y < mouseAction.sf.y / 2) {
+				mouseAction.maximized = true;
+				mouseAction.win.maximize();
+			}
 			return;
+		}
+		if (mouseAction.maximized) {
+			mouseAction.maximized = false;
 		}
 		nf.x -= x;
 		nf.y -= y;
@@ -134,7 +141,7 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 			nf.y = sby;
 		}
 
-		mouseAction.win.setTopLeft(nf);
+		mouseAction.win.setFrame(nf);
 
 		const currentScreen = mouseAction.win.screen();
 		if (!currentScreen.isEqual(mouseAction.screen)) {

@@ -2,7 +2,7 @@ import {frameAlmostEq, objEq, retry} from './util';
 import {frameRatio} from './calc';
 import log from './logger';
 
-export {setFrame, maximize, toggleMaximized};
+export {setFrame, maximize, toggleMaximized, clearFrameCache};
 
 interface FrameCache {
 	screen: Rectangle;
@@ -15,9 +15,13 @@ interface FrameCache {
 
 const frameCache: Map<number, FrameCache> = new Map();
 
+function clearFrameCache(win: Window) {
+	frameCache.delete(win.hash());
+}
+
 Event.on('windowDidClose', (win: Window) => {
 	// Cleanup references to unmaximized window frames.
-	frameCache.delete(win.hash());
+	clearFrameCache(win);
 });
 
 function unmaximizedFrame(win: Window): Rectangle {
