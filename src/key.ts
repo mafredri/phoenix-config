@@ -57,4 +57,24 @@ function getHandler(key: string, mod: string[]) {
 	return handlers.get(id);
 }
 
-export {onKey, getHandler};
+const modAlias: Record<Phoenix.ModifierKey, Phoenix.ModifierKey> = {
+	command: 'command',
+	cmd: 'command',
+	option: 'option',
+	alt: 'option',
+	control: 'control',
+	ctrl: 'control',
+	shift: 'shift',
+};
+
+function modifiersMatch(
+	mods: Phoenix.ModifierKey[],
+	match: Phoenix.ModifierKey[],
+): boolean {
+	return (
+		mods.every((m) => match.some((e) => modAlias[m] === modAlias[e])) &&
+		match.every((e) => mods.some((m) => modAlias[m] === modAlias[e]))
+	);
+}
+
+export {onKey, getHandler, modifiersMatch};

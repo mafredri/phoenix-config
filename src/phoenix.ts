@@ -1,7 +1,7 @@
 import {frameRatio, moveToFrame} from './calc';
 import {hyper, hyperShift} from './config';
 import {cycleBackward, cycleForward} from './cycle';
-import {onKey} from './key';
+import {modifiersMatch, onKey} from './key';
 import log from './logger';
 import coffeeTimer, {TimerStopper} from './misc/coffee';
 import * as terminal from './misc/terminal';
@@ -47,23 +47,16 @@ const enableMouseActionHandler: (handler: Key, repeated: boolean) => void = (
 	enableMouseAction = !enableMouseAction;
 };
 
-function hasMouseModifiers(
-	{modifiers}: {modifiers: Phoenix.ModifierKey[]},
-	compare: Phoenix.ModifierKey[],
-): boolean {
-	return (
-		Math.ceil(modifiers.length / 2) == compare.length &&
-		compare.map((key) => modifiers.includes(key)).every((x) => x)
-	);
-}
-
 const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 	target,
 ) => {
 	let type: 'move' | 'resize';
-	if (enableMouseAction && hasMouseModifiers(target, hyper)) {
+	if (enableMouseAction && modifiersMatch(target.modifiers, hyper)) {
 		type = 'move';
-	} else if (enableMouseAction && hasMouseModifiers(target, hyperShift)) {
+	} else if (
+		enableMouseAction &&
+		modifiersMatch(target.modifiers, hyperShift)
+	) {
 		type = 'resize';
 	} else {
 		enableMouseAction = false;
