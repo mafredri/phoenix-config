@@ -104,7 +104,9 @@ const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
 	const nf = {...mouseAction.wf};
 	if (type === 'move') {
 		if (target.y < mouseAction.sf.y) {
-			if (!mouseAction.maximized && target.y < mouseAction.sf.y / 2) {
+			const screenTop = mouseAction.screen.flippedFrame().y;
+			const snapThreshold = (screenTop + mouseAction.sf.y) / 2;
+			if (!mouseAction.maximized && target.y < snapThreshold) {
 				mouseAction.maximized = true;
 				mouseAction.win.maximize();
 			}
