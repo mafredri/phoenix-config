@@ -90,6 +90,12 @@ function tempKey(
 	let handler: Key | undefined;
 	let prev: Key | undefined;
 
+	function guard(): Key {
+		if (!handler) {
+			throw new Error(`TempKey(${key}, [${mod}]) not yet initialized`);
+		}
+		return handler;
+	}
 	const self: TempKey = {
 		get key() {
 			return key;
@@ -98,10 +104,10 @@ function tempKey(
 			return [...mod];
 		},
 		hash() {
-			return handler?.hash() ?? 0;
+			return guard().hash();
 		},
 		isEqual(object: object) {
-			return handler?.isEqual(object) ?? false;
+			return guard().isEqual(object);
 		},
 		isEnabled() {
 			return handler?.isEnabled() ?? false;
