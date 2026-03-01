@@ -33,6 +33,7 @@ I've optimized the key bindings for my common use-case, showing two windows on o
 ### Misc bindings
 
 * `hyper + a` (Toggle mouse action mode, then hold hyper + move mouse to move window)
+* `hyper + z` (Raise window under cursor to front, only active in mouse action mode)
 * `hyper + c` (Start coffee timer, defaults to 8 minutes)
 * `hyper + p` (Show window information in a modal)
 * `hyperShift + a` (Toggle mouse action mode, then hold hyperShift + move mouse to resize window)

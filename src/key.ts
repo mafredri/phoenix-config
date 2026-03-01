@@ -77,4 +77,41 @@ function modifiersMatch(
 	);
 }
 
-export {onKey, getHandler, modifiersMatch};
+interface TempKey {
+	enable(): void;
+	disable(): void;
+}
+
+// tempKey creates a temporary key binding that starts disabled and is
+// only constructed on first enable. On enable, any existing handler for
+// the same key combo is saved and restored on disable.
+function tempKey(
+	key: Phoenix.KeyIdentifier,
+	mod: Phoenix.ModifierKey[],
+	cb: (handler: Key, repeated: boolean) => Promise<unknown> | unknown,
+): TempKey {
+	let registered = false;
+	let prev: Key | undefined;
+
+	return {
+		enable() {
+			prev = getHandler(key, [...mod]);
+			if (!registered) {
+				onKeySingle(key, mod, cb);
+				registered = true;
+			} else {
+				getHandler(key, mod)?.enable();
+			}
+		},
+		disable() {
+			getHandler(key, mod)?.disable();
+			if (prev) {
+				prev.enable();
+				prev = undefined;
+			}
+		},
+	};
+}
+
+export {onKey, tempKey, getHandler, modifiersMatch};
+export type {TempKey};

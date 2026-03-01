@@ -1,7 +1,7 @@
 import {frameRatio, moveToFrame} from './calc';
 import {hyper, hyperShift} from './config';
 import {cycleBackward, cycleForward} from './cycle';
-import {modifiersMatch, onKey} from './key';
+import {type TempKey, tempKey, modifiersMatch, onKey} from './key';
 import log from './logger';
 import coffeeTimer, {TimerStopper} from './misc/coffee';
 import * as terminal from './misc/terminal';
@@ -39,6 +39,16 @@ interface MouseAction {
 let enableMouseAction = false;
 let mouseAction: MouseAction | undefined;
 
+// Mouse action mode keys (deferred, enabled/disabled with mouse mode).
+const mouseActionKeys: TempKey[] = [
+	tempKey('z', hyper, () => {
+		if (!mouseAction) {
+			return;
+		}
+		mouseAction.win.focus();
+	}),
+];
+
 const enableMouseActionHandler: (handler: Key, repeated: boolean) => void = (
 	_,
 	repeat,
@@ -47,6 +57,13 @@ const enableMouseActionHandler: (handler: Key, repeated: boolean) => void = (
 		return;
 	}
 	enableMouseAction = !enableMouseAction;
+	for (const mak of mouseActionKeys) {
+		if (enableMouseAction) {
+			mak.enable();
+		} else {
+			mak.disable();
+		}
+	}
 };
 
 const mouseActionHandler: (target: MousePoint, handler: Event) => void = (
