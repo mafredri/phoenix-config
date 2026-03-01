@@ -1,16 +1,41 @@
 import * as esbuild from 'esbuild';
-import {readFileSync, rmSync} from 'fs';
+import {execFileSync} from 'child_process';
+import {mkdirSync, readFileSync, writeFileSync} from 'fs';
 
 const watch = process.argv.includes('--watch');
 
-// Read target from tsconfig.json
+// Read target from tsconfig.json.
 const tsconfig = JSON.parse(
 	readFileSync('tsconfig.json', 'utf-8').replace(/,(\s*[}\]])/g, '$1'),
 );
 const target = tsconfig.compilerOptions?.target?.toLowerCase() ?? 'esnext';
 
-// Clean output directory
-rmSync('out', {recursive: true, force: true});
+// Ensure output directory exists.
+mkdirSync('out', {recursive: true});
+
+/** @type {esbuild.Plugin} */
+const tscPlugin = {
+	name: 'tsc',
+	setup(build) {
+		build.onStart(() => {
+			try {
+				execFileSync('pnpm', ['run', 'typecheck'], {
+					stdio: 'inherit',
+				});
+			} catch {
+				return {errors: [{text: 'Type check failed'}]};
+			}
+		});
+		build.onEnd((result) => {
+			if (result.errors.length > 0) {
+				return;
+			}
+			for (const file of result.outputFiles ?? []) {
+				writeFileSync(file.path, file.contents);
+			}
+		});
+	},
+};
 
 /** @type {esbuild.BuildOptions} */
 const common = {
@@ -18,6 +43,10 @@ const common = {
 	bundle: true,
 	format: 'esm',
 	target,
+
+	// Ensure we only write on success.
+	write: false,
+	plugins: [tscPlugin],
 };
 
 /** @type {esbuild.BuildOptions} */

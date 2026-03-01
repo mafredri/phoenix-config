@@ -19,7 +19,6 @@
 	"scripts": {
 		"start": "pnpm run watch",
 		"watch": "node build.mjs --watch",
-		"watch-dev": "node build.mjs --watch --dev",
 		"build": "node build.mjs",
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint src",
