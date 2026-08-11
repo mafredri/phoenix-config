@@ -9,12 +9,12 @@
 		"rxjs": "^7.8.2"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.39.2",
-		"esbuild": "^0.25.0",
-		"eslint": "^9.39.2",
-		"prettier": "^3.8.1",
-		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.54.0"
+		"@eslint/js": "^10.0.1",
+		"esbuild": "^0.28.2",
+		"eslint": "^10.8.1",
+		"prettier": "^3.9.6",
+		"typescript": "^7.0.2",
+		"typescript-eslint": "^8.67.0"
 	},
 	"scripts": {
 		"start": "pnpm run watch",
@@ -40,5 +40,13 @@
 		"singleQuote": true,
 		"bracketSpacing": false,
 		"trailingComma": "all"
+	},
+	"ava": {
+		"extensions": {
+			"ts": "module"
+		},
+		"nodeArguments": [
+			"--import=tsimp"
+		]
 	}
 }
